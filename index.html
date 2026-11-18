@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<script>try{var u=JSON.parse(localStorage.getItem("idUser")||"null");if(u&&u.name&&!/[?&]home=1/.test(location.search))location.replace("/app.html")}catch(e){}</script>
+<script>try{var u=JSON.parse(localStorage.getItem("idUser")||"null");if(u&&u.name&&!/[?&]home=1/.test(location.search))location.replace("/home")}catch(e){}</script>
 <title>InterDars — darsni o’yinga aylantiring</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Nunito:wght@600;700;800&display=swap" rel="stylesheet">
@@ -185,14 +185,14 @@ footer{padding:26px 0 40px;color:var(--muted);font-size:14px;text-align:center}
     <div class="acc" id="acc"></div>
     <p class="pv">Davom etsangiz, Google ismingiz, email manzilingiz va profil rasmingizni InterDars bilan ulashadi.</p></div>
   <div id="v2" hidden><div class="spin"></div><h2>Kirilmoqda…</h2></div>
-  <div id="v3" hidden><div class="pf big2" id="bp"></div><h2 id="bn"></h2><p id="be"></p><a class="go" id="app" href="/app.html">Ilovaga o’tish →</a></div>
+  <div id="v3" hidden><div class="pf big2" id="bp"></div><h2 id="bn"></h2><p id="be"></p><a class="go" id="app" href="/home">Ilovaga o’tish →</a></div>
 </div></div>
 
 <script>
 (function(){
 var d=document,$=function(s){return d.querySelector(s)},$$=function(s){return [].slice.call(d.querySelectorAll(s))};
 d.documentElement.classList.add('js');
-var APP="/app.html";
+var APP="/home";
 var mq=$('#mq');mq.innerHTML+=mq.innerHTML;
 var M=[
 ['⚡','Viktorina','10–15 daq','Jonli reyting bilan tezkor savollar. Har javobdan so’ng natija darhol ko’rinadi.',['Ball tezlik va aniqlikka qarab beriladi','Savol har 15 soniyada almashadi','Dars oxirida g’oliblar podiumi'],['10–15 daq','Yakka','Takrorlash uchun'],'#4B6BFF,#7C93FF'],
