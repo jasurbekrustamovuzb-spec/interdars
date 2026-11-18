@@ -452,6 +452,16 @@ body.typing nav{display:flex}
 .guide p{background:var(--card);border:2px solid var(--line);border-radius:18px 18px 18px 6px;padding:10px 14px;font-weight:700;font-size:14px;box-shadow:var(--shadow)}
 .cf{position:fixed;z-index:90;width:9px;height:14px;border-radius:2px;pointer-events:none;animation:cf 1.5s cubic-bezier(.2,.7,.4,1) forwards}
 @keyframes cf{0%{transform:translate(0,0) rotate(0);opacity:1}35%{transform:translate(calc(var(--dx)*.7),calc(var(--dy)*-1)) rotate(calc(var(--r)*.5))}100%{transform:translate(var(--dx),240px) rotate(var(--r));opacity:0}}
+.sw{width:46px;height:28px;border-radius:99px;background:var(--line);position:relative;flex:none;transition:background .2s;display:block}
+.sw i{position:absolute;left:3px;top:3px;width:22px;height:22px;border-radius:50%;background:#fff;box-shadow:0 2px 4px rgba(0,0,0,.25);transition:transform .2s;display:block}
+[aria-checked=true] .sw{background:var(--mint)}[aria-checked=true] .sw i{transform:translateX(18px)}
+.dot[hidden]{display:none}
+.nl{display:grid;gap:10px;margin-top:14px;max-height:46vh;overflow-y:auto}
+.ni{display:flex;gap:12px;align-items:center;background:var(--bg);border-radius:16px;padding:10px 12px}
+.ni .si{font-style:normal;width:36px;height:36px;border-radius:12px;display:grid;place-items:center;background:var(--card);flex:none}
+.ni b{display:block;font-size:14px;line-height:1.25}.ni small{color:var(--muted);font-size:12.5px}
+.dlg .sr{border-radius:16px;margin-top:12px;background:var(--bg);border:0}
+.dlg .es{box-shadow:none;background:var(--bg);margin-top:14px}
 </style>
 </head>
 <body>
@@ -463,7 +473,7 @@ body.typing nav{display:flex}
     <button class="icon-btn lang" id="lang" aria-label="Tilni almashtirish" title="Tilni almashtirish">UZ</button>
     <button class="icon-btn" data-search aria-label="Qidirish" title="Qidirish"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg></button>
     <button class="icon-btn" id="theme" aria-label="Rejimni almashtirish" title="Rejimni almashtirish"></button>
-    <button class="icon-btn" aria-label="Bildirishnomalar" data-toast="Yangi bildirishnoma yo’q">
+    <button class="icon-btn" id="bell" aria-label="Bildirishnomalar"><i class="dot" id="bdot" hidden></i>
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 1 1 12 0c0 7 3 8 3 8H3s3-1 3-8"/><path d="M10.3 20a2 2 0 0 0 3.4 0"/></svg>
     </button>
   </header>
@@ -578,9 +588,9 @@ body.typing nav{display:flex}
   <section class="sec"><div class="sh"><h2>Sozlamalar</h2></div><div class="set">
     <button class="sr" id="sedit"><i class="si">✏️</i><span>Profilni tahrirlash</span><em>›</em></button>
     <div class="sr rl"><span>Foydalanish turi</span><div class="pills" id="role"><button class="pill" aria-pressed="true" data-role="general">Umumiy</button><button class="pill" aria-pressed="false" data-role="teacher">O’qituvchi</button><button class="pill" aria-pressed="false" data-role="student">Talaba</button></div><small>Profilingizda ko’rinadi.</small></div>
-    <div class="sr rl"><span>Til</span><div class="pills" id="lg"><button class="pill" aria-pressed="true" data-l="uz">O’zbekcha</button><button class="pill" aria-pressed="false" data-l="ru">Русский</button></div></div>
-    <button class="sr" id="rt"><i class="si">🌙</i><span>Qorong’i rejim</span><em>⇄</em></button>
-    <button class="sr" data-toast="Yangi bildirishnoma yo’q"><i class="si">🔔</i><span>Bildirishnomalar</span></button>
+    <div class="sr rl"><span>Til</span><div class="pills" id="lg"><button class="pill" aria-pressed="true" data-l="uz">O’zbekcha</button><button class="pill" aria-pressed="false" data-l="ru">Русский</button><button class="pill" aria-pressed="false" data-l="en">English</button></div></div>
+    <button class="sr" id="rt" role="switch" aria-checked="false"><i class="si" id="rti">🌙</i><span>Qorong’i rejim</span><b class="sw"><i></i></b></button>
+    <button class="sr" id="nrow"><i class="si">🔔</i><span>Bildirishnomalar</span><em>›</em></button>
     <button class="sr" id="clr"><i class="si">🗑️</i><span>Ma’lumotlarni tozalash</span></button>
     <button class="sr out"><i class="si">🚪</i><span>Chiqish</span></button></div></section>
 </section>
@@ -636,7 +646,7 @@ document.querySelectorAll(".ava").forEach(function(e){e.textContent=u.avatar||fi
 document.querySelectorAll(".un").forEach(function(e){e.textContent=first});document.querySelectorAll(".unf").forEach(function(e){e.textContent=u.name});
 document.querySelectorAll(".ue").forEach(function(e){e.textContent=u.email||""})}catch(e){}}
 window.applyName=apply;apply();
-try{var out=document.querySelector(".sr.out");if(out){out.addEventListener("click",function(){try{localStorage.removeItem("idUser")}catch(e){}var go=function(){location.replace("/?home=1")};try{window.sb?window.sb.auth.signOut().then(go,go):go()}catch(e){go()}},true)}}catch(e){}
+
 })();
 </script>
 
@@ -688,25 +698,26 @@ Object.assign(window.RX,{'Yangi daraja':'Новый уровень','Avval mavzu
 })();
 </script>
 
+<script>window.EN={"Xush kelibsiz": "Welcome", "Salom,": "Hi,", "Daraja:": "Level:", "Ustoz": "Mentor", "Yangi dars yaratamiz": "Let's create a new lesson", "Mavzu va metodni tanlang, savollarni kiriting — dars tayyor.": "Pick a topic and a method, add questions — your lesson is ready.", "Dars yaratish": "Create lesson", "Mavzu": "Topic", "Metod": "Method", "Boshlash": "Start", "Hammasi": "All", "Barchasi": "All", "Batafsil": "Details", "Viktorina": "Quiz", "Xotira o’yini": "Memory game", "Jamoaviy jang": "Team battle", "Krossvord": "Crossword", "Kim millioner": "Millionaire", "Jamoa bilan": "With a team", "Juftlarni top": "Find the pairs", "Yordam bilan": "With lifelines", "Oxirgi natijalar": "Recent results", "Bosh": "Home", "Kutubxona": "Library", "Yaratish": "Create", "Profil": "Profile", "Bildirishnomalar": "Notifications", "Daraja": "Level", "Haftalik natijalar": "Weekly results", "Asosiy navigatsiya": "Main navigation", "Ketma-ket kunlar": "Day streak", "Tilni almashtirish": "Change language", "Rejimni almashtirish": "Switch theme", "Yangi bildirishnoma yo’q": "No new notifications", "Viktorina tanlandi": "Quiz selected", "Jamoaviy jang tanlandi": "Team battle selected", "Xotira o’yini tanlandi": "Memory game selected", "Krossvord tanlandi": "Crossword selected", "Kim millioner tanlandi": "Millionaire selected", "JONLI VIKTORINA": "LIVE QUIZ", "JONLI": "LIVE", "Sinf bir vaqtda o’ynaydi": "The whole class plays together", "O’qituvchi savol beradi, o’quvchilar telefondan kod bilan qo’shilib, tezlikka javob beradi. Reyting har soniya yangilanadi.": "The teacher asks, students join from their phones with a code and answer against the clock. The ranking updates every second.", "6 xonali kod bilan bir zumda qo’shilish": "Join in seconds with a 6-digit code", "Har savolga taymer: tezroq javob, ko’proq ball": "A timer on every question: faster answer, more points", "Jonli reyting va yakunda g’oliblar podiumi": "Live ranking and a winners’ podium at the end", "Kod bilan qo’shilish": "Join with a code", "Viktorina yaratish": "Create a quiz", "Jonli viktorina": "Live quiz", "Butun sinf bilan": "With the whole class", "Eng katta sayyora qaysi?": "Which planet is the biggest?", "Mars": "Mars", "Yupiter": "Jupiter", "Venera": "Venus", "Yer": "Earth", "Butun sinf bir vaqtda o’ynaydi, reyting jonli yangilanadi.": "The whole class plays at once, the ranking updates live.", "10–20 daq": "10–20 min", "Jonli viktorina tanlandi": "Live quiz selected", "Qidirish": "Search", "Natijalar": "Results", "Yopish": "Close", "Turi": "Type", "Kirish": "Join", "Bunday kod topilmadi — tekshirib, qayta kiriting.": "Code not found — check it and try again.", "Mohir": "Skilled", "Oxirgi darslarim": "My recent lessons", "Foydalanish turi": "Usage type", "Umumiy": "General", "O’qituvchi": "Teacher", "Talaba": "Student", "Kim uchun": "Who is it for", "Guruh": "Group", "Dars yaratuvchi": "Lesson creator", "Metodlar": "Methods", "Dars metodlari": "Lesson methods", "Mavzuga mos o’yinni tanlang — dars shu usulda o’tadi.": "Pick a game that fits the topic — the lesson will run that way.", "Yakka": "Solo", "Jamoa": "Team", "Tanlash": "Choose", "Yangi dars": "New lesson", "To’rt qadamda tayyor.": "Ready in four steps.", "Davom etish": "Continue", "Orqaga": "Back", "Sinf": "Class", "4. Tekshiring va boshlang": "4. Review and start", "Hammasi to’g’rimi?": "Is everything correct?", "Darsni yaratish": "Create the lesson", "Tayyor darslar — tanlang va bir bosishda ishlating.": "Ready lessons — pick one and use it in a click.", "Natijalarim": "My results", "Yaratilgan darslar": "Lessons created", "Nishonlar": "Badges", "Sozlamalar": "Settings", "Til": "Language", "Qorong’i rejim": "Dark mode", "Chiqish": "Log out", "Birinchi dars": "First lesson", "Savollar": "Questions", "Statistika": "Statistics", "Hali dars yo’q": "No lessons yet", "Birinchi darsingizni yarating yoki tayyor darslardan boshlang.": "Create your first lesson or start with a ready one.", "Tayyor darslar": "Ready lessons", "Mening darslarim": "My lessons", "O’ynash": "Play", "Natijalar o’ynagandan keyin shu yerda chiqadi.": "Results will appear here after you play.", "Tez orada": "Coming soon", "Tez orada — hozircha tayyorlanmoqda": "Coming soon — still in the works", "Savol": "Question", "Javob": "Answer", "Savol matni": "Question text", "O’chirish": "Delete", "Savol qo’shish": "Add question", "Juft qo’shish": "Add pair", "Juft": "Pair", "Atama": "Term", "Ta’rif": "Definition", "To’ldirilgan": "Filled in", "kamida": "at least", "savol": "questions", "juft": "pairs", "1. Mavzu": "1. Topic", "Dars qaysi mavzuda bo’ladi?": "What is the lesson about?", "2. Metodni tanlang": "2. Choose a method", "3. Savollarni kiriting": "3. Enter the questions", "3. Juftliklarni kiriting": "3. Enter the pairs", "Har savolga 2–4 ta javob yozing va to’g’risini belgilang.": "Write 2–4 answers for each question and mark the correct one.", "Atama va uning ta’rifini yozing — o’yinda shular juftlanadi.": "Write a term and its definition — they become the pairs in the game.", "Darslikdan avtomatik savol tayyorlash tez orada qo’shiladi.": "Automatic questions from a textbook are coming soon.", "Natija": "Result", "Qayta o’ynash": "Play again", "Keyingisi": "Next", "Natijani ko’rish": "See result", "To’g’ri!": "Correct!", "Noto’g’ri": "Wrong", "Vaqt tugadi": "Time’s up", "Yutuqni olish": "Take the money", "Yutuq": "Winnings", "ball": "points", "Ball": "Score", "Durang": "Draw", "g’olib!": "wins!", "Nechta jamoa o’ynaydi?": "How many teams are playing?", "Savollarga jamoalar navbat bilan javob beradi. Bitta qurilmada o’ynang.": "Teams answer in turn. Play on a single device.", "Qizil jamoa": "Red team", "Ko’k jamoa": "Blue team", "Yashil jamoa": "Green team", "urinish": "attempts", "soniya": "seconds", "bugun": "today", "kecha": "yesterday", "kun oldin": "days ago", "Kod": "Code", "Kod hozircha shu qurilmada ishlaydi.": "The code works on this device only for now.", "Kodni nusxalash": "Copy code", "Kod nusxalandi": "Code copied", "Darslarimga qo’shish": "Add to my lessons", "Darslarimga qo’shildi": "Added to my lessons", "Dars o’chirilsinmi?": "Delete this lesson?", "Dars o’chirildi": "Lesson deleted", "Profilni tahrirlash": "Edit profile", "Ism": "Name", "Avatar": "Avatar", "Rang": "Color", "Saqlash": "Save", "Bekor qilish": "Cancel", "Profil saqlandi": "Profile saved", "Ismingizni kiriting": "Enter your name", "Birinchi o’yin": "First game", "3 kunlik seriya": "3-day streak", "100% natija": "100% result", "5 ta dars": "5 lessons", "20 ta o’yin": "20 games", "Ma’lumotlarni tozalash": "Clear data", "Barcha darslar va natijalar o’chiriladi. Davom etasizmi?": "All lessons and results will be deleted. Continue?", "Ma’lumotlar tozalandi": "Data cleared", "Yangi": "New", "Havaskor": "Amateur", "Usta": "Expert", "Profilingizda ko’rinadi.": "Shown on your profile.", "Tezkor savollar": "Quick questions", "O’yin": "Game", "Savollar soni": "Number of questions", "Yangi daraja": "New level", "Avval mavzuni yozing — qisqa va aniq bo’lsin.": "Start with the topic — keep it short and clear.", "Dars qanday o’yin bo’lishini tanlang.": "Choose what kind of game the lesson will be.", "Savollarni yozing va to’g’ri javobni belgilang.": "Write the questions and mark the right answer.", "Hammasi tayyor! Darsni yarating.": "All set! Create the lesson.", "Savollarga tez javob bering: tezroq javob — ko’proq ball.": "Answer quickly: the faster you answer, the more points you get.", "Jamoalar navbat bilan javob beradi va ball uchun bellashadi.": "Teams answer in turn and compete for points.", "Atama va ta’rifni juftlab, kartalarni ochib toping.": "Flip the cards and match each term with its definition.", "Savollar ketma-ket, xato qilsangiz o’yin tugaydi. 50:50 yordami bor.": "Questions in a row — one mistake ends the game. A 50:50 lifeline is available.", "Butun sinf telefonlardan bir vaqtda o’ynaydi, reyting jonli yangilanadi.": "The whole class plays on phones at once, the ranking updates live.", "Mavzu bo’yicha so’zlarni topib, katakchalarni to’ldiring.": "Find the words on the topic and fill in the grid.", "10–15 daq": "10–15 min", "20–25 daq": "20–25 min", "8–10 daq": "8–10 min", "15–20 daq": "15–20 min", "15 daq": "15 min", "tanlandi": "selected", "Hozircha hech narsa yo’q. Dars yaratsangiz yoki o’ynasangiz, shu yerda chiqadi.": "Nothing yet. When you create a lesson or play, it will show up here.", "Brauzer eslatmalari": "Browser reminders", "Yoqish": "Turn on", "O’chirib qo’yish": "Turn off", "Yoqilgan": "On", "O’chirilgan": "Off", "Seriyangiz uzilmasin — bugun bitta dars o’ynang!": "Keep your streak alive — play one lesson today!", "Ruxsat berilmadi — brauzer sozlamalaridan yoqing": "Permission denied — enable it in your browser settings", "Bu brauzer bildirishnomalarni qo’llamaydi": "This browser does not support notifications", "Eslatmalar yoqildi": "Reminders turned on", "Eslatmalar o’chirildi": "Reminders turned off", "Eslatma har kuni, sayt ochilganda chiqadi.": "The reminder appears once a day when you open the site.", "Dars yaratildi": "Lesson created", "Ro’yxatni tozalash": "Clear list", "Tozalash": "Clear", "Chiqishni xohlaysizmi?": "Log out?", "Hisobingizdan chiqasiz. Darslaringiz shu qurilmada saqlanib qoladi.": "You will be signed out. Your lessons stay saved on this device.", "Yorug’ rejim": "Light mode", "Dars yaratildi — kod:": "Lesson created — code:", "Dars kodi": "Lesson code", "Dars kodi, 6 raqam": "Lesson code, 6 digits", "Masalan: Kasrlar": "For example: Fractions", "Dars nomini qidiring": "Search lesson name", "Metod yoki dars nomi": "Method or lesson name", "Dars butunlay o’chiriladi.": "The lesson will be deleted permanently.", "O’rtacha natija": "Average result", "O’ynalgan": "Played", "Eng yuqori ball": "Best score", "O’rtacha ball": "Average score", "Matematika": "Mathematics", "Tabiat": "Nature", "Biologiya": "Biology", "Serverga saqlanmadi — faqat shu qurilmada": "Not saved to the server — only on this device", "Hech narsa topilmadi — boshqa so’z yozib ko’ring.": "Nothing found — try a different word.", "Kod bilan kirish": "Join with a code", "Dars qaysi o’yin shaklida o’tadi?": "Which game will the lesson be played as?", "Dars": "Lesson", "Darslar": "Lessons", "Yaratilgan": "Created", "Mavzular": "Topics", "Materiallar": "Materials"};window.RX=window.RX||{};Object.assign(window.RX,{"Savollarga tez javob bering: tezroq javob — ko’proq ball.": "Отвечайте быстро: чем быстрее ответ, тем больше баллов.", "Jamoalar navbat bilan javob beradi va ball uchun bellashadi.": "Команды отвечают по очереди и соревнуются за баллы.", "Atama va ta’rifni juftlab, kartalarni ochib toping.": "Открывайте карточки и находите пары: термин и определение.", "Savollar ketma-ket, xato qilsangiz o’yin tugaydi. 50:50 yordami bor.": "Вопросы подряд, ошибка — и игра окончена. Есть подсказка 50:50.", "Butun sinf telefonlardan bir vaqtda o’ynaydi, reyting jonli yangilanadi.": "Весь класс играет с телефонов одновременно, рейтинг обновляется вживую.", "Mavzu bo’yicha so’zlarni topib, katakchalarni to’ldiring.": "Находите слова по теме и заполняйте сетку.", "10–15 daq": "10–15 мин", "20–25 daq": "20–25 мин", "8–10 daq": "8–10 мин", "15–20 daq": "15–20 мин", "15 daq": "15 мин", "tanlandi": "выбрано", "Tezkor savollar": "Быстрые вопросы", "Dars yaratildi — kod:": "Урок создан — код:", "Hozircha hech narsa yo’q. Dars yaratsangiz yoki o’ynasangiz, shu yerda chiqadi.": "Пока пусто. Когда вы создадите урок или сыграете, здесь появятся записи.", "Brauzer eslatmalari": "Напоминания в браузере", "Yoqish": "Включить", "O’chirib qo’yish": "Выключить", "Yoqilgan": "Включено", "O’chirilgan": "Выключено", "Seriyangiz uzilmasin — bugun bitta dars o’ynang!": "Не прерывайте серию — сыграйте сегодня один урок!", "Ruxsat berilmadi — brauzer sozlamalaridan yoqing": "Доступ запрещён — включите в настройках браузера", "Bu brauzer bildirishnomalarni qo’llamaydi": "Этот браузер не поддерживает уведомления", "Eslatmalar yoqildi": "Напоминания включены", "Eslatmalar o’chirildi": "Напоминания выключены", "Eslatma har kuni, sayt ochilganda chiqadi.": "Напоминание появляется раз в день при открытии сайта.", "Dars yaratildi": "Урок создан", "Ro’yxatni tozalash": "Очистить список", "Tozalash": "Очистить", "Chiqishni xohlaysizmi?": "Выйти?", "Hisobingizdan chiqasiz. Darslaringiz shu qurilmada saqlanib qoladi.": "Вы выйдете из аккаунта. Уроки останутся на этом устройстве.", "Yorug’ rejim": "Светлый режим", "Dars kodi": "Код урока", "Dars kodi, 6 raqam": "Код урока, 6 цифр", "Masalan: Kasrlar": "Например: Дроби", "Dars nomini qidiring": "Найдите урок по названию", "Metod yoki dars nomi": "Метод или название урока", "Dars butunlay o’chiriladi.": "Урок будет удалён навсегда.", "Serverga saqlanmadi — faqat shu qurilmada": "Не сохранено на сервере — только на этом устройстве", "Hech narsa topilmadi — boshqa so’z yozib ko’ring.": "Ничего не найдено — попробуйте другое слово.", "Kod bilan kirish": "Вход по коду", "Dars qaysi o’yin shaklida o’tadi?": "В какой игре пройдёт урок?", "Dars": "Урок", "Darslar": "Уроки", "O’rtacha natija": "Средний результат", "O’ynalgan": "Сыграно", "Eng yuqori ball": "Лучший балл", "O’rtacha ball": "Средний балл", "Matematika": "Математика", "Tabiat": "Природа", "Biologiya": "Биология", "Umumiy": "Общие"});</script>
 <script>
 (function(){
 var R={'Xush kelibsiz':'Добро пожаловать','Salom,':'Привет,','Daraja:':'Уровень:','Ustoz':'Наставник','Yangi dars yaratamiz':'Создаём новый урок','Darslikni yuklang, mavzuni tanlang — qolganini InterDars tayyorlaydi.':'Загрузите учебник, выберите тему — остальное подготовит InterDars.','Dars yaratish':'Создать урок','Yuklash':'Загрузка','Mavzu':'Тема','Metod':'Метод','Boshlash':'Начать','Bugungi darslar':'Уроки на сегодня','Hammasi':'Все','Barchasi':'Все','Batafsil':'Подробнее','Kasrlar va ularning amallari':'Дроби и действия с ними','6-A sinf · 09:00':'6-А класс · 09:00','7-B sinf · 10:40':'7-Б класс · 10:40','8-A sinf · 13:20':'8-А класс · 13:20','Viktorina':'Викторина','O’zbekiston tabiati':'Природа Узбекистана','Xotira o’yini':'Игра на память','Fotosintez':'Фотосинтез','Jamoaviy jang':'Командный бой','Tahrirlash':'Изменить','Bu hafta':'На этой неделе','Sinflar':'Классы','O’tilgan darslar':'Проведено уроков','O’rtacha natija':'Средний результат','Davomat':'Посещаемость','Dars metodlari':'Методы уроков','Jonli reyting':'Живой рейтинг','Jamoa bilan':'Командой','Juftlarni top':'Найди пары','Krossvord':'Кроссворд','So’z topish':'Найди слова','Kim millioner':'Миллионер','Yordam bilan':'С подсказками','Oxirgi natijalar':'Последние результаты','6-A sinf, o’rtacha ball':'6-А класс, средний балл','▲ 6% o’tgan haftadan':'▲ 6% к прошлой неделе','Du':'Пн','Se':'Вт','Ch':'Ср','Pa':'Чт','Ju':'Пт','Bosh':'Главная','Kutubxona':'Библиотека','Yaratish':'Создать','Profil':'Профиль','Bildirishnomalar':'Уведомления','Daraja':'Уровень','Haftalik natijalar':'Результаты за неделю','Asosiy navigatsiya':'Главная навигация','Ketma-ket kunlar':'Дней подряд','Tilni almashtirish':'Сменить язык','Rejimni almashtirish':'Сменить тему','Yangi bildirishnoma yo’q':'Новых уведомлений нет','Yaratish bo’limi ochiladi':'Открывается раздел создания','Dars boshlandi — kod: 482193':'Урок начат — код: 4821','Dars boshlandi — kod: 730518':'Урок начат — код: 7305','Dars tahrirlash uchun ochildi':'Урок открыт для редактирования','Viktorina tanlandi':'Выбрана викторина','Jamoaviy jang tanlandi':'Выбран командный бой','Xotira o’yini tanlandi':'Выбрана игра на память','Krossvord tanlandi':'Выбран кроссворд','Kim millioner tanlandi':'Выбран «Миллионер»','Kutubxona bo’limi tayyorlanmoqda':'Раздел «Библиотека» в разработке','Sinflar bo’limi tayyorlanmoqda':'Раздел «Классы» в разработке','Yaratish bo’limi tayyorlanmoqda':'Раздел «Создать» в разработке','Profil bo’limi tayyorlanmoqda':'Раздел «Профиль» в разработке'};
 Object.assign(R,window.RX);var lang='uz',nodes=[],attrs=[],root=document.documentElement,mq=matchMedia('(prefers-color-scheme: dark)'),lb=document.getElementById('lang'),tb=document.getElementById('theme');
 var w=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT,{acceptNode:function(n){var p=n.parentNode;if(p.nodeName==='SCRIPT'||p.nodeName==='STYLE'||p.id==='lang'||!n.nodeValue.trim())return NodeFilter.FILTER_REJECT;return NodeFilter.FILTER_ACCEPT}});
 while(w.nextNode())nodes.push({n:w.currentNode,o:w.currentNode.nodeValue});
-document.querySelectorAll('[aria-label],[title]').forEach(function(e){['aria-label','title'].forEach(function(a){if(e.hasAttribute(a))attrs.push({e:e,a:a,o:e.getAttribute(a)})})});
-window.tt=function(s){return lang==='ru'&&R[s]?R[s]:s};
+document.querySelectorAll('[aria-label],[title],[placeholder]').forEach(function(e){['aria-label','title','placeholder'].forEach(function(a){if(e.hasAttribute(a))attrs.push({e:e,a:a,o:e.getAttribute(a)})})});
+window.tt=function(s){return lang==='ru'?(R[s]||s):lang==='en'?(window.EN[s]||s):s};
 function save(k,v){try{localStorage.setItem(k,v)}catch(e){}}
 function load(k){try{return localStorage.getItem(k)}catch(e){return null}}
-function setLang(l,s){lang=l;nodes.forEach(function(x){var k=x.o.trim();x.n.nodeValue=l==='ru'&&R[k]?x.o.replace(k,R[k]):x.o});attrs.forEach(function(x){x.e.setAttribute(x.a,l==='ru'&&R[x.o]?R[x.o]:x.o)});root.lang=l;document.title=l==='ru'?'InterDars — Главная':'InterDars — Bosh sahifa';lb.textContent=l.toUpperCase();if(s)save('idLang',l);document.dispatchEvent(new Event('langchange'))}
+function setLang(l,s){lang=l;var d=l==='ru'?R:l==='en'?window.EN:null;nodes.forEach(function(x){var k=x.o.trim();x.n.nodeValue=d&&d[k]?x.o.replace(k,function(){return d[k]}):x.o});attrs.forEach(function(x){var k=x.o.trim();x.e.setAttribute(x.a,d&&d[k]?d[k]:x.o)});root.lang=l;document.title={uz:'InterDars — Bosh sahifa',ru:'InterDars — Главная',en:'InterDars — Home'}[l];lb.textContent=l.toUpperCase();if(s)save('idLang',l);document.dispatchEvent(new Event('langchange'))}
 var SUN='<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#F2A516" stroke-width="2.4" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>';
 var MOON='<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#8A63F5" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M21 13.2A9 9 0 1 1 10.8 3a7 7 0 0 0 10.2 10.2z"/></svg>';
 function eff(){return root.getAttribute('data-theme')||(mq.matches?'dark':'light')}
 function setTheme(t,s){root.setAttribute('data-theme',t);tb.innerHTML=t==='dark'?SUN:MOON;if(s)save('idTheme',t)}
-lb.addEventListener('click',function(){setLang(lang==='uz'?'ru':'uz',true)});
+window.setLang=setLang;lb.addEventListener('click',function(){var o=['uz','ru','en'];setLang(o[(o.indexOf(lang)+1)%3],true)});
 tb.addEventListener('click',function(){setTheme(eff()==='dark'?'light':'dark',true)});
 var st=load('idTheme');setTheme(st==='dark'||st==='light'?st:eff(),false);
-if(load('idLang')==='ru')setLang('ru',false);
+var sl=load('idLang');if(sl==='ru'||sl==='en')setLang(sl,false);
 })();
 </script>
 <script>
@@ -725,7 +736,8 @@ function uinfo(){try{return JSON.parse(localStorage.getItem('idUser')||'null')||
 function dkey(){return 'idData:'+(uinfo().email||'local')}
 var curK=dkey(),D;
 function loadD(){try{D=JSON.parse(localStorage.getItem(dkey())||'null')}catch(e){D=null}
-  if(!D||typeof D!=='object')D={};D.lessons=D.lessons||[];D.plays=D.plays||[];D.xp=D.xp||0;D.streak=D.streak||{n:0,last:''}}
+  if(!D||typeof D!=='object')D={};D.lessons=D.lessons||[];D.plays=D.plays||[];D.xp=D.xp||0;D.streak=D.streak||{n:0,last:''};D.notes=D.notes||[];D.nread=D.nread||0}
+function addNote(k,a){D.notes.unshift({k:k,a:a,ts:Date.now()});if(D.notes.length>30)D.notes.length=30}
 function saveD(){try{localStorage.setItem(dkey(),JSON.stringify(D))}catch(e){}}
 loadD();
 function dstr(d){return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate()}
@@ -858,7 +870,7 @@ $$('[data-back]').forEach(function(b){b.addEventListener('click',function(){step
 $('#mk').addEventListener('click',function(){var m=MT[W.m];if(validN()<m.min)return;
   var l={id:'u'+Date.now(),code:gen(),title:W.topic,cls:W.cls,m:W.m,created:Date.now()};
   if(m.t==='qs')l.qs=validQs();else l.pairs=validPs();
-  D.lessons.unshift(l);D.xp+=50;touch();saveD();say('Dars yaratildi — kod: '+l.code);resetW();renderAll();go('bosh');confetti(innerWidth/2,innerHeight*.35,50)});
+  D.lessons.unshift(l);D.xp+=50;touch();addNote('lesson',l.title);saveD();say(T('Dars yaratildi — kod:')+' '+l.code);resetW();renderAll();go('bosh');confetti(innerWidth/2,innerHeight*.35,50)});
 
 /* ===== kutubxona ===== */
 pills('#lf',function(b){lf=b.dataset.f;renderLib()});$('#q').addEventListener('input',renderLib);
@@ -886,10 +898,31 @@ $('#sx').addEventListener('click',closeS);sq.addEventListener('input',renderS);s
 pills('#sf',function(b){sfv=b.dataset.f;renderS()});
 $('#sres').addEventListener('click',function(e){var b=e.target.closest('.sit');if(!b)return;closeS();
   if(b.dataset.t==='m')pickMethod(b.dataset.id);else openDetail(b.dataset.id)});
-function pickMethod(k){if(MT[k].soon){say('Tez orada — hozircha tayyorlanmoqda');return}setM(k);say(MT[k].n+' tanlandi');go('yaratish')}
+function pickMethod(k){if(MT[k].soon){say('Tez orada — hozircha tayyorlanmoqda');return}setM(k);say(T(MT[k].n)+' — '+T('tanlandi'));go('yaratish')}
 
 /* ===== dars oynasi ===== */
 function closeDlg(){$('#dlg').hidden=true;syncOv()}
+var ASK=null;
+function ask(title,text,ok,fn){ASK=fn;$('#dsh').innerHTML='<div class="dh"><div><h2>'+T(title)+'</h2></div><button class="icon-btn" data-dx aria-label="'+T('Yopish')+'">✕</button></div><p class="dnote" style="font-size:14px;margin-top:12px">'+T(text)+'</p><div class="drow"><button class="go alt" data-dx>'+T('Bekor qilish')+'</button><button class="cta" data-askok>'+T(ok)+'</button></div>';$('#dlg').hidden=false;syncOv()}
+function lsg(k){try{return localStorage.getItem(k)}catch(e){return null}}
+function lss(k,v){try{localStorage.setItem(k,v)}catch(e){}}
+function remOn(){return lsg('idNotif')==='1'&&!!window.Notification&&Notification.permission==='granted'}
+function unread(){return D.notes.filter(function(n){return n.ts>D.nread}).length}
+function bdot(){var d=$('#bdot');if(d)d.hidden=!unread()}
+function noteTxt(n){if(n.k==='lesson')return T('Dars yaratildi')+': '+n.a;if(n.k==='level')return T('Yangi daraja')+': '+T(n.a);var p=n.a.split('|');return p[0]+' — '+p[1]+'%'}
+function openNotes(){D.nread=Date.now();saveD();bdot();var on=remOn();
+  var h='<div class="dh"><div><h2>'+T('Bildirishnomalar')+'</h2></div><button class="icon-btn" data-dx aria-label="'+T('Yopish')+'">✕</button></div>';
+  h+=D.notes.length?'<div class="nl">'+D.notes.map(function(n){return '<div class="ni"><span class="si">'+({lesson:'📝',play:'🎮',level:'⭐'}[n.k]||'🔔')+'</span><div><b>'+esc(noteTxt(n))+'</b><small>'+rel(n.ts)+'</small></div></div>'}).join('')+'</div>':'<div class="es sm"><div class="em">🔔</div><p>'+T('Hozircha hech narsa yo’q. Dars yaratsangiz yoki o’ynasangiz, shu yerda chiqadi.')+'</p></div>';
+  h+='<button class="sr" id="nrem" role="switch" aria-checked="'+on+'"><span>'+T('Brauzer eslatmalari')+'</span><b class="sw"><i></i></b></button><p class="dnote">'+T('Eslatma har kuni, sayt ochilganda chiqadi.')+'</p>';
+  if(D.notes.length)h+='<div class="drow"><button class="go alt" data-nclr>'+T('Ro’yxatni tozalash')+'</button></div>';
+  $('#dsh').innerHTML=h;$('#dlg').hidden=false;syncOv()}
+function toggleRem(){
+  if(!window.Notification){say('Bu brauzer bildirishnomalarni qo’llamaydi');return}
+  if(remOn()){lss('idNotif','0');say('Eslatmalar o’chirildi');openNotes();return}
+  var done=function(p){if(p==='granted'){lss('idNotif','1');say('Eslatmalar yoqildi');try{new Notification('InterDars',{body:T('Seriyangiz uzilmasin — bugun bitta dars o’ynang!')})}catch(e){}}else say('Ruxsat berilmadi — brauzer sozlamalaridan yoqing');openNotes()};
+  try{var r=Notification.requestPermission(done);if(r&&r.then)r.then(done)}catch(e){say('Bu brauzer bildirishnomalarni qo’llamaydi')}}
+function logout(){var go=function(){try{localStorage.removeItem('idUser');localStorage.removeItem('idProf');Object.keys(localStorage).forEach(function(k){if(/^sb-.*-auth-token/.test(k))localStorage.removeItem(k)})}catch(e){}location.replace('/?home=1')};
+  setTimeout(go,1500);try{window.sb?window.sb.auth.signOut().then(go,go):go()}catch(e){go()}}
 function openDetail(id){var l=find(id);if(!l)return;var m=MT[l.m],own=l.id.charAt(0)==='u';
   var h='<div class="dh"><span class="tile" style="background:'+m.bg+'">'+m.e+'</span><div><h2>'+esc(l.title)+'</h2><small>'+T(m.n)+' · '+cnt(l)+' '+T(unit(l))+(l.sub?' · '+esc(l.sub):'')+'</small></div><button class="icon-btn" data-dx aria-label="'+T('Yopish')+'">✕</button></div>';
   if(own)h+='<div class="dcode"><span>'+T('Kod')+'</span><b>'+l.code+'</b><button class="go alt" data-dcopy="'+l.code+'">'+T('Kodni nusxalash')+'</button></div><p class="dnote">'+T('Kod hozircha shu qurilmada ishlaydi.')+'</p>';
@@ -916,15 +949,20 @@ function saveEdit(){var nm=E.name.trim().slice(0,40);if(!nm){say('Ismingizni kir
 $('#dlg').addEventListener('input',function(e){if(e.target.id==='ename'){E.name=e.target.value;epPrev()}});
 $('#dlg').addEventListener('click',function(e){var t=e.target,b;
   if(t===this||t.closest('[data-dx]')){closeDlg();return}
+  if(t.closest('[data-askok]')){var af=ASK;ASK=null;closeDlg();if(af)af();return}
+  if(t.closest('#nrem')){toggleRem();return}
+  if(t.closest('[data-nclr]')){D.notes=[];saveD();openNotes();return}
   if(b=t.closest('[data-dplay]')){play(b.dataset.dplay);return}
   if(b=t.closest('[data-dcopy]')){try{navigator.clipboard.writeText(b.dataset.dcopy).then(function(){say('Kod nusxalandi')},function(){})}catch(x){}return}
-  if(b=t.closest('[data-ddel]')){if(confirm(T('Dars o’chirilsinmi?'))){D.lessons=D.lessons.filter(function(x){return x.id!==b.dataset.ddel});saveD();closeDlg();renderAll();say('Dars o’chirildi')}return}
+  if(b=t.closest('[data-ddel]')){var did=b.dataset.ddel;ask('Dars o’chirilsinmi?','Dars butunlay o’chiriladi.','O’chirish',function(){D.lessons=D.lessons.filter(function(x){return x.id!==did});saveD();renderAll();say('Dars o’chirildi')});return}
   if(b=t.closest('[data-dadd]')){var l=find(b.dataset.dadd),c={id:'u'+Date.now(),code:gen(),title:l.title,cls:'Sinf',m:l.m,created:Date.now()};if(l.qs)c.qs=JSON.parse(JSON.stringify(l.qs));else c.pairs=JSON.parse(JSON.stringify(l.pairs));D.lessons.unshift(c);saveD();closeDlg();renderAll();say('Darslarimga qo’shildi');return}
   if(b=t.closest('[data-ee]')){E.emoji=b.dataset.ee;$$('#eemo button').forEach(function(x){x.setAttribute('aria-pressed',x===b)});epPrev();return}
   if(b=t.closest('[data-eb]')){E.bg=BGS[+b.dataset.eb];$$('#ebg button').forEach(function(x){x.setAttribute('aria-pressed',x===b)});epPrev();return}
   if(t.closest('[data-esave]'))saveEdit()});
 $('#pe').addEventListener('click',openEdit);$('#sedit').addEventListener('click',openEdit);
-$('#clr').addEventListener('click',function(){if(confirm(T('Barcha darslar va natijalar o’chiriladi. Davom etasizmi?'))){try{localStorage.removeItem(dkey())}catch(e){}loadD();renderAll();say('Ma’lumotlar tozalandi')}});
+$('#clr').addEventListener('click',function(){ask('Ma’lumotlarni tozalash','Barcha darslar va natijalar o’chiriladi. Davom etasizmi?','Tozalash',function(){try{localStorage.removeItem(dkey())}catch(e){}loadD();renderAll();say('Ma’lumotlar tozalandi')})});
+$('.sr.out').addEventListener('click',function(){ask('Chiqishni xohlaysizmi?','Hisobingizdan chiqasiz. Darslaringiz shu qurilmada saqlanib qoladi.','Chiqish',logout)});
+$('#nrow').addEventListener('click',openNotes);$('#bell').addEventListener('click',openNotes);
 
 /* ===== o'yin ===== */
 var PL={timer:null,t2:null,les:null};
@@ -936,7 +974,7 @@ function start(l){PL.les=l;stopT();clearTimeout(PL.t2);PL.ans=PL.nx=PL.fifty=PL.
   if(l.m==='memory')runMem(l);else if(l.m==='team')teamSetup(l);else runQs(l,l.m)}
 function result(l,pct,pts,xp,line,extra){stopT();
   D.plays.unshift({lid:l.id,t:l.title,m:l.m,pct:pct,pts:pts,ts:Date.now()});if(D.plays.length>60)D.plays.length=60;
-  var L0=lvl().L;D.xp+=xp;touch();saveD();renderAll();var nl=lvl(),up=nl.L>L0,em=MS(pct>=80?'cheer':pct>=50?'idle':'oops');
+  var L0=lvl().L;D.xp+=xp;touch();var nl=lvl(),up=nl.L>L0;addNote('play',l.title+'|'+pct);if(up)addNote('level',nl.name);saveD();renderAll();var em=MS(pct>=80?'cheer':pct>=50?'idle':'oops');
   $('#pl').innerHTML=top(l.title,T('Natija'),'')+'<div class="res"><div class="rem">'+em+'</div><div class="rpc">'+pct+'%</div><p class="rl">'+line+'</p>'+extra+'<p class="rxp">+'+xp+' XP</p>'+(up?'<p class="lvup">'+T('Yangi daraja')+': '+T(nl.name)+'</p>':'')+'<div class="rb"><button class="cta" data-again>'+T('Qayta o’ynash')+'</button><button class="lq-ghost2" data-x>'+T('Yopish')+'</button></div></div>';
   if(pct>=50||up)setTimeout(function(){confetti(innerWidth/2,innerHeight*.3,pct>=80?64:28)},250)}
 function teamSetup(l){
@@ -1017,9 +1055,11 @@ document.addEventListener('langchange',renderAll);
 
 /* ===== profil sozlamalari ===== */
 var root=document.documentElement;
-function syncL(){var l=root.lang==='ru'?'ru':'uz';$$('#lg .pill').forEach(function(b){b.setAttribute('aria-pressed',b.dataset.l===l)})}
-$$('#lg .pill').forEach(function(b){b.addEventListener('click',function(){if(b.dataset.l!==(root.lang==='ru'?'ru':'uz'))$('#lang').click();syncL()})});syncL();
+function syncL(){var l=root.lang==='ru'||root.lang==='en'?root.lang:'uz';$$('#lg .pill').forEach(function(b){b.setAttribute('aria-pressed',b.dataset.l===l)})}
+$$('#lg .pill').forEach(function(b){b.addEventListener('click',function(){window.setLang(b.dataset.l,true);syncL()})});syncL();document.addEventListener('langchange',syncL);
 $('#rt').addEventListener('click',function(){$('#theme').click()});
+function syncTh(){var d=root.getAttribute('data-theme')==='dark';$('#rt').setAttribute('aria-checked',d);$('#rti').textContent=d?'🌙':'☀️'}
+new MutationObserver(syncTh).observe(root,{attributes:true,attributeFilter:['data-theme']});syncTh();
 function setRole(r,sv){root.setAttribute('data-role',r);$$('#role .pill').forEach(function(b){b.setAttribute('aria-pressed',b.dataset.role===r)});if(sv){try{localStorage.setItem('idRole',r)}catch(e){}}}
 $$('#role .pill').forEach(function(b){b.addEventListener('click',function(){setRole(b.dataset.role,true)})});
 setRole(root.getAttribute('data-role')||'general',false);
@@ -1034,7 +1074,8 @@ $$('.cnt').forEach(function(e){var n=+e.textContent||128;setInterval(function(){
 $$('.lq-sec').forEach(function(e){var s=10;setInterval(function(){s=s<=1?10:s-1;e.textContent=s},1000)});
 $$('[data-lqjoin]').forEach(function(b){b.addEventListener('click',function(){go('bosh');setTimeout(function(){code.scrollIntoView({behavior:'smooth',block:'center'});code.focus()},80)})});
 
-renderAll();show();
+renderAll();show();bdot();
+try{if(remOn()){var td=dstr(new Date());if(lsg('idRemDay')!==td&&D.streak.last!==td&&curStreak()>0){lss('idRemDay',td);new Notification('InterDars',{body:T('Seriyangiz uzilmasin — bugun bitta dars o’ynang!')})}}}catch(e){}
 })();
 </script>
 </body>
