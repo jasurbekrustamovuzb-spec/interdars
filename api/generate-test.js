@@ -2,6 +2,7 @@ const MAX_TEXT = 120000;
 const USER_DAILY_LIMIT = 5;
 const GLOBAL_DAILY_LIMIT = 100;
 const GLOBAL_PER_MINUTE_LIMIT = 10;
+const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
 
 const clean = (value, length) => typeof value === 'string' ? value.trim().slice(0, length) : '';
 
@@ -91,11 +92,21 @@ module.exports = async (req, res) => {
 
   const startedAt = Date.now();
   try {
-    const response = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent?key=' + encodeURIComponent(geminiKey), {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }], generationConfig: { responseMimeType: 'application/json', temperature: 0.35, maxOutputTokens: 8192 } })
-    });
+    const geminiUrl = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent?key=' + encodeURIComponent(geminiKey);
+    const geminiBody = JSON.stringify({ contents: [{ parts: [{ text: prompt }] }], generationConfig: { responseMimeType: 'application/json', temperature: 0.35, maxOutputTokens: 8192 } });
+    let response;
+    // Gemini may briefly return 503 during capacity spikes. Retry once in the
+    // same request so the user does not need to click again and hit cooldown.
+    for (let attempt = 0; attempt < 2; attempt += 1) {
+      response = await fetch(geminiUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: geminiBody
+      });
+      if (response.status !== 503 || attempt === 1) break;
+      logEvent('ai_test_provider_retry', { status: 503, attempt: attempt + 1 });
+      await sleep(900);
+    }
     let payload = {};
     try { payload = await response.json(); } catch (_) { /* handled below */ }
     if (!response.ok) {
@@ -106,7 +117,11 @@ module.exports = async (req, res) => {
         res.setHeader('Retry-After', String(retry));
         return res.status(429).json({ error: 'Google AI’ning umumiy kvotasi vaqtincha tugadi. Keyinroq qayta urinib ko’ring.', retryAfter: retry });
       }
-      if (response.status === 503) return res.status(503).json({ error: 'Google AI hozir band. Birozdan keyin qayta urinib ko’ring.' });
+      if (response.status === 503) {
+        const retryAfter = 20;
+        res.setHeader('Retry-After', String(retryAfter));
+        return res.status(503).json({ error: `Google AI hozircha band — tizim avtomatik qayta urinib ko’rdi. ${retryAfter} soniyadan keyin yana bir marta urinib ko’ring.`, retryAfter });
+      }
       return res.status(502).json({ error: 'AI javob bera olmadi. Sozlamalar yoki model holatini tekshiring.' });
     }
 
