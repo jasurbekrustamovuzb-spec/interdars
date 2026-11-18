@@ -274,8 +274,8 @@ body.typing nav{display:flex}
 <div class="wrap"><div class="page on" id="p-bosh">
 
   <header class="top">
-    <div class="ava" aria-hidden="true">D</div>
-    <div class="hello"><small>Xush kelibsiz</small><b>Salom, Dilnoza!</b></div>
+    <div class="ava" aria-hidden="true"></div>
+    <div class="hello"><small>Xush kelibsiz</small><b>Salom, <span class="un"></span>!</b></div>
     <button class="icon-btn lang" id="lang" aria-label="Tilni almashtirish" title="Tilni almashtirish">UZ</button>
     <button class="icon-btn" data-search aria-label="Qidirish" title="Qidirish"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg></button>
     <button class="icon-btn" id="theme" aria-label="Rejimni almashtirish" title="Rejimni almashtirish"></button>
@@ -445,7 +445,7 @@ body.typing nav{display:flex}
 
 <section class="page" id="p-profil">
   <div class="ph" style="display:none"><h1>Profil</h1></div>
-  <div class="pc"><div class="ava" aria-hidden="true">D</div><div><b>Dilnoza</b><small data-r="general">Dars yaratuvchi</small><small data-r="teacher">O’qituvchi</small><small data-r="student">Talaba</small></div></div>
+  <div class="pc"><div class="ava" aria-hidden="true"></div><div><b class="un"></b><small data-r="general">Dars yaratuvchi</small><small data-r="teacher">O’qituvchi</small><small data-r="student">Talaba</small></div></div>
   <section class="level" aria-label="Daraja"><div class="lv">7</div><div class="lvbody"><div class="lvrow"><span>Daraja: <b>Mohir</b></span><span>840 / 1000 XP</span></div><div class="bar"><i data-w="84%"></i></div></div><div class="chip" title="Ketma-ket kunlar">🔥 12</div></section>
   <section class="sec"><div class="sh"><h2>Natijalarim</h2></div><div class="stats">
     <div class="stat"><span class="em">📚</span><b>36</b><small>Yaratilgan darslar</small></div>
@@ -499,23 +499,25 @@ sb.auth.getSession().then(function(r){var s=r.data&&r.data.session;
 if(!s){try{localStorage.removeItem('idUser')}catch(e){}location.replace('/');return}
 var u=s.user,m=u.user_metadata||{},nm=m.full_name||m.name||(u.email||'').split('@')[0]||'Foydalanuvchi';
 try{localStorage.setItem('idUser',JSON.stringify({name:nm,email:u.email||'',avatar:'',photo:m.avatar_url||''}))}catch(e){}
-if(!had)location.replace('/home')});
+if(window.applyName)window.applyName();
+try{if(/[?&]code=|access_token=/.test(location.search+location.hash))history.replaceState(null,'','/home')}catch(e){}});
 sb.auth.onAuthStateChange(function(ev){if(ev==='SIGNED_OUT'){try{localStorage.removeItem('idUser')}catch(e){}}});
 })();
 </script>
 <script>
-(function(){try{var u=JSON.parse(localStorage.getItem("idUser")||"null");if(!u||!u.name)return;
+(function(){
+function apply(){try{var u=JSON.parse(localStorage.getItem("idUser")||"null");if(!u||!u.name)return;
 var first=u.name.split(" ")[0];
 document.querySelectorAll(".ava").forEach(function(e){e.textContent=first.charAt(0).toUpperCase();if(u.bg)e.style.background=u.bg});
-var h=document.querySelector(".hello b");if(h)h.textContent="Salom, "+first+"!";
-var pb=document.querySelector(".pc b");if(pb)pb.textContent=first;
-var out=document.querySelector(".sr.out");if(out){out.removeAttribute("data-toast");out.addEventListener("click",function(){try{localStorage.removeItem("idUser")}catch(e){}var go=function(){location.replace("/?home=1")};try{window.sb?window.sb.auth.signOut().then(go,go):go()}catch(e){go()}},true)}
-}catch(e){}})();
+document.querySelectorAll(".un").forEach(function(e){e.textContent=first})}catch(e){}}
+window.applyName=apply;apply();
+try{var out=document.querySelector(".sr.out");if(out){out.removeAttribute("data-toast");out.addEventListener("click",function(){try{localStorage.removeItem("idUser")}catch(e){}var go=function(){location.replace("/?home=1")};try{window.sb?window.sb.auth.signOut().then(go,go):go()}catch(e){go()}},true)}}catch(e){}
+})();
 </script>
 <script>
 (function(){
-var R={'Xush kelibsiz':'Добро пожаловать','Salom, Dilnoza!':'Привет, Дилноза!','Daraja:':'Уровень:','Ustoz':'Наставник','Yangi dars yaratamiz':'Создаём новый урок','Darslikni yuklang, mavzuni tanlang — qolganini InterDars tayyorlaydi.':'Загрузите учебник, выберите тему — остальное подготовит InterDars.','Dars yaratish':'Создать урок','Yuklash':'Загрузка','Mavzu':'Тема','Metod':'Метод','Boshlash':'Начать','Bugungi darslar':'Уроки на сегодня','Hammasi':'Все','Barchasi':'Все','Batafsil':'Подробнее','Kasrlar va ularning amallari':'Дроби и действия с ними','6-A sinf · 09:00':'6-А класс · 09:00','7-B sinf · 10:40':'7-Б класс · 10:40','8-A sinf · 13:20':'8-А класс · 13:20','Viktorina':'Викторина','O’zbekiston tabiati':'Природа Узбекистана','Xotira o’yini':'Игра на память','Fotosintez':'Фотосинтез','Jamoaviy jang':'Командный бой','Tahrirlash':'Изменить','Bu hafta':'На этой неделе','Sinflar':'Классы','O’tilgan darslar':'Проведено уроков','O’rtacha natija':'Средний результат','Davomat':'Посещаемость','Dars metodlari':'Методы уроков','Jonli reyting':'Живой рейтинг','Jamoa bilan':'Командой','Juftlarni top':'Найди пары','Krossvord':'Кроссворд','So’z topish':'Найди слова','Kim millioner':'Миллионер','Yordam bilan':'С подсказками','Oxirgi natijalar':'Последние результаты','6-A sinf, o’rtacha ball':'6-А класс, средний балл','▲ 6% o’tgan haftadan':'▲ 6% к прошлой неделе','Du':'Пн','Se':'Вт','Ch':'Ср','Pa':'Чт','Ju':'Пт','Bosh':'Главная','Kutubxona':'Библиотека','Yaratish':'Создать','Profil':'Профиль','Bildirishnomalar':'Уведомления','Daraja':'Уровень','Haftalik natijalar':'Результаты за неделю','Asosiy navigatsiya':'Главная навигация','Ketma-ket kunlar':'Дней подряд','Tilni almashtirish':'Сменить язык','Rejimni almashtirish':'Сменить тему','Yangi bildirishnoma yo’q':'Новых уведомлений нет','Yaratish bo’limi ochiladi':'Открывается раздел создания','Dars boshlandi — kod: 482193':'Урок начат — код: 4821','Dars boshlandi — kod: 730518':'Урок начат — код: 7305','Dars tahrirlash uchun ochildi':'Урок открыт для редактирования','Viktorina tanlandi':'Выбрана викторина','Jamoaviy jang tanlandi':'Выбран командный бой','Xotira o’yini tanlandi':'Выбрана игра на память','Krossvord tanlandi':'Выбран кроссворд','Kim millioner tanlandi':'Выбран «Миллионер»','Kutubxona bo’limi tayyorlanmoqda':'Раздел «Библиотека» в разработке','Sinflar bo’limi tayyorlanmoqda':'Раздел «Классы» в разработке','Yaratish bo’limi tayyorlanmoqda':'Раздел «Создать» в разработке','Profil bo’limi tayyorlanmoqda':'Раздел «Профиль» в разработке'};
-Object.assign(R,window.RX);try{var _p=JSON.parse(localStorage.getItem('idUser')||'null');if(_p&&_p.name){var _f=_p.name.split(' ')[0];R['Salom, '+_f+'!']='Привет, '+_f+'!'}}catch(e){}var lang='uz',nodes=[],attrs=[],root=document.documentElement,mq=matchMedia('(prefers-color-scheme: dark)'),lb=document.getElementById('lang'),tb=document.getElementById('theme');
+var R={'Xush kelibsiz':'Добро пожаловать','Salom,':'Привет,','Daraja:':'Уровень:','Ustoz':'Наставник','Yangi dars yaratamiz':'Создаём новый урок','Darslikni yuklang, mavzuni tanlang — qolganini InterDars tayyorlaydi.':'Загрузите учебник, выберите тему — остальное подготовит InterDars.','Dars yaratish':'Создать урок','Yuklash':'Загрузка','Mavzu':'Тема','Metod':'Метод','Boshlash':'Начать','Bugungi darslar':'Уроки на сегодня','Hammasi':'Все','Barchasi':'Все','Batafsil':'Подробнее','Kasrlar va ularning amallari':'Дроби и действия с ними','6-A sinf · 09:00':'6-А класс · 09:00','7-B sinf · 10:40':'7-Б класс · 10:40','8-A sinf · 13:20':'8-А класс · 13:20','Viktorina':'Викторина','O’zbekiston tabiati':'Природа Узбекистана','Xotira o’yini':'Игра на память','Fotosintez':'Фотосинтез','Jamoaviy jang':'Командный бой','Tahrirlash':'Изменить','Bu hafta':'На этой неделе','Sinflar':'Классы','O’tilgan darslar':'Проведено уроков','O’rtacha natija':'Средний результат','Davomat':'Посещаемость','Dars metodlari':'Методы уроков','Jonli reyting':'Живой рейтинг','Jamoa bilan':'Командой','Juftlarni top':'Найди пары','Krossvord':'Кроссворд','So’z topish':'Найди слова','Kim millioner':'Миллионер','Yordam bilan':'С подсказками','Oxirgi natijalar':'Последние результаты','6-A sinf, o’rtacha ball':'6-А класс, средний балл','▲ 6% o’tgan haftadan':'▲ 6% к прошлой неделе','Du':'Пн','Se':'Вт','Ch':'Ср','Pa':'Чт','Ju':'Пт','Bosh':'Главная','Kutubxona':'Библиотека','Yaratish':'Создать','Profil':'Профиль','Bildirishnomalar':'Уведомления','Daraja':'Уровень','Haftalik natijalar':'Результаты за неделю','Asosiy navigatsiya':'Главная навигация','Ketma-ket kunlar':'Дней подряд','Tilni almashtirish':'Сменить язык','Rejimni almashtirish':'Сменить тему','Yangi bildirishnoma yo’q':'Новых уведомлений нет','Yaratish bo’limi ochiladi':'Открывается раздел создания','Dars boshlandi — kod: 482193':'Урок начат — код: 4821','Dars boshlandi — kod: 730518':'Урок начат — код: 7305','Dars tahrirlash uchun ochildi':'Урок открыт для редактирования','Viktorina tanlandi':'Выбрана викторина','Jamoaviy jang tanlandi':'Выбран командный бой','Xotira o’yini tanlandi':'Выбрана игра на память','Krossvord tanlandi':'Выбран кроссворд','Kim millioner tanlandi':'Выбран «Миллионер»','Kutubxona bo’limi tayyorlanmoqda':'Раздел «Библиотека» в разработке','Sinflar bo’limi tayyorlanmoqda':'Раздел «Классы» в разработке','Yaratish bo’limi tayyorlanmoqda':'Раздел «Создать» в разработке','Profil bo’limi tayyorlanmoqda':'Раздел «Профиль» в разработке'};
+Object.assign(R,window.RX);var lang='uz',nodes=[],attrs=[],root=document.documentElement,mq=matchMedia('(prefers-color-scheme: dark)'),lb=document.getElementById('lang'),tb=document.getElementById('theme');
 var w=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT,{acceptNode:function(n){var p=n.parentNode;if(p.nodeName==='SCRIPT'||p.nodeName==='STYLE'||p.id==='lang'||!n.nodeValue.trim())return NodeFilter.FILTER_REJECT;return NodeFilter.FILTER_ACCEPT}});
 while(w.nextNode())nodes.push({n:w.currentNode,o:w.currentNode.nodeValue});
 document.querySelectorAll('[aria-label],[title]').forEach(function(e){['aria-label','title'].forEach(function(a){if(e.hasAttribute(a))attrs.push({e:e,a:a,o:e.getAttribute(a)})})});
