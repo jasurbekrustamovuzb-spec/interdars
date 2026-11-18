@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="uz" data-role="general"><script>try{var _u=JSON.parse(localStorage.getItem("idUser")||"null");if(!_u||!_u.name)location.replace("/")}catch(e){location.replace("/")}</script>
+<html lang="uz" data-role="general"><script>try{var _u=JSON.parse(localStorage.getItem("idUser")||"null");var _s=Object.keys(localStorage).some(function(k){return /^sb-.*-auth-token$/.test(k)})||/[?&]code=|access_token=/.test(location.search+location.hash);if(!(_u&&_u.name)&&!_s)location.replace("/")}catch(e){location.replace("/")}</script>
 <script>try{var r=localStorage.getItem("idRole");if(r)document.documentElement.setAttribute("data-role",r)}catch(e){}</script>
 <head>
 <meta charset="utf-8">
@@ -216,6 +216,58 @@ body.typing nav{display:flex}
 .toast{left:calc(50% + 130px);bottom:40px}
 }
 @media(min-width:900px) and (max-width:1179px){.cols{grid-template-columns:minmax(0,1fr)}}
+
+/* ===== jonli viktorina ===== */
+.lqb{position:relative;overflow:hidden;border-radius:32px;padding:26px 20px;color:#fff;background:radial-gradient(120% 140% at 0% 0%,#5B3BD6 0%,#1D2063 52%,#0E1034 100%);box-shadow:0 8px 0 #2A2090,0 22px 46px rgba(75,43,184,.35);display:grid;gap:26px;align-items:center;isolation:isolate}
+.lqb::before,.lqb::after{content:"";position:absolute;border-radius:50%;filter:blur(80px);z-index:-1;pointer-events:none}
+.lqb::before{width:300px;height:300px;background:#FF3B5C;opacity:.38;right:-70px;top:-90px}
+.lqb::after{width:260px;height:260px;background:#27C9E6;opacity:.28;left:-60px;bottom:-90px}
+@media(min-width:900px){.lqb{grid-template-columns:1fr 1.05fr;padding:46px;gap:40px}}
+.lqb h2{font-family:"Baloo 2",Nunito,sans-serif;font-weight:800;line-height:1.02;font-size:clamp(30px,5vw,48px);margin:12px 0 10px;max-width:15ch;color:#fff}
+.lqb .lq-d{opacity:.92;font-size:16px;max-width:40ch}
+.lqb ul{list-style:none;padding:0;display:grid;gap:8px;margin:16px 0 20px}
+.lqb li{font-weight:700;font-size:15px}
+.lqb li::before{content:"✓";display:inline-grid;place-items:center;width:22px;height:22px;border-radius:8px;background:rgba(255,255,255,.2);margin-right:10px;font-size:13px}
+.lq-pill{display:inline-flex;align-items:center;gap:8px;background:#FF3B5C;color:#fff;border-radius:99px;padding:4px 14px 4px 12px;font-weight:800;font-size:13px;letter-spacing:.06em;box-shadow:0 4px 0 #B81E3A}
+.lq-pill i,.lq-live i{width:9px;height:9px;border-radius:50%;background:#fff;animation:lqblink 1.1s ease-in-out infinite;display:inline-block}
+.lq-acts{display:flex;flex-wrap:wrap;gap:12px;align-items:center}
+.lq-ghost{background:rgba(255,255,255,.14);border:2px solid rgba(255,255,255,.3);color:#fff;border-radius:18px;padding:11px 20px;font-family:"Baloo 2",Nunito,sans-serif;font-weight:800;font-size:17px;cursor:pointer}
+.lq-s{position:relative;padding:8px}
+.lq-e{position:absolute;font-size:34px;z-index:2;animation:lqbob 5s ease-in-out infinite;pointer-events:none}
+.lq-scr{position:relative;background:rgba(255,255,255,.09);border:2px solid rgba(255,255,255,.2);border-radius:28px;padding:16px;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);box-shadow:0 18px 40px rgba(0,0,0,.28);transform:rotate(1.2deg)}
+.lq-h{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.lq-live{display:inline-flex;align-items:center;gap:6px;background:#FF3B5C;border-radius:99px;padding:2px 11px;font-weight:800;font-size:12px;letter-spacing:.06em;color:#fff}
+.lq-pin{font-weight:800;font-size:13px;opacity:.9}
+.lq-pin b{font-family:"Baloo 2",Nunito,sans-serif;letter-spacing:.12em;font-size:16px}
+.lq-pl{margin-left:auto;font-weight:800;font-size:13px}
+.lq-qr{display:flex;align-items:center;gap:12px;margin-top:12px}
+.lq-ring{position:relative;width:54px;height:54px;flex:none}
+.lq-ring svg{width:54px;height:54px;transform:rotate(-90deg)}
+.lq-ring circle{fill:none;stroke-width:5}
+.lq-ring .bg{stroke:rgba(255,255,255,.2)}
+.lq-ring .fg{stroke:#FFC53D;stroke-linecap:round;stroke-dasharray:138.2;animation:lqring 10s linear infinite}
+.lq-ring b{position:absolute;inset:0;display:grid;place-items:center;font:800 20px "Baloo 2",Nunito,sans-serif}
+.lq-q{font-family:"Baloo 2",Nunito,sans-serif;font-weight:800;font-size:clamp(18px,2.6vw,24px);line-height:1.1}
+.lq-o{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
+.lq-o i{font-style:normal;font-weight:800;border-radius:14px;padding:9px 10px;display:flex;align-items:center;gap:8px;font-size:14px;color:#fff;animation:lqdim 10s infinite}
+.lq-o i u{text-decoration:none;opacity:.85;font-size:13px}
+.lq-o .a{background:#E5484D}.lq-o .b{background:#2F6BFF;animation-name:lqwin}.lq-o .c{background:#F2A516;color:#3F2E00}.lq-o .d{background:#1FB98C}
+.lq-lb{position:relative;height:138px;margin-top:12px;--rh:46px}
+.lq-lb .r{position:absolute;left:0;right:0;top:0;height:40px;display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.13);border-radius:14px;padding:0 12px;font-weight:800;font-size:14px;color:#fff}
+.lq-lb .r span{font-size:20px}.lq-lb .r b{flex:1}
+.lq-lb .r em{font-style:normal;font-family:"Baloo 2",Nunito,sans-serif;font-size:16px;color:#FFC53D}
+.lq-lb .r1{animation:lqrA 12s ease-in-out infinite}.lq-lb .r2{animation:lqrB 12s ease-in-out infinite}.lq-lb .r3{animation:lqrC 12s ease-in-out infinite}
+.lq-tm{height:8px;border-radius:99px;background:rgba(255,255,255,.2);overflow:hidden;margin-top:10px}
+.lq-tm i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,#FFC53D,#FF6F61);animation:lqtm 10s linear infinite}
+@keyframes lqblink{50%{opacity:.25}}
+@keyframes lqbob{50%{transform:translateY(-10px)}}
+@keyframes lqring{from{stroke-dashoffset:0}to{stroke-dashoffset:138.2}}
+@keyframes lqtm{from{width:100%}to{width:0}}
+@keyframes lqwin{0%,78%{transform:none;box-shadow:none}84%,96%{transform:scale(1.05);box-shadow:0 0 0 3px #fff}100%{transform:none;box-shadow:none}}
+@keyframes lqdim{0%,78%{opacity:1}84%,96%{opacity:.35}100%{opacity:1}}
+@keyframes lqrA{0%,20%{transform:translateY(0)}25%,45%{transform:translateY(var(--rh))}50%,95%{transform:translateY(calc(var(--rh)*2))}100%{transform:translateY(0)}}
+@keyframes lqrB{0%,20%{transform:translateY(var(--rh))}25%,70%{transform:translateY(0)}75%,100%{transform:translateY(var(--rh))}}
+@keyframes lqrC{0%,45%{transform:translateY(calc(var(--rh)*2))}50%,70%{transform:translateY(var(--rh))}75%,95%{transform:translateY(0)}100%{transform:translateY(calc(var(--rh)*2))}}
 </style>
 </head>
 <body>
@@ -298,9 +350,29 @@ body.typing nav{display:flex}
 <div class="stat"><span class="em">🏆</span><b>96%</b><small>Eng yuqori ball</small></div></div></section>
 </div>
 
+  <section class="sec"><div class="lqb">
+  <div class="lq-t">
+    <span class="lq-pill"><i></i>JONLI VIKTORINA</span>
+    <h2>Sinf bir vaqtda o’ynaydi</h2>
+    <p class="lq-d">O’qituvchi savol beradi, o’quvchilar telefondan kod bilan qo’shilib, tezlikka javob beradi. Reyting har soniya yangilanadi.</p>
+    <ul><li>6 xonali kod bilan bir zumda qo’shilish</li><li>Har savolga taymer: tezroq javob, ko’proq ball</li><li>Jonli reyting va yakunda g’oliblar podiumi</li></ul>
+    <div class="lq-acts"><button class="cta" data-lqjoin>Kod bilan qo’shilish</button><button class="lq-ghost" data-go="yaratish">Viktorina yaratish</button></div>
+  </div>
+  <div class="lq-s" aria-hidden="true">
+    <span class="lq-e" style="left:-6px;top:-14px">🎉</span><span class="lq-e" style="right:-4px;top:-18px;animation-delay:-1.6s">🏆</span><span class="lq-e" style="right:6px;bottom:-20px;animation-delay:-3s">⭐</span>
+    <div class="lq-scr">
+      <div class="lq-h"><span class="lq-live"><i></i>JONLI</span><span class="lq-pin">PIN <b>482 193</b></span><span class="lq-pl">👥 <b class="cnt">128</b></span></div>
+      <div class="lq-qr"><div class="lq-ring"><svg viewBox="0 0 54 54"><circle class="bg" cx="27" cy="27" r="22"/><circle class="fg" cx="27" cy="27" r="22"/></svg><b class="lq-sec">10</b></div><div class="lq-q">Eng katta sayyora qaysi?</div></div>
+      <div class="lq-o"><i class="a"><u>▲</u>Mars</i><i class="b"><u>◆</u>Yupiter</i><i class="c"><u>●</u>Venera</i><i class="d"><u>■</u>Yer</i></div>
+      <div class="lq-lb"><div class="r r1"><span>🦊</span><b>Aziza</b><em>1 840</em></div><div class="r r2"><span>🐼</span><b>Jasur</b><em>1 760</em></div><div class="r r3"><span>🦁</span><b>Malika</b><em>1 690</em></div></div>
+    </div>
+  </div>
+</div></section>
+
   <section class="sec">
     <div class="sh"><h2>Dars metodlari</h2><a href="#metodlar">Barchasi</a></div>
     <div class="methods">
+      <button class="m" style="background:linear-gradient(150deg,#FF3B5C,#FF8A5B)" data-toast="Jonli viktorina tanlandi"><span class="e">🔴</span><span><b>Jonli viktorina</b><small>Butun sinf bilan</small></span></button>
       <button class="m" style="background:linear-gradient(150deg,#4B6BFF,#6F8BFF)" data-toast="Viktorina tanlandi"><span class="e">⚡</span><span><b>Viktorina</b><small>Jonli reyting</small></span></button>
       <button class="m" style="background:linear-gradient(150deg,#FF6F61,#FF9A6B)" data-toast="Jamoaviy jang tanlandi"><span class="e">🛡️</span><span><b>Jamoaviy jang</b><small>Jamoa bilan</small></span></button>
       <button class="m" style="background:linear-gradient(150deg,#27C99A,#59E0B6)" data-toast="Xotira o’yini tanlandi"><span class="e">🧠</span><span><b>Xotira o’yini</b><small>Juftlarni top</small></span></button>
@@ -321,8 +393,26 @@ body.typing nav{display:flex}
 </div>
 <section class="page" id="p-metodlar">
   <div class="ph"><button class="icon-btn sbx" data-search aria-label="Qidirish" title="Qidirish"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg></button><h1>Dars metodlari</h1><p>Mavzuga mos o’yinni tanlang — dars shu usulda o’tadi.</p></div>
+  <div style="margin-top:16px"><div class="lqb">
+  <div class="lq-t">
+    <span class="lq-pill"><i></i>JONLI VIKTORINA</span>
+    <h2>Sinf bir vaqtda o’ynaydi</h2>
+    <p class="lq-d">O’qituvchi savol beradi, o’quvchilar telefondan kod bilan qo’shilib, tezlikka javob beradi. Reyting har soniya yangilanadi.</p>
+    <ul><li>6 xonali kod bilan bir zumda qo’shilish</li><li>Har savolga taymer: tezroq javob, ko’proq ball</li><li>Jonli reyting va yakunda g’oliblar podiumi</li></ul>
+    <div class="lq-acts"><button class="cta" data-lqjoin>Kod bilan qo’shilish</button><button class="lq-ghost" data-go="yaratish">Viktorina yaratish</button></div>
+  </div>
+  <div class="lq-s" aria-hidden="true">
+    <span class="lq-e" style="left:-6px;top:-14px">🎉</span><span class="lq-e" style="right:-4px;top:-18px;animation-delay:-1.6s">🏆</span><span class="lq-e" style="right:6px;bottom:-20px;animation-delay:-3s">⭐</span>
+    <div class="lq-scr">
+      <div class="lq-h"><span class="lq-live"><i></i>JONLI</span><span class="lq-pin">PIN <b>482 193</b></span><span class="lq-pl">👥 <b class="cnt">128</b></span></div>
+      <div class="lq-qr"><div class="lq-ring"><svg viewBox="0 0 54 54"><circle class="bg" cx="27" cy="27" r="22"/><circle class="fg" cx="27" cy="27" r="22"/></svg><b class="lq-sec">10</b></div><div class="lq-q">Eng katta sayyora qaysi?</div></div>
+      <div class="lq-o"><i class="a"><u>▲</u>Mars</i><i class="b"><u>◆</u>Yupiter</i><i class="c"><u>●</u>Venera</i><i class="d"><u>■</u>Yer</i></div>
+      <div class="lq-lb"><div class="r r1"><span>🦊</span><b>Aziza</b><em>1 840</em></div><div class="r r2"><span>🐼</span><b>Jasur</b><em>1 760</em></div><div class="r r3"><span>🦁</span><b>Malika</b><em>1 690</em></div></div>
+    </div>
+  </div>
+</div></div>
   <div class="fl" role="group" aria-label="Filtr" id="mf"><button class="pill" aria-pressed="true" data-f="all">Hammasi</button><button class="pill" aria-pressed="false" data-f="solo">Yakka</button><button class="pill" aria-pressed="false" data-f="team">Jamoa</button></div>
-  <div class="mg"><article class="mc" data-k="solo" style="background:linear-gradient(150deg,#4B6BFF,#6F8BFF)"><span class="e" aria-hidden="true">⚡</span><div><b>Viktorina</b><small>Savollarga tez javob bering, natija jonli reytingda ko’rinadi.</small><div class="meta"><span>10–15 daq</span><span>Yakka</span></div><button class="pick" data-m="Viktorina">Tanlash</button></div></article><article class="mc" data-k="team" style="background:linear-gradient(150deg,#FF6F61,#FF9A6B)"><span class="e" aria-hidden="true">🛡️</span><div><b>Jamoaviy jang</b><small>Sinf jamoalarga bo’linib, ball uchun bellashadi.</small><div class="meta"><span>20–25 daq</span><span>Jamoa</span></div><button class="pick" data-m="Jamoaviy jang">Tanlash</button></div></article><article class="mc" data-k="solo" style="background:linear-gradient(150deg,#27C99A,#59E0B6)"><span class="e" aria-hidden="true">🧠</span><div><b>Xotira o’yini</b><small>Atama va ta’rifni juftlab, kartalarni ochib toping.</small><div class="meta"><span>8–10 daq</span><span>Yakka</span></div><button class="pick" data-m="Xotira o’yini">Tanlash</button></div></article><article class="mc" data-k="team" style="background:linear-gradient(150deg,#8A63F5,#AE8BFF)"><span class="e" aria-hidden="true">🧩</span><div><b>Krossvord</b><small>Mavzu bo’yicha so’zlarni topib, katakchalarni to’ldiring.</small><div class="meta"><span>15 daq</span><span>Jamoa</span></div><button class="pick" data-m="Krossvord">Tanlash</button></div></article><article class="mc" data-k="solo" style="background:linear-gradient(150deg,#F2A516,#FFC53D)"><span class="e" aria-hidden="true">💰</span><div><b>Kim millioner</b><small>Savollar qiyinlashib boradi, yordam variantlari bor.</small><div class="meta"><span>15–20 daq</span><span>Yakka</span></div><button class="pick" data-m="Kim millioner">Tanlash</button></div></article></div>
+  <div class="mg"><article class="mc" data-k="team" style="background:linear-gradient(150deg,#FF3B5C,#FF8A5B)"><span class="e" aria-hidden="true">🔴</span><div><b>Jonli viktorina</b><small>Butun sinf bir vaqtda o’ynaydi, reyting jonli yangilanadi.</small><div class="meta"><span>10–20 daq</span><span>Jamoa</span></div><button class="pick" data-m="Jonli viktorina">Tanlash</button></div></article><article class="mc" data-k="solo" style="background:linear-gradient(150deg,#4B6BFF,#6F8BFF)"><span class="e" aria-hidden="true">⚡</span><div><b>Viktorina</b><small>Savollarga tez javob bering, natija jonli reytingda ko’rinadi.</small><div class="meta"><span>10–15 daq</span><span>Yakka</span></div><button class="pick" data-m="Viktorina">Tanlash</button></div></article><article class="mc" data-k="team" style="background:linear-gradient(150deg,#FF6F61,#FF9A6B)"><span class="e" aria-hidden="true">🛡️</span><div><b>Jamoaviy jang</b><small>Sinf jamoalarga bo’linib, ball uchun bellashadi.</small><div class="meta"><span>20–25 daq</span><span>Jamoa</span></div><button class="pick" data-m="Jamoaviy jang">Tanlash</button></div></article><article class="mc" data-k="solo" style="background:linear-gradient(150deg,#27C99A,#59E0B6)"><span class="e" aria-hidden="true">🧠</span><div><b>Xotira o’yini</b><small>Atama va ta’rifni juftlab, kartalarni ochib toping.</small><div class="meta"><span>8–10 daq</span><span>Yakka</span></div><button class="pick" data-m="Xotira o’yini">Tanlash</button></div></article><article class="mc" data-k="team" style="background:linear-gradient(150deg,#8A63F5,#AE8BFF)"><span class="e" aria-hidden="true">🧩</span><div><b>Krossvord</b><small>Mavzu bo’yicha so’zlarni topib, katakchalarni to’ldiring.</small><div class="meta"><span>15 daq</span><span>Jamoa</span></div><button class="pick" data-m="Krossvord">Tanlash</button></div></article><article class="mc" data-k="solo" style="background:linear-gradient(150deg,#F2A516,#FFC53D)"><span class="e" aria-hidden="true">💰</span><div><b>Kim millioner</b><small>Savollar qiyinlashib boradi, yordam variantlari bor.</small><div class="meta"><span>15–20 daq</span><span>Yakka</span></div><button class="pick" data-m="Kim millioner">Tanlash</button></div></article></div>
 </section>
 
 <section class="page" id="p-yaratish">
@@ -337,7 +427,7 @@ body.typing nav{display:flex}
       <input class="inp" id="topic" maxlength="60" placeholder="Masalan: Kasrlar" aria-label="Mavzu">
       <span class="lab">Kim uchun</span><div class="pills" id="cls"><button class="pill" aria-pressed="true" data-c="Sinf">Sinf</button><button class="pill" aria-pressed="false" data-c="Guruh">Guruh</button><button class="pill" aria-pressed="false" data-c="Yakka">Yakka</button></div>
       <div class="wrow"><button class="go alt" data-back>Orqaga</button><button class="go" id="n2" disabled>Davom etish</button></div></div>
-    <div class="pane"><h2>3. Metodni tanlang</h2><p>Dars qaysi o’yin shaklida o’tadi?</p><div id="opts"><button class="opt" aria-pressed="true" data-m="Viktorina"><span class="tile" style="background:#E6EBFF">⚡</span><b>Viktorina</b></button><button class="opt" aria-pressed="false" data-m="Jamoaviy jang"><span class="tile" style="background:#FFE1DD">🛡️</span><b>Jamoaviy jang</b></button><button class="opt" aria-pressed="false" data-m="Xotira o’yini"><span class="tile" style="background:#DDF7EE">🧠</span><b>Xotira o’yini</b></button><button class="opt" aria-pressed="false" data-m="Krossvord"><span class="tile" style="background:#EDE6FF">🧩</span><b>Krossvord</b></button><button class="opt" aria-pressed="false" data-m="Kim millioner"><span class="tile" style="background:#FFF0C9">💰</span><b>Kim millioner</b></button></div>
+    <div class="pane"><h2>3. Metodni tanlang</h2><p>Dars qaysi o’yin shaklida o’tadi?</p><div id="opts"><button class="opt" aria-pressed="true" data-m="Viktorina"><span class="tile" style="background:#E6EBFF">⚡</span><b>Viktorina</b></button><button class="opt" aria-pressed="false" data-m="Jonli viktorina"><span class="tile" style="background:#FFE1E6">🔴</span><b>Jonli viktorina</b></button><button class="opt" aria-pressed="false" data-m="Jamoaviy jang"><span class="tile" style="background:#FFE1DD">🛡️</span><b>Jamoaviy jang</b></button><button class="opt" aria-pressed="false" data-m="Xotira o’yini"><span class="tile" style="background:#DDF7EE">🧠</span><b>Xotira o’yini</b></button><button class="opt" aria-pressed="false" data-m="Krossvord"><span class="tile" style="background:#EDE6FF">🧩</span><b>Krossvord</b></button><button class="opt" aria-pressed="false" data-m="Kim millioner"><span class="tile" style="background:#FFF0C9">💰</span><b>Kim millioner</b></button></div>
       <div class="wrow"><button class="go alt" data-back>Orqaga</button><button class="go" id="n3">Davom etish</button></div></div>
     <div class="pane"><h2>4. Tekshiring va boshlang</h2><p>Hammasi to’g’rimi?</p>
       <div class="sum"><div><span>Fayl</span><b id="s-f"></b></div><div><span>Mavzu</span><b id="s-t"></b></div><div><span>Kim uchun</span><b id="s-c"></b></div><div><span>Metod</span><b id="s-m"></b></div></div>
@@ -398,7 +488,20 @@ body.typing nav{display:flex}
 })();
 </script>
 <script>
-window.RX={'Foydalanuvchilar':'Пользователи','Foydalanuvchi':'Пользователь','Qidirish':'Поиск','Mavzular':'Темы','Darslar':'Уроки','Materiallar':'Материалы','Dars':'Урок','Material':'Материал','Natijalar':'Результаты','Yopish':'Закрыть','Turi':'Тип','Dars kodi bormi?':'Есть код урока?','Do’stingiz yoki o’qituvchi bergan 4 xonali kodni kiriting.':'Введите 4-значный код от друга или учителя.','Kirish':'Войти','Bunday kod topilmadi — tekshirib, qayta kiriting.':'Такой код не найден — проверьте и попробуйте снова.','Mohir':'Мастер','Oxirgi darslarim':'Мои последние уроки','20 savol · kecha':'20 вопросов · вчера','12 juft · 2 kun oldin':'12 пар · 2 дня назад','Qoralama · 3 kun oldin':'Черновик · 3 дня назад','Geometrik shakllar':'Геометрические фигуры','Yaratilgan':'Создано','O’ynalgan':'Сыграно','Eng yuqori ball':'Лучший балл','O’rtacha ball':'Средний балл','O’ynaganlar':'Играли','Foydalanish turi':'Тип использования','Bosh sahifa shu tanlovga moslashadi.':'Главная подстроится под выбор.','Umumiy':'Общий','O’qituvchi':'Учитель','Talaba':'Студент','Kim uchun':'Для кого','Guruh':'Группа','Bosh sahifa yangilandi':'Главная обновлена','Dars yaratuvchi':'Создатель уроков','Metodlar':'Методы','Mavzuga mos o’yinni tanlang — dars shu usulda o’tadi.':'Выберите игру по теме — урок пройдёт в таком формате.','Yakka':'Один','Jamoa':'Команда','Tanlash':'Выбрать','Yangi dars':'Новый урок','To’rt qadamda tayyor — qolganini InterDars bajaradi.':'Четыре шага — остальное сделает InterDars.','1. Darslikni yuklang':'1. Загрузите учебник','PDF yoki Word fayl — InterDars undan savollar tayyorlaydi.':'PDF или Word — InterDars подготовит из него вопросы.','Faylni tanlang':'Выберите файл','Davom etish':'Продолжить','Orqaga':'Назад','2. Mavzuni kiriting':'2. Укажите тему','Sinf':'Класс','3. Metodni tanlang':'3. Выберите метод','4. Tekshiring va boshlang':'4. Проверьте и начните','Hammasi to’g’rimi?':'Всё верно?','Fayl':'Файл','Darsni yaratish':'Создать урок','Kutubxona':'Библиотека','Tayyor darslar — tanlang va bir bosishda ishlating.':'Готовые уроки — выберите и используйте в одно касание.','Matematika':'Математика','Tabiat':'Природа','Biologiya':'Биология','Ishlatish':'Использовать','Natijalarim':'Мои результаты','Yaratilgan darslar':'Создано уроков','O’quvchilar':'Ученики','Eng uzoq seriya':'Лучшая серия','Nishonlar':'Награды','Sozlamalar':'Настройки','Til':'Язык','Qorong’i rejim':'Тёмная тема','Bildirishnomalar':'Уведомления','Chiqish':'Выйти','Maktab o’qituvchisi':'Учитель школы','Birinchi dars':'Первый урок','12 kunlik seriya':'Серия 12 дней','Viktorina ustasi':'Мастер викторин','100 o’quvchi':'100 учеников','Krossvord ustasi':'Мастер кроссвордов','50 ta dars':'50 уроков'};
+window.RX={'JONLI VIKTORINA':'ЖИВАЯ ВИКТОРИНА','JONLI':'LIVE','Sinf bir vaqtda o’ynaydi':'Весь класс играет одновременно','O’qituvchi savol beradi, o’quvchilar telefondan kod bilan qo’shilib, tezlikka javob beradi. Reyting har soniya yangilanadi.':'Учитель задаёт вопрос, ученики входят с телефона по коду и отвечают на скорость. Рейтинг обновляется каждую секунду.','6 xonali kod bilan bir zumda qo’shilish':'Вход по 6-значному коду за секунду','Har savolga taymer: tezroq javob, ko’proq ball':'Таймер на каждый вопрос: быстрее ответ — больше баллов','Jonli reyting va yakunda g’oliblar podiumi':'Живой рейтинг и пьедестал победителей','Kod bilan qo’shilish':'Войти по коду','Viktorina yaratish':'Создать викторину','Jonli viktorina':'Живая викторина','Butun sinf bilan':'Со всем классом','Eng katta sayyora qaysi?':'Какая планета самая большая?','Mars':'Марс','Yupiter':'Юпитер','Venera':'Венера','Yer':'Земля','Aziza':'Азиза','Jasur':'Жасур','Malika':'Малика','Butun sinf bir vaqtda o’ynaydi, reyting jonli yangilanadi.':'Весь класс играет одновременно, рейтинг обновляется вживую.','10–20 daq':'10–20 мин','Jonli viktorina tanlandi':'Выбрана живая викторина','Foydalanuvchilar':'Пользователи','Foydalanuvchi':'Пользователь','Qidirish':'Поиск','Mavzular':'Темы','Darslar':'Уроки','Materiallar':'Материалы','Dars':'Урок','Material':'Материал','Natijalar':'Результаты','Yopish':'Закрыть','Turi':'Тип','Dars kodi bormi?':'Есть код урока?','Do’stingiz yoki o’qituvchi bergan 4 xonali kodni kiriting.':'Введите 4-значный код от друга или учителя.','Kirish':'Войти','Bunday kod topilmadi — tekshirib, qayta kiriting.':'Такой код не найден — проверьте и попробуйте снова.','Mohir':'Мастер','Oxirgi darslarim':'Мои последние уроки','20 savol · kecha':'20 вопросов · вчера','12 juft · 2 kun oldin':'12 пар · 2 дня назад','Qoralama · 3 kun oldin':'Черновик · 3 дня назад','Geometrik shakllar':'Геометрические фигуры','Yaratilgan':'Создано','O’ynalgan':'Сыграно','Eng yuqori ball':'Лучший балл','O’rtacha ball':'Средний балл','O’ynaganlar':'Играли','Foydalanish turi':'Тип использования','Bosh sahifa shu tanlovga moslashadi.':'Главная подстроится под выбор.','Umumiy':'Общий','O’qituvchi':'Учитель','Talaba':'Студент','Kim uchun':'Для кого','Guruh':'Группа','Bosh sahifa yangilandi':'Главная обновлена','Dars yaratuvchi':'Создатель уроков','Metodlar':'Методы','Mavzuga mos o’yinni tanlang — dars shu usulda o’tadi.':'Выберите игру по теме — урок пройдёт в таком формате.','Yakka':'Один','Jamoa':'Команда','Tanlash':'Выбрать','Yangi dars':'Новый урок','To’rt qadamda tayyor — qolganini InterDars bajaradi.':'Четыре шага — остальное сделает InterDars.','1. Darslikni yuklang':'1. Загрузите учебник','PDF yoki Word fayl — InterDars undan savollar tayyorlaydi.':'PDF или Word — InterDars подготовит из него вопросы.','Faylni tanlang':'Выберите файл','Davom etish':'Продолжить','Orqaga':'Назад','2. Mavzuni kiriting':'2. Укажите тему','Sinf':'Класс','3. Metodni tanlang':'3. Выберите метод','4. Tekshiring va boshlang':'4. Проверьте и начните','Hammasi to’g’rimi?':'Всё верно?','Fayl':'Файл','Darsni yaratish':'Создать урок','Kutubxona':'Библиотека','Tayyor darslar — tanlang va bir bosishda ishlating.':'Готовые уроки — выберите и используйте в одно касание.','Matematika':'Математика','Tabiat':'Природа','Biologiya':'Биология','Ishlatish':'Использовать','Natijalarim':'Мои результаты','Yaratilgan darslar':'Создано уроков','O’quvchilar':'Ученики','Eng uzoq seriya':'Лучшая серия','Nishonlar':'Награды','Sozlamalar':'Настройки','Til':'Язык','Qorong’i rejim':'Тёмная тема','Bildirishnomalar':'Уведомления','Chiqish':'Выйти','Maktab o’qituvchisi':'Учитель школы','Birinchi dars':'Первый урок','12 kunlik seriya':'Серия 12 дней','Viktorina ustasi':'Мастер викторин','100 o’quvchi':'100 учеников','Krossvord ustasi':'Мастер кроссвордов','50 ta dars':'50 уроков'};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+(function(){
+var sb=window.supabase.createClient('https://kikehcuwjcucyspxdopd.supabase.co','sb_publishable_aBqimXgAK3ia1K_keuaICg_wIRBHx14');window.sb=sb;
+var had=false;try{var c=JSON.parse(localStorage.getItem('idUser')||'null');had=!!(c&&c.name)}catch(e){}
+sb.auth.getSession().then(function(r){var s=r.data&&r.data.session;
+if(!s){try{localStorage.removeItem('idUser')}catch(e){}location.replace('/');return}
+var u=s.user,m=u.user_metadata||{},nm=m.full_name||m.name||(u.email||'').split('@')[0]||'Foydalanuvchi';
+try{localStorage.setItem('idUser',JSON.stringify({name:nm,email:u.email||'',avatar:'',photo:m.avatar_url||''}))}catch(e){}
+if(!had)location.replace('/home')});
+sb.auth.onAuthStateChange(function(ev){if(ev==='SIGNED_OUT'){try{localStorage.removeItem('idUser')}catch(e){}}});
+})();
 </script>
 <script>
 (function(){try{var u=JSON.parse(localStorage.getItem("idUser")||"null");if(!u||!u.name)return;
@@ -406,7 +509,7 @@ var first=u.name.split(" ")[0];
 document.querySelectorAll(".ava").forEach(function(e){e.textContent=first.charAt(0).toUpperCase();if(u.bg)e.style.background=u.bg});
 var h=document.querySelector(".hello b");if(h)h.textContent="Salom, "+first+"!";
 var pb=document.querySelector(".pc b");if(pb)pb.textContent=first;
-var out=document.querySelector(".sr.out");if(out){out.removeAttribute("data-toast");out.addEventListener("click",function(){try{localStorage.removeItem("idUser")}catch(e){}location.replace("/?home=1")},true)}
+var out=document.querySelector(".sr.out");if(out){out.removeAttribute("data-toast");out.addEventListener("click",function(){try{localStorage.removeItem("idUser")}catch(e){}var go=function(){location.replace("/?home=1")};try{window.sb?window.sb.auth.signOut().then(go,go):go()}catch(e){go()}},true)}
 }catch(e){}})();
 </script>
 <script>
@@ -483,7 +586,7 @@ var TC={t:['#E6EBFF','#3149D6','Mavzu'],d:['#DDF7EE','#0F7A5A','Dars'],f:['#FFF0
 var SD=[['t','➗','Oddiy kasrlar','Matematika · 6-sinf'],['t','🔢','O’nli kasrlar','Matematika · 6-sinf'],['t','🔺','Uchburchaklar','Matematika · 5-sinf'],['t','🌿','Fotosintez','Biologiya · 8-sinf'],['t','🧬','Hujayra tuzilishi','Biologiya · 8-sinf'],['t','🏔️','Tog’lar va tekisliklar','Tabiat · 7-sinf'],['t','🌦️','Iqlim mintaqalari','Tabiat · 7-sinf'],
 ['d','⚡','Kasrlar va ularning amallari','Matematika · Viktorina'],['d','🧠','O’zbekiston tabiati','Tabiat · Xotira o’yini'],['d','🛡️','Fotosintez','Biologiya · Jamoaviy jang'],['d','🧩','Geometrik shakllar','Matematika · Krossvord'],['d','💰','O’simliklar dunyosi','Biologiya · Kim millioner'],['d','⚡','Iqlim mintaqalari','Tabiat · Viktorina'],
 ['f','📘','Matematika 6-sinf darsligi','PDF'],['f','📗','Biologiya 8-sinf darsligi','PDF'],['f','📙','Tabiat 7-sinf darsligi','PDF'],['f','📝','Geometriya ish daftari','DOCX'],
-['m','⚡','Viktorina','10–15 daq · Yakka'],['m','🛡️','Jamoaviy jang','20–25 daq · Jamoa'],['m','🧠','Xotira o’yini','8–10 daq · Yakka'],['m','🧩','Krossvord','15 daq · Jamoa'],['m','💰','Kim millioner','15–20 daq · Yakka']];
+['m','🔴','Jonli viktorina','10–20 daq · Butun sinf'],['m','⚡','Viktorina','10–15 daq · Yakka'],['m','🛡️','Jamoaviy jang','20–25 daq · Jamoa'],['m','🧠','Xotira o’yini','8–10 daq · Yakka'],['m','🧩','Krossvord','15 daq · Jamoa'],['m','💰','Kim millioner','15–20 daq · Yakka']];
 SD.push(['u','A','Aziza Karimova','O’qituvchi · 24 dars'],['u','J','Jasur Toshmatov','Talaba · 9 dars'],['u','M','Malika Yusupova','O’qituvchi · 31 dars'],['u','S','Sardor Aliyev','Talaba · 5 dars'],['u','N','Nodira Rahimova','O’qituvchi · 17 dars']);
 var ORD='mtdfu';SD.sort(function(a,b){return ORD.indexOf(a[0])-ORD.indexOf(b[0])});
 var sov=$('#sov'),sq=$('#sq'),sf='all',T=function(x){return window.tt?window.tt(x):x};
@@ -510,6 +613,13 @@ function setRole(r,sv){root.setAttribute('data-role',r);$$('#role .pill').forEac
 $$('#role .pill').forEach(function(b){b.addEventListener('click',function(){setRole(b.dataset.role,true);say('Bosh sahifa yangilandi')})});
 setRole(root.getAttribute('data-role')||'general',false);
 show();
+})();
+</script>
+<script>
+(function(){var $$=function(q){return [].slice.call(document.querySelectorAll(q))};
+$$('.cnt').forEach(function(e){var n=+e.textContent||128;setInterval(function(){n+=Math.floor(Math.random()*5)-1;if(n<90)n=90;e.textContent=n},1800)});
+$$('.lq-sec').forEach(function(e){var s=10;setInterval(function(){s=s<=1?10:s-1;e.textContent=s},1000)});
+$$('[data-lqjoin]').forEach(function(b){b.addEventListener('click',function(){var t=document.querySelector('.nv[data-tab="bosh"]');if(t)t.click();setTimeout(function(){var c=document.getElementById('code');if(c){c.scrollIntoView({behavior:'smooth',block:'center'});c.focus()}},80)})});
 })();
 </script>
 </body>
