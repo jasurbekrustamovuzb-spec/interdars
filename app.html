@@ -442,72 +442,16 @@ body.typing nav{display:flex}
 @keyframes wlu{to{transform:rotate(42deg)}}@keyframes wru{to{transform:rotate(-42deg)}}
 @keyframes twk{50%{transform:scale(1.5) rotate(20deg);opacity:.6}}
 @keyframes tear{0%{transform:translateY(0);opacity:0}20%{opacity:1}100%{transform:translateY(16px);opacity:0}}
-/* ikonkalar */
-.ic-bolt .bl{transform-origin:32px 32px;animation:zap 1.8s ease-in-out infinite}
-.ic-bolt .sk{animation:fade 1.8s ease-in-out infinite}
-.ic-team .shd{transform-origin:32px 58px;animation:rock 2.6s ease-in-out infinite}
-.ic-team .st{transform-box:fill-box;transform-origin:center;animation:beat 1.3s ease-in-out infinite}
-.ic-mem .ca,.ic-mem .cb{transform-box:fill-box;transform-origin:center}
-.ic-mem .ca{animation:fa 2.6s ease-in-out infinite}.ic-mem .cb{animation:fb 2.6s ease-in-out infinite}
-.ic-mem .cs{transform-box:fill-box;transform-origin:center;animation:msbob 2.2s ease-in-out infinite}
-.ic-mill .cn{transform-box:fill-box;transform-origin:center;animation:spinx 2.4s ease-in-out infinite}
-.ic-mill .tw{transform-box:fill-box;transform-origin:center;animation:twk 1.4s ease-in-out infinite}
-.ic-live .rp{transform-box:fill-box;transform-origin:center;animation:rip 2s ease-out infinite}.ic-live .rp.r2{animation-delay:-1s}
-.ic-cross .cl{transform-box:fill-box;transform-origin:center;animation:pop 2.4s ease-in-out infinite}
-.ic-book .pg{transform-origin:32px 34px;animation:flap 2.8s ease-in-out infinite}
-.ic-play .pc2{animation:msbob 1.6s ease-in-out infinite}
-.ic-target .tg{transform-box:fill-box;transform-origin:center;animation:beat 1.8s ease-in-out infinite}
-.ic-trophy .tsh{animation:fade 2.2s ease-in-out infinite}
-.ic-flame .fl{transform-origin:32px 58px;animation:flick 1.1s ease-in-out infinite}
-.ic-rocket .rk{animation:msbob 2s ease-in-out infinite}.ic-rocket .fm{transform-box:fill-box;transform-origin:top;animation:flick 0.5s ease-in-out infinite}
-.ic-star .sr2{transform-box:fill-box;transform-origin:center;animation:twk 2s ease-in-out infinite}
-.ic-chart .b1,.ic-chart .b2,.ic-chart .b3{transform-box:fill-box;transform-origin:bottom;animation:grow 2.4s ease-in-out infinite}
-.ic-chart .b2{animation-delay:-.4s}.ic-chart .b3{animation-delay:-.8s}
-.ic-key{animation:wig 2.4s ease-in-out infinite}
-@keyframes zap{0%,55%,100%{transform:scale(1) rotate(0)}65%{transform:scale(1.14) rotate(-7deg)}78%{transform:scale(.97) rotate(4deg)}}
-@keyframes fade{50%{opacity:.25}}
-@keyframes rock{50%{transform:rotate(-6deg)}}
-@keyframes beat{50%{transform:scale(1.2)}}
-@keyframes fa{0%,38%{transform:scaleX(1)}46%,92%{transform:scaleX(0)}100%{transform:scaleX(1)}}
-@keyframes fb{0%,42%{transform:scaleX(0)}50%,90%{transform:scaleX(1)}96%,100%{transform:scaleX(0)}}
-@keyframes spinx{0%,100%{transform:scaleX(1)}50%{transform:scaleX(.12)}}
-@keyframes rip{0%{transform:scale(.4);opacity:1}100%{transform:scale(1.15);opacity:0}}
-@keyframes pop{0%,60%,100%{transform:scale(1)}30%{transform:scale(1.25)}}
-@keyframes flap{50%{transform:scaleX(.8)}}
-@keyframes flick{50%{transform:scale(1.07,.93) rotate(2deg)}}
-@keyframes grow{0%,100%{transform:scaleY(1)}50%{transform:scaleY(.6)}}
-@keyframes wig{50%{transform:rotate(12deg)}}
 /* joylashuv */
-.mc .e{width:58px;height:58px}.m .e{width:56px;height:56px;font-size:0}
-.tile{padding:7px}.opt .tile,.sit .tile,.dh .tile{padding:6px}
-.bars div .ic{width:22px;height:22px}
-.stat .em{display:grid;place-items:center;width:44px;height:44px;padding:7px;border-radius:14px;background:#E6EBFF}
-.stat:nth-child(2) .em{background:#DDF7EE}.stat:nth-child(3) .em{background:#FFE1DD}.stat:nth-child(4) .em{background:#FFF0C9}
-.bd .em{width:46px;height:46px;margin:0 auto}
-.bd:not(.lock) .em{animation:msbob 3s ease-in-out infinite}
-.chip .ic{width:22px;height:22px;flex:none}
-.lv{position:relative;background:none;width:50px;height:54px;display:block;overflow:visible}
-.lv .lvm{width:50px}
-.lv i{position:absolute;right:-6px;bottom:0;min-width:22px;height:22px;padding:0 4px;border-radius:8px;background:var(--sun);color:#4A3500;font:800 13px "Baloo 2",sans-serif;font-style:normal;display:grid;place-items:center;border:2px solid var(--card)}
-.hero .art{width:104px;right:14px;top:10px;font-size:0;transform:none;animation:none;pointer-events:auto;cursor:pointer;background:none;padding:0}
-.hero .art:active{transform:scale(.94)}
-@media(max-width:560px){.hero p{max-width:calc(100% - 96px)}.hero h1{max-width:12ch}}
-.es .em{width:92px;margin:0 auto;font-size:0}.es.sm .em{width:60px}
 .rem{width:132px;margin:0 auto;font-size:0}
 .fm{display:inline-block;width:54px;vertical-align:middle;margin-right:8px;animation:dup .3s ease}
 .pfb{display:flex;align-items:center;justify-content:center;min-height:60px}
-.lvup{font-family:"Baloo 2";font-weight:800;font-size:18px;color:var(--violet);animation:beat 1.2s ease-in-out 3}
+.lvup{font-family:"Baloo 2";font-weight:800;font-size:18px;color:var(--violet);margin-top:4px}
 .guide{display:flex;align-items:center;gap:10px;margin-top:14px}
 .guide .gm{width:54px;flex:none}
-.guide p{background:var(--card);border:2px solid var(--line);border-radius:18px 18px 18px 6px;padding:10px 14px;font-weight:700;font-size:14px;position:relative;box-shadow:var(--shadow)}
-.team-ic{width:84px;margin:0 auto;font-size:0}
-.brand .bmi{width:34px;display:block}
-.join .key{width:34px;height:34px;font-size:0}
-.lq-e{width:42px;font-size:0}
+.guide p{background:var(--card);border:2px solid var(--line);border-radius:18px 18px 18px 6px;padding:10px 14px;font-weight:700;font-size:14px;box-shadow:var(--shadow)}
 .cf{position:fixed;z-index:90;width:9px;height:14px;border-radius:2px;pointer-events:none;animation:cf 1.5s cubic-bezier(.2,.7,.4,1) forwards}
 @keyframes cf{0%{transform:translate(0,0) rotate(0);opacity:1}35%{transform:translate(calc(var(--dx)*.7),calc(var(--dy)*-1)) rotate(calc(var(--r)*.5))}100%{transform:translate(var(--dx),240px) rotate(var(--r));opacity:0}}
-.nv[aria-current="page"] svg{animation:navpop .45s cubic-bezier(.3,1.6,.5,1)}
-@keyframes navpop{0%{transform:translateY(0) scale(.8)}}
 </style>
 </head>
 <body>
@@ -527,7 +471,7 @@ body.typing nav{display:flex}
   <section class="level" id="lv1" aria-label="Daraja"></section>
 
   <section class="hero">
-    <button class="art" id="heroMas" aria-label="Zakiy bilan o’ynash" title="Zakiy"></button>
+    <span class="art" aria-hidden="true">🚀</span>
     <h1>Yangi dars yaratamiz</h1>
     <p>Mavzu va metodni tanlang, savollarni kiriting — dars tayyor.</p>
     <button class="cta" data-go="yaratish">
@@ -537,7 +481,7 @@ body.typing nav{display:flex}
     <div class="steps"><span>Mavzu</span><span>Metod</span><span>Savollar</span><span>Boshlash</span></div>
   </section>
 
-  <section class="join" aria-label="Kod bilan kirish"><span class="key" id="keyIc" aria-hidden="true"></span><input class="inp code" id="code" inputmode="numeric" maxlength="6" autocomplete="off" placeholder="Dars kodi" aria-label="Dars kodi, 6 raqam"><button class="go" id="join" disabled>Kirish</button><p class="jerr" id="jerr" role="alert">Bunday kod topilmadi — tekshirib, qayta kiriting.</p></section>
+  <section class="join" aria-label="Kod bilan kirish"><span class="key" aria-hidden="true">🔑</span><input class="inp code" id="code" inputmode="numeric" maxlength="6" autocomplete="off" placeholder="Dars kodi" aria-label="Dars kodi, 6 raqam"><button class="go" id="join" disabled>Kirish</button><p class="jerr" id="jerr" role="alert">Bunday kod topilmadi — tekshirib, qayta kiriting.</p></section>
 
   <div class="cols">
     <section class="sec"><div class="sh"><h2>Oxirgi darslarim</h2><a href="#kutubxona">Hammasi</a></div><div class="lessons" id="hl"></div></section>
@@ -652,7 +596,7 @@ body.typing nav{display:flex}
 <div class="pov" id="play" role="dialog" aria-label="O’yin" hidden><div class="pin" id="pl"></div></div>
 <div class="dlg" id="dlg" role="dialog" hidden><div class="dsh" id="dsh"></div></div>
 
-<nav aria-label="Asosiy navigatsiya"><span class="brand" aria-hidden="true"><span class="bmi" id="brandMas"></span>InterDars</span>
+<nav aria-label="Asosiy navigatsiya"><span class="brand" aria-hidden="true">🚀 InterDars</span>
   <button class="nv" data-tab="bosh" aria-current="page"><svg viewBox="0 0 24 24"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg>Bosh</button>
   <button class="nv" data-tab="metodlar"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7.5" height="7.5" rx="2"/><rect x="13.5" y="3" width="7.5" height="7.5" rx="2"/><rect x="3" y="13.5" width="7.5" height="7.5" rx="2"/><rect x="13.5" y="13.5" width="7.5" height="7.5" rx="2"/></svg>Metodlar</button>
   <button class="nv mk" data-tab="yaratish"><span class="plus"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></span>Yaratish</button>
@@ -801,7 +745,6 @@ mill:{n:'Kim millioner',e:'💰',g:'#F2A516,#FFC53D',t:'qs',min:4,k:'solo',tm:'1
 live:{n:'Jonli viktorina',e:'🔴',g:'#FF3B5C,#FF8A5B',t:'qs',min:3,k:'team',tm:'10–20 daq',s:'Tez orada',d:'Butun sinf telefonlardan bir vaqtda o’ynaydi, reyting jonli yangilanadi.',bg:'#FFE1E6',fg:'#B81E3A',soon:1},
 cross:{n:'Krossvord',e:'🧩',g:'#8A63F5,#AE8BFF',t:'pairs',min:3,k:'team',tm:'15 daq',s:'Tez orada',d:'Mavzu bo’yicha so’zlarni topib, katakchalarni to’ldiring.',bg:'#EDE6FF',fg:'#5B38C7',soon:1}};
 var MORD=['quiz','team','memory','mill','live','cross'];
-Object.keys(MT).forEach(function(k){MT[k].e=IC[k]});
 var PR=[100,200,300,500,1000,2000,4000,8000,16000,32000,64000,125000,250000,500000,1000000];
 var TEAMS=[{e:'🦊',n:'Qizil jamoa'},{e:'🐬',n:'Ko’k jamoa'},{e:'🐸',n:'Yashil jamoa'}];
 function Q(q,a,c){return{q:q,a:a,c:c}}
@@ -838,17 +781,17 @@ function find(id){var a=allL();for(var i=0;i<a.length;i++)if(a[i].id===id)return
 function rel(ts){var d=Math.floor((Date.now()-ts)/864e5);if(d<=0)return T('bugun');if(d===1)return T('kecha');return d+' '+T('kun oldin')}
 
 /* ===== ko'rinishlar ===== */
-function levelHTML(){var l=lvl();return '<div class="lv"><div class="lvm">'+MS('idle')+'</div><i>'+l.L+'</i></div><div class="lvbody"><div class="lvrow"><span>'+T('Daraja:')+' <b>'+T(l.name)+'</b></span><span>'+l.inx+' / 200 XP</span></div><div class="bar"><i style="width:'+(l.inx/2)+'%"></i></div></div><div class="chip" title="'+T('Ketma-ket kunlar')+'">'+IC.flame+' '+curStreak()+'</div>'}
+function levelHTML(){var l=lvl();return '<div class="lv">'+l.L+'</div><div class="lvbody"><div class="lvrow"><span>'+T('Daraja:')+' <b>'+T(l.name)+'</b></span><span>'+l.inx+' / 200 XP</span></div><div class="bar"><i style="width:'+(l.inx/2)+'%"></i></div></div><div class="chip" title="'+T('Ketma-ket kunlar')+'">🔥 '+curStreak()+'</div>'}
 function stat(e,v,l){return '<div class="stat"><span class="em">'+e+'</span><b>'+v+'</b><small>'+T(l)+'</small></div>'}
-function statsHTML(){var s=st();return stat(IC.book,s.c,'Yaratilgan darslar')+stat(IC.play,s.p,'O’ynalgan')+stat(IC.target,s.a+'%','O’rtacha natija')+stat(IC.trophy,s.b+'%','Eng yuqori ball')}
+function statsHTML(){var s=st();return stat('🧩',s.c,'Yaratilgan darslar')+stat('🎮',s.p,'O’ynalgan')+stat('🎯',s.a+'%','O’rtacha natija')+stat('🏆',s.b+'%','Eng yuqori ball')}
 function lcard(l){var m=MT[l.m],sub=l.sub||((l.cls?T(l.cls)+' · ':'')+rel(l.created));
   return '<article class="lesson" data-lid="'+l.id+'"><div class="tile" style="background:'+m.bg+'">'+m.e+'</div><div class="lbody"><b>'+esc(l.title)+'</b><small>'+cnt(l)+' '+T(unit(l))+' · '+esc(sub)+'</small><span class="tag" style="background:'+m.bg+';color:'+m.fg+'">'+T(m.n)+'</span></div><button class="go" data-play="'+l.id+'">'+T('O’ynash')+'</button></article>'}
-function emptyCard(){return '<div class="es"><div class="em">'+MS('think')+'</div><b>'+T('Hali dars yo’q')+'</b><p>'+T('Birinchi darsingizni yarating yoki tayyor darslardan boshlang.')+'</p><div class="es-a"><button class="go" data-go2="yaratish">'+T('Dars yaratish')+'</button><button class="go alt" data-go2="kutubxona">'+T('Tayyor darslar')+'</button></div></div>'}
+function emptyCard(){return '<div class="es"><div class="em">📝</div><b>'+T('Hali dars yo’q')+'</b><p>'+T('Birinchi darsingizni yarating yoki tayyor darslardan boshlang.')+'</p><div class="es-a"><button class="go" data-go2="yaratish">'+T('Dars yaratish')+'</button><button class="go alt" data-go2="kutubxona">'+T('Tayyor darslar')+'</button></div></div>'}
 function chartHTML(){var pl=D.plays.slice(0,7).reverse();
-  if(!pl.length)return '<div class="es sm"><div class="em">'+IC.chart+'</div><p>'+T('Natijalar o’ynagandan keyin shu yerda chiqadi.')+'</p></div>';
+  if(!pl.length)return '<div class="es sm"><div class="em">📊</div><p>'+T('Natijalar o’ynagandan keyin shu yerda chiqadi.')+'</p></div>';
   return '<div class="row"><div><small style="color:var(--muted)">'+T('O’rtacha ball')+'</small><br><b>'+st().a+'%</b></div></div><div class="bars" role="img" aria-label="'+T('Haftalik natijalar')+'">'+pl.map(function(p){return '<div><i style="height:'+Math.max(6,p.pct)+'%"></i>'+MT[p.m].e+'</div>'}).join('')+'</div>'}
 function badgesHTML(){var s=st(),n=D.lessons.length;
-  return [[IC.rocket,'Birinchi dars',n>=1],[IC.play,'Birinchi o’yin',s.p>=1],[IC.flame,'3 kunlik seriya',curStreak()>=3],[IC.trophy,'100% natija',s.b>=100],[IC.book,'5 ta dars',n>=5],[IC.star,'20 ta o’yin',s.p>=20]].map(function(b){return '<div class="bd'+(b[2]?'':' lock')+'"><span class="em" aria-hidden="true">'+b[0]+'</span><b>'+T(b[1])+'</b></div>'}).join('')}
+  return [['🚀','Birinchi dars',n>=1],['🎮','Birinchi o’yin',s.p>=1],['🔥','3 kunlik seriya',curStreak()>=3],['🏆','100% natija',s.b>=100],['🧩','5 ta dars',n>=5],['🌟','20 ta o’yin',s.p>=20]].map(function(b){return '<div class="bd'+(b[2]?'':' lock')+'"><span class="em" aria-hidden="true">'+b[0]+'</span><b>'+T(b[1])+'</b></div>'}).join('')}
 var mfv='all',lf='all';
 function mcar(){return MORD.map(function(k){var m=MT[k];return '<button class="m" style="background:linear-gradient(150deg,'+m.g+')" data-mk="'+k+'"><span class="e">'+m.e+'</span><span><b>'+T(m.n)+'</b><small>'+T(m.s)+'</small></span></button>'}).join('')}
 function mcards(){return MORD.map(function(k){var m=MT[k];return '<article class="mc'+(m.soon?' soon':'')+(mfv!=='all'&&m.k!==mfv?' hide':'')+'" data-k="'+m.k+'" style="background:linear-gradient(150deg,'+m.g+')"><span class="e" aria-hidden="true">'+m.e+'</span><div><b>'+T(m.n)+'</b><small>'+T(m.d)+'</small><div class="meta"><span>'+T(m.tm)+'</span><span>'+T(m.k==='solo'?'Yakka':'Jamoa')+'</span></div><button class="pick" data-mk="'+k+'">'+T(m.soon?'Tez orada':'Tanlash')+'</button></div></article>'}).join('')}
@@ -997,7 +940,7 @@ function result(l,pct,pts,xp,line,extra){stopT();
   $('#pl').innerHTML=top(l.title,T('Natija'),'')+'<div class="res"><div class="rem">'+em+'</div><div class="rpc">'+pct+'%</div><p class="rl">'+line+'</p>'+extra+'<p class="rxp">+'+xp+' XP</p>'+(up?'<p class="lvup">'+T('Yangi daraja')+': '+T(nl.name)+'</p>':'')+'<div class="rb"><button class="cta" data-again>'+T('Qayta o’ynash')+'</button><button class="lq-ghost2" data-x>'+T('Yopish')+'</button></div></div>';
   if(pct>=50||up)setTimeout(function(){confetti(innerWidth/2,innerHeight*.3,pct>=80?64:28)},250)}
 function teamSetup(l){
-  function draw(){$('#pl').innerHTML=top(l.title,T('Jamoaviy jang'),'')+'<div class="res"><div class="team-ic">'+IC.team+'</div><h2>'+T('Nechta jamoa o’ynaydi?')+'</h2><div class="pills" style="justify-content:center">'+[2,3].map(function(n){return '<button class="pill" aria-pressed="'+(PL.tcount===n)+'" data-tn="'+n+'">'+n+'</button>'}).join('')+'</div><p class="rl">'+T('Savollarga jamoalar navbat bilan javob beradi. Bitta qurilmada o’ynang.')+'</p><div class="rb"><button class="cta" data-ts>'+T('Boshlash')+'</button></div></div>'}
+  function draw(){$('#pl').innerHTML=top(l.title,T('Jamoaviy jang'),'')+'<div class="res"><div class="rem">🛡️</div><h2>'+T('Nechta jamoa o’ynaydi?')+'</h2><div class="pills" style="justify-content:center">'+[2,3].map(function(n){return '<button class="pill" aria-pressed="'+(PL.tcount===n)+'" data-tn="'+n+'">'+n+'</button>'}).join('')+'</div><p class="rl">'+T('Savollarga jamoalar navbat bilan javob beradi. Bitta qurilmada o’ynang.')+'</p><div class="rb"><button class="cta" data-ts>'+T('Boshlash')+'</button></div></div>'}
   PL.tn=function(n){PL.tcount=n;draw()};PL.ts=function(){runQs(l,'team',TEAMS.slice(0,PL.tcount))};draw()}
 function runQs(l,kind,teams){
   var items=l.qs.map(function(x){var idx=x.a.map(function(_,i){return i});shuffle(idx);return{q:x.q,a:idx.map(function(i){return x.a[i]}),c:idx.indexOf(x.c)}});
@@ -1092,10 +1035,6 @@ $$('.lq-sec').forEach(function(e){var s=10;setInterval(function(){s=s<=1?10:s-1;
 $$('[data-lqjoin]').forEach(function(b){b.addEventListener('click',function(){go('bosh');setTimeout(function(){code.scrollIntoView({behavior:'smooth',block:'center'});code.focus()},80)})});
 
 renderAll();show();
-/* maskot */
-var hm=$('#heroMas');hm.innerHTML=MS('idle');var hmt;hm.addEventListener('click',function(){var sv=hm.querySelector('svg');sv.setAttribute('class','ms m-cheer');var r=hm.getBoundingClientRect();confetti(r.left+r.width/2,r.top+30,26);clearTimeout(hmt);hmt=setTimeout(function(){sv.setAttribute('class','ms m-idle')},1600)});
-$('#brandMas').innerHTML=MS('idle');$('#keyIc').innerHTML=IC.key;
-$$('.lq-e').forEach(function(e,i){e.innerHTML=[IC.star,IC.trophy,IC.star][i]||''});
 })();
 </script>
 </body>
