@@ -5,8 +5,11 @@ create table if not exists public.ai_test_usage (
   bucket_key text not null,
   request_count integer not null default 0 check (request_count >= 0),
   last_requested_at timestamptz,
+  reservation_id uuid,
   primary key (window_type, period_key, bucket_key)
 );
+
+alter table public.ai_test_usage add column if not exists reservation_id uuid;
 
 alter table public.ai_test_usage enable row level security;
 revoke all on table public.ai_test_usage from public, anon, authenticated, service_role;
@@ -27,6 +30,7 @@ declare
   v_global_minute_count integer;
   v_user_day_count integer;
   v_user_last_request timestamptz;
+  v_reservation_id uuid := pg_catalog.gen_random_uuid();
   v_retry_seconds integer;
   v_daily_reset timestamptz;
   v_user_daily_limit constant integer := 5;
@@ -105,17 +109,46 @@ begin
   where window_type = 'global_minute' and period_key = v_minute_key and bucket_key = 'all';
 
   update public.ai_test_usage
-  set request_count = request_count + 1, last_requested_at = v_now
+  set request_count = request_count + 1, last_requested_at = v_now, reservation_id = v_reservation_id
   where window_type = 'user_day' and period_key = v_day_key and bucket_key = v_user_key;
 
   return pg_catalog.jsonb_build_object(
     'allowed', true,
     'remaining', greatest(0, v_user_daily_limit - v_user_day_count - 1),
-    'globalDailyRemaining', greatest(0, v_global_daily_limit - v_global_day_count - 1)
+    'globalDailyRemaining', greatest(0, v_global_daily_limit - v_global_day_count - 1),
+    'reservationId', v_reservation_id
   );
 end;
 $$;
 
 revoke all on function public.consume_ai_test_quota(uuid) from public, anon, authenticated;
 grant execute on function public.consume_ai_test_quota(uuid) to service_role;
+
+create or replace function public.refund_ai_test_user_quota(p_user_id uuid, p_reservation_id uuid)
+returns jsonb
+language plpgsql
+security definer
+set search_path = ''
+as $$
+declare
+  v_refunded boolean := false;
+begin
+  if p_user_id is null or p_reservation_id is null then
+    return pg_catalog.jsonb_build_object('refunded', false);
+  end if;
+
+  update public.ai_test_usage
+  set request_count = request_count - 1, reservation_id = null
+  where window_type = 'user_day'
+    and bucket_key = p_user_id::text
+    and reservation_id = p_reservation_id
+    and request_count > 0;
+
+  v_refunded := found;
+  return pg_catalog.jsonb_build_object('refunded', v_refunded);
+end;
+$$;
+
+revoke all on function public.refund_ai_test_user_quota(uuid, uuid) from public, anon, authenticated;
+grant execute on function public.refund_ai_test_user_quota(uuid, uuid) to service_role;
 
