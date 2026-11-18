@@ -12,9 +12,9 @@
 - 5 AI test generations per user per day.
 - 20 seconds between generations from the same user.
 - 10 generations per minute and 100 per day across the whole app.
-- Quota reservation is atomic and happens before the Gemini request. Failed provider attempts still consume one app quota slot to prevent retry abuse.
+- Quota reservation is atomic and happens before the Gemini request. A failed generation refunds that user's daily slot through a one-time reservation ID; global minute/day traffic counters and the 20-second cooldown still count the attempt to prevent retry abuse.
 - Limits reset according to America/Los_Angeles time, aligned with Google's daily quota reset.
-- Quota counters are in `public.ai_test_usage`, which has no client access. `public.consume_ai_test_quota(uuid)` is executable only by `service_role`.
+- Quota counters are in `public.ai_test_usage`, which has no client access. `public.consume_ai_test_quota(uuid)` and `public.refund_ai_test_user_quota(uuid, uuid)` are executable only by `service_role`.
 - The Vercel function logs generation outcome, duration, question count, and token usage, without document text, API keys, or user IDs. Review these in Vercel Runtime Logs.
 
 Adjust the constants in `supabase/ai-test-quota.sql` after reviewing Gemini's current project limits in Google AI Studio. Keep the global app caps below the provider quota if the app must remain on the free tier.
