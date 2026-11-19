@@ -1262,22 +1262,28 @@ function cuid(){if(CL.uid)return Promise.resolve(CL.uid);if(!sbc())return Promis
 function rowOf(l,uid){var p={};if(l.qs)p.qs=l.qs;if(l.pairs)p.pairs=l.pairs;if(l.aiTest)p.aiTest=true;return{owner_id:uid,owner_name:String(uinfo().name||'').slice(0,60),code:l.code,title:String(l.title||'').slice(0,180),sub:l.aiTest?'AI':(l.sub||null),method:l.m,cls:l.cls||null,payload:p,is_public:l.pub!==false}}
 function lessonOf(r,mine){var p=r.payload||{},l={id:(mine?'u_':'g_')+r.id,cid:r.id,code:r.code,title:r.title,cls:r.cls||'Sinf',m:r.method,created:Date.parse(r.created_at)||Date.now(),pub:r.is_public};
   l.sub=mine?(r.sub==='AI'?'AI':r.sub):('👤 '+(r.owner_name||'—'));if(p.qs)l.qs=p.qs;if(p.pairs)l.pairs=p.pairs;if(p.aiTest)l.aiTest=true;return l}
-function cloudWarn(e){console.warn('InterDars bulut:',e&&e.message||e);if(!CL.warned){CL.warned=true;say('Bulutga saqlanmadi — keyinroq urinib ko’ring')}}
+function cloudWhy(e){var m=String(e&&e.message||e||''),c=String(e&&e.code||'');
+  if(c==='PGRST205'||c==='42P01'||/schema cache|does not exist|relation/i.test(m))return 'Supabase’da shared_lessons jadvali yo’q — shared-lessons.sql ni SQL Editor’da ishga tushiring';
+  if(c==='42501'||/row-level security|permission denied/i.test(m))return 'Supabase ruxsat bermadi (RLS) — shared-lessons.sql to’liq ishga tushirilganini tekshiring';
+  if(c==='23514'||/check constraint/i.test(m))return 'Supabase jadvali ma’lumotni qabul qilmadi: '+m.slice(0,70);
+  if(/fetch|network|Failed/i.test(m))return 'Internet aloqasi yo’q — keyinroq urinib ko’ring';
+  return 'Bulutga saqlanmadi: '+(c?c+' · ':'')+m.slice(0,70)}
+function cloudWarn(e){console.warn('InterDars bulut:',e);if(!CL.warned){CL.warned=true;say(cloudWhy(e))}}
 function cloudPush(l){if(!sbc())return Promise.resolve();return cuid().then(function(uid){if(!uid)return;var tries=0;
-  function once(){var row=rowOf(l,uid),q=l.cid?sbc().from('lessons').update(row).eq('id',l.cid).select('id').maybeSingle():sbc().from('lessons').insert(row).select('id').single();
+  function once(){var row=rowOf(l,uid),q=l.cid?sbc().from('shared_lessons').update(row).eq('id',l.cid).select('id').maybeSingle():sbc().from('shared_lessons').insert(row).select('id').single();
     return q.then(function(r){if(r.error){if(r.error.code==='23505'&&tries++<6){l.code=gen();return once()}throw r.error}if(r.data&&r.data.id&&l.cid!==r.data.id){l.cid=r.data.id;saveD()}})}
   return once()}).catch(cloudWarn)}
-function cloudDel(cid){if(!sbc())return;cuid().then(function(uid){if(uid)return sbc().from('lessons').delete().eq('id',cid)}).catch(cloudWarn)}
+function cloudDel(cid){if(!sbc())return;cuid().then(function(uid){if(uid)return sbc().from('shared_lessons').delete().eq('id',cid)}).catch(cloudWarn)}
 function cloudPull(){return cuid().then(function(uid){if(!uid)return;
-  return sbc().from('lessons').select('*').eq('owner_id',uid).order('created_at',{ascending:false}).limit(500).then(function(r){
+  return sbc().from('shared_lessons').select('*').eq('owner_id',uid).order('created_at',{ascending:false}).limit(500).then(function(r){
     if(r.error)throw r.error;var ids={};
     (r.data||[]).forEach(function(row){ids[row.id]=1;var nl=lessonOf(row,true),i=D.lessons.findIndex(function(x){return x.cid===row.id||(!x.cid&&x.code===row.code)});if(i<0)D.lessons.push(nl);else{nl.id=D.lessons[i].id;D.lessons[i]=nl}});
     D.lessons=D.lessons.filter(function(x){return !x.cid||ids[x.cid]||Date.now()-x.created<60000});
     D.lessons.sort(function(a,b){return b.created-a.created});saveD();renderAll();
-    return D.lessons.filter(function(x){return !x.cid}).reduce(function(p,l){return p.then(function(){return cloudPush(l)})},Promise.resolve())})}).catch(function(e){console.warn('InterDars bulut:',e&&e.message||e)})}
-function cloudPub(){if(!sbc())return;CL.pubAt=Date.now();cuid().then(function(uid){return sbc().from('lessons').select('*').eq('is_public',true).neq('owner_id',uid||'00000000-0000-0000-0000-000000000000').order('created_at',{ascending:false}).limit(40)}).then(function(r){if(r.error)throw r.error;G=(r.data||[]).map(function(x){return lessonOf(x,false)});renderLib()}).catch(function(){})}
+    return D.lessons.filter(function(x){return !x.cid}).reduce(function(p,l){return p.then(function(){return cloudPush(l)})},Promise.resolve())})}).catch(function(e){cloudWarn(e)})}
+function cloudPub(){if(!sbc())return;CL.pubAt=Date.now();cuid().then(function(uid){return sbc().from('shared_lessons').select('*').eq('is_public',true).neq('owner_id',uid||'00000000-0000-0000-0000-000000000000').order('created_at',{ascending:false}).limit(40)}).then(function(r){if(r.error)throw r.error;G=(r.data||[]).map(function(x){return lessonOf(x,false)});renderLib()}).catch(function(){})}
 window.cloudPubSoon=function(){if(Date.now()-CL.pubAt>20000)cloudPub()};
-function fetchByCode(c){if(!sbc())return Promise.resolve(null);return cuid().then(function(){return sbc().from('lessons').select('*').eq('code',c).maybeSingle()}).then(function(r){if(r.error||!r.data)return null;var mine=r.data.owner_id===CL.uid,l=lessonOf(r.data,mine),ex=allL().filter(function(x){return x.cid===l.cid})[0];if(ex)return ex;if(mine){D.lessons.unshift(l);saveD()}else G.unshift(l);return l},function(){return null})}
+function fetchByCode(c){if(!sbc())return Promise.resolve(null);return cuid().then(function(){return sbc().from('shared_lessons').select('*').eq('code',c).maybeSingle()}).then(function(r){if(r.error||!r.data)return null;var mine=r.data.owner_id===CL.uid,l=lessonOf(r.data,mine),ex=allL().filter(function(x){return x.cid===l.cid})[0];if(ex)return ex;if(mine){D.lessons.unshift(l);saveD()}else G.unshift(l);return l},function(){return null})}
 function shareL(l){if(!l||!l.code)return;if(l.pub===false){say('Ulashish uchun “Hammaga ochiq”ni yoqing');return}
   var url=location.origin+'/home#t='+l.code,txt=T('InterDars’da test:')+' '+l.title;
   if(navigator.share){navigator.share({title:l.title,text:txt,url:url}).catch(function(){})}
