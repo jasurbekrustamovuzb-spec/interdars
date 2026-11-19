@@ -97,7 +97,9 @@ create or replace function public.live_quiz_create(p_title text, p_questions jso
 returns jsonb language plpgsql security definer set search_path = '' as $$
 declare v_room public.live_quiz_rooms%rowtype; v_pin text; v_q jsonb;
 begin
-  if (select auth.uid()) is null then raise exception 'Tizimga kiring'; end if;
+  if (select auth.uid()) is null or coalesce(((select auth.jwt())->>'is_anonymous')::boolean,false) then
+    raise exception 'Jonli xona ochish uchun tuzuvchi hisobi bilan kiring';
+  end if;
   if p_questions is null or jsonb_typeof(p_questions) <> 'array' or jsonb_array_length(p_questions) not between 3 and 80 then
     raise exception 'Jonli test uchun 3–80 ta savol kerak';
   end if;
