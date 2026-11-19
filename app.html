@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="uz" data-role="general"><script>try{var _u=JSON.parse(localStorage.getItem("idUser")||"null");var _m=location.hash.match(/^#t=(\d{6})$/);if(_m)localStorage.setItem("idPending",_m[1]);var _s=Object.keys(localStorage).some(function(k){return /^sb-.*-auth-token$/.test(k)})||/[?&]code=|access_token=/.test(location.search+location.hash);if(!(_u&&_u.name)&&!_s)location.replace("/")}catch(e){location.replace("/")}</script>
+<html lang="uz" data-role="general"><script>try{var _u=JSON.parse(localStorage.getItem("idUser")||"null");var _m=location.hash.match(/^#t=(\d{6})$/),_si=location.hash.match(/^#s=([0-9a-f-]{36})$/i);if(_m)localStorage.setItem("idPending",_m[1]);if(_si)localStorage.setItem("idPendingShare",_si[1]);var _s=Object.keys(localStorage).some(function(k){return /^sb-.*-auth-token$/.test(k)})||/[?&]code=|access_token=/.test(location.search+location.hash);if(!(_u&&_u.name)&&!_s)location.replace("/")}catch(e){location.replace("/")}</script>
 <script>try{var r=localStorage.getItem("idRole");if(r)document.documentElement.setAttribute("data-role",r)}catch(e){}</script>
 <head>
 <script>try{var th=localStorage.getItem("idTheme");if(th==="dark"||th==="light")document.documentElement.setAttribute("data-theme",th)}catch(e){}</script>
@@ -595,7 +595,7 @@ html{background:var(--bg)}
 .axr{display:flex;align-items:center;gap:10px;background:var(--card);padding:10px 12px;border-radius:20px;box-shadow:var(--shadow)}
 .axr>div{flex:1;min-width:0}.axr b{display:block;overflow-wrap:anywhere;line-height:1.2}.axr small{color:var(--muted);font-size:13px}
 .axr .tile{width:44px;height:44px}
-.lesson-actions{display:flex;align-items:center;gap:6px;flex:none}.lesson-actions .ibtn{width:38px;height:38px;border-radius:12px;border:1.5px solid var(--line);background:var(--bg);display:grid;place-items:center;font-size:16px;transition:transform .15s,border-color .15s}.lesson-actions .ibtn:hover{transform:translateY(-2px);border-color:var(--blue)}
+.lesson-actions{display:flex;align-items:center;gap:6px;flex:none}.lesson-actions .ibtn{width:36px;height:36px;border-radius:12px;border:1.5px solid var(--line);background:var(--bg);display:grid;place-items:center;font-size:15px;transition:transform .15s,border-color .15s}.lesson-actions .ibtn:hover{transform:translateY(-2px);border-color:var(--blue)}.lesson-tools{position:relative}.lesson-menu{position:absolute;z-index:5;right:0;top:42px;display:flex;gap:5px;padding:6px;background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow)}.lesson-menu[hidden]{display:none}.lesson-menu .ibtn{width:32px;height:32px}
 @media(max-width:560px){.lesson{flex-wrap:wrap}.lesson-actions{width:100%;justify-content:flex-end}.lesson-actions .go{margin-left:auto}}
 .cf{position:fixed;top:0;left:0;width:9px;height:14px;border-radius:2px;z-index:99;pointer-events:none;will-change:transform,opacity}
 @keyframes aispin{to{transform:rotate(360deg)}}
@@ -911,7 +911,11 @@ var curK=dkey(),D;
 function loadD(){try{D=JSON.parse(localStorage.getItem(dkey())||'null')}catch(e){D=null}
   if(!D||typeof D!=='object')D={};D.lessons=D.lessons||[];D.plays=D.plays||[];D.xp=D.xp||0;D.streak=D.streak||{n:0,last:''};D.notes=D.notes||[];D.nread=D.nread||0}
 function addNote(k,a){D.notes.unshift({k:k,a:a,ts:Date.now()});if(D.notes.length>30)D.notes.length=30}
-function saveD(){try{localStorage.setItem(dkey(),JSON.stringify(D))}catch(e){}}
+ var progressTimer=null,restoringProgress=false;
+ function progressData(){return{xp:D.xp,streak:D.streak,plays:D.plays.slice(0,60),notes:D.notes.slice(0,30),nread:D.nread,updatedAt:Date.now()}}
+ function scheduleCloudProgress(){if(restoringProgress||!window.sb||!window.sb.auth)return;clearTimeout(progressTimer);progressTimer=setTimeout(function(){window.sb.auth.updateUser({data:{interdars_progress:progressData()}}).then(function(r){if(r&&r.error)console.warn('InterDars progress sync:',r.error.message)},function(e){console.warn('InterDars progress sync:',e)})},700)}
+ function restoreCloudProgress(){if(!window.sb||!window.sb.auth)return;window.sb.auth.getSession().then(function(r){var u=r.data&&r.data.session&&r.data.session.user,p=u&&u.user_metadata&&u.user_metadata.interdars_progress;if(!p)return;restoringProgress=true;D.xp=Math.max(+D.xp||0,+p.xp||0);if(p.streak&&(+p.streak.n||0)>(+D.streak.n||0))D.streak=p.streak;var seen={};D.plays.concat(p.plays||[]).sort(function(a,b){return(+b.ts||0)-(+a.ts||0)}).forEach(function(x){var k=String(x.ts||'')+':'+String(x.lid||'')+':'+String(x.pct||0);if(!seen[k])seen[k]=x});D.plays=Object.keys(seen).map(function(k){return seen[k]}).sort(function(a,b){return(+b.ts||0)-(+a.ts||0)}).slice(0,60);var noteSeen={};D.notes.concat(p.notes||[]).sort(function(a,b){return(+b.ts||0)-(+a.ts||0)}).forEach(function(x){var k=String(x.ts||'')+':'+String(x.k||'')+':'+String(x.a||'');if(!noteSeen[k])noteSeen[k]=x});D.notes=Object.keys(noteSeen).map(function(k){return noteSeen[k]}).sort(function(a,b){return(+b.ts||0)-(+a.ts||0)}).slice(0,30);D.nread=Math.max(+D.nread||0,+p.nread||0);saveD();restoringProgress=false;scheduleCloudProgress();renderAll()}).catch(function(){restoringProgress=false})}
+ function saveD(){try{localStorage.setItem(dkey(),JSON.stringify(D))}catch(e){}scheduleCloudProgress()}
 loadD();
 function dstr(d){return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate()}
 function touch(){var t=dstr(new Date());if(D.streak.last===t)return;D.streak.n=D.streak.last===dstr(new Date(Date.now()-864e5))?D.streak.n+1:1;D.streak.last=t}
@@ -919,7 +923,7 @@ function curStreak(){var l=D.streak.last;return(l===dstr(new Date())||l===dstr(n
 var LV=['Yangi','Havaskor','Mohir','Usta','Ustoz'];
 function lvl(){var L=Math.floor(D.xp/200)+1;return{L:L,name:LV[Math.min(L,5)-1],inx:D.xp%200}}
 function st(){var n=D.plays.length,sum=0,best=0;D.plays.forEach(function(p){sum+=p.pct;if(p.pct>best)best=p.pct});return{c:D.lessons.length,p:n,a:n?Math.round(sum/n):0,b:best}}
-window.onUserReady=function(){var k=dkey();if(k!==curK){try{var old=localStorage.getItem(curK);if(old&&!localStorage.getItem(k))localStorage.setItem(k,old)}catch(e){}curK=k;loadD();renderAll()}};
+window.onUserReady=function(){var k=dkey();if(k!==curK){try{var old=localStorage.getItem(curK);if(old&&!localStorage.getItem(k))localStorage.setItem(k,old)}catch(e){}curK=k;loadD();renderAll()}restoreCloudProgress()};setTimeout(restoreCloudProgress,0);
 
 /* ===== metodlar ===== */
 var MT={
@@ -969,8 +973,8 @@ function rel(ts){var d=Math.floor((Date.now()-ts)/864e5);if(d<=0)return T('bugun
 function levelHTML(){var l=lvl();return '<div class="lv">'+l.L+'</div><div class="lvbody"><div class="lvrow"><span>'+T('Daraja:')+' <b>'+T(l.name)+'</b></span><span>'+l.inx+' / 200 XP</span></div><div class="bar"><i style="width:'+(l.inx/2)+'%"></i></div></div><div class="chip" title="'+T('Ketma-ket kunlar')+'">🔥 '+curStreak()+'</div>'}
 function stat(e,v,l){return '<div class="stat"><span class="em">'+e+'</span><b>'+v+'</b><small>'+T(l)+'</small></div>'}
 function statsHTML(){var s=st();return stat('🧩',s.c,'Yaratilgan darslar')+stat('🎮',s.p,'Topshirilgan')+stat('🎯',s.a+'%','O’rtacha natija')+stat('🏆',s.b+'%','Eng yuqori ball')}
-function lcard(l){var m=MT[l.m],sub=l.sub||rel(l.created),own=l.id.charAt(0)==='u';sub=sub.replace(/(?:^| · )\d{1,2}(?:–\d{1,2})?-sinf/gi,'').replace(/^ · | · $/g,'')||rel(l.created);
-  return '<article class="lesson" data-lid="'+l.id+'"><div class="tile" style="background:'+m.bg+'">'+m.e+'</div><div class="lbody"><b>'+esc(l.title)+'</b><small>'+cnt(l)+' '+T(unit(l))+' · '+esc(sub)+'</small></div><div class="lesson-actions">'+(own&&(l.qs||l.pairs)?'<button class="ibtn" data-edit-test="'+l.id+'" aria-label="'+T('Tahrirlash')+'" title="'+T('Tahrirlash')+'">✏️</button>':'')+(l.code?'<button class="ibtn" data-share-test="'+l.id+'" aria-label="'+T('Ulashish')+'" title="'+T('Ulashish')+'">↗</button>':'')+(own?'<button class="ibtn" data-delete-test="'+l.id+'" aria-label="'+T('O’chirish')+'" title="'+T('O’chirish')+'">⌫</button>':'')+'<button class="go" data-play="'+l.id+'">'+T('Boshlash')+'</button></div></article>'}
+function lcard(l){var m=MT[l.m],sub=l.sub||rel(l.created),own=l.id.indexOf('u_')===0||l.id.charAt(0)==='u';sub=sub.replace(/(?:^| · )\d{1,2}(?:–\d{1,2})?-sinf/gi,'').replace(/^ · | · $/g,'')||rel(l.created);
+  return '<article class="lesson" data-lid="'+l.id+'"><div class="tile" style="background:'+m.bg+'">'+m.e+'</div><div class="lbody"><b>'+esc(l.title)+'</b><small>'+cnt(l)+' '+T(unit(l))+' · '+esc(sub)+'</small></div><div class="lesson-actions">'+(l.pub!==false?'<button class="ibtn" data-share-test="'+l.id+'" aria-label="'+T('Ulashish')+'" title="'+T('Ulashish')+'">↗</button>':'')+(own?'<div class="lesson-tools"><button class="ibtn" data-test-settings="'+l.id+'" aria-label="'+T('Sozlamalar')+'" title="'+T('Sozlamalar')+'">⚙</button><div class="lesson-menu" data-test-menu="'+l.id+'" hidden><button class="ibtn" data-edit-test="'+l.id+'" aria-label="'+T('Tahrirlash')+'" title="'+T('Tahrirlash')+'">✎</button><button class="ibtn" data-test-pub="'+l.id+'" aria-label="'+(l.pub===false?T('Hammaga ochiq'):T('Maxfiy'))+'" title="'+(l.pub===false?T('Hammaga ochiq'):T('Maxfiy'))+'">'+(l.pub===false?'🔒':'🌐')+'</button><button class="ibtn" data-delete-test="'+l.id+'" aria-label="'+T('O’chirish')+'" title="'+T('O’chirish')+'">⌫</button></div></div>':'')+'<button class="go" data-play="'+l.id+'">'+T('Boshlash')+'</button></div></article>'}
 function emptyCard(){return '<div class="es"><div class="em">📝</div><b>'+T('Hali dars yo’q')+'</b><p>'+T('Birinchi darsingizni yarating yoki tayyor darslardan boshlang.')+'</p><div class="es-a"><button class="go" data-go2="yaratish">'+T('Dars yaratish')+'</button><button class="go alt" data-go2="kutubxona">'+T('Tayyor darslar')+'</button></div></div>'}
 function chartHTML(){var pl=D.plays.slice(0,7).reverse();
   if(!pl.length)return '<div class="es sm"><div class="em">📊</div><p>'+T('Natijalar test topshirgandan keyin shu yerda chiqadi.')+'</p></div>';
@@ -1006,7 +1010,7 @@ function show(p){if(typeof p!=='string')p=location.hash.slice(1);if(P.indexOf(p)
   window.scrollTo(0,0)}
 function go(p){if(P.indexOf(p)<0)p='bosh';show(p);try{history.pushState({interdars:true,page:p},'','#'+p)}catch(e){}}
 try{var initial=P.indexOf(location.hash.slice(1))>-1?location.hash.slice(1):'bosh';history.replaceState({interdars:true,page:initial},'','#'+initial)}catch(e){}
-window.addEventListener('popstate',function(e){if(e.state&&e.state.interdars){show(e.state.page);return}try{history.replaceState({interdars:true,page:'bosh'},'','#bosh')}catch(x){}show('bosh')});
+window.addEventListener('popstate',function(e){if(e.state&&e.state.interdars){show(e.state.page);if(e.state.page==='bosh')try{history.pushState({interdars:true,page:'bosh'},'','#bosh')}catch(x){}return}try{history.replaceState({interdars:true,page:'bosh'},'','#bosh');history.pushState({interdars:true,page:'bosh'},'','#bosh')}catch(x){}show('bosh')});
 window.addEventListener('hashchange',show);
 tabs.forEach(function(b){b.addEventListener('click',function(){go(b.dataset.tab)})});
 $$('[data-go]').forEach(function(b){b.addEventListener('click',function(){go(b.dataset.go)})});
@@ -1049,7 +1053,7 @@ $$('[data-back]').forEach(function(b){b.addEventListener('click',function(){step
 $('#mk').addEventListener('click',function(){var m=MT[W.m];if(validN()<m.min)return;
   var old=W.editId?find(W.editId):null,l=old?Object.assign({},old,{title:W.topic,m:W.m}):{id:'u'+Date.now(),code:gen(),title:W.topic,m:W.m,created:Date.now()};
   if(m.t==='qs'){l.qs=validQs();delete l.pairs}else{l.pairs=validPs();delete l.qs}
-  if(old)D.lessons=D.lessons.map(function(x){return x.id===old.id?l:x});else{D.lessons.unshift(l);D.xp+=50;touch();addNote('lesson',l.title)}saveD();cloudPush(l);say(old?'Test saqlandi':T('Dars yaratildi — kod:')+' '+l.code);resetW();renderAll();go(old?'kutubxona':'bosh');confetti(innerWidth/2,innerHeight*.35,50)});
+  if(old)D.lessons=D.lessons.map(function(x){return x.id===old.id?l:x});else{D.lessons.unshift(l);D.xp+=50;touch();addNote('lesson',l.title)}saveD();cloudPush(l);say(old?'Test saqlandi':'Test yaratildi');resetW();renderAll();go(old?'kutubxona':'bosh');confetti(innerWidth/2,innerHeight*.35,50)});
 function editLesson(id){var l=find(id);if(!l||(!l.qs&&!l.pairs))return;W.editId=l.id;W.topic=l.title;W.m=l.m||'quiz';W.qs=(l.qs||[]).map(function(q){return{q:q.q||'',o:(q.a||[]).slice(),c:q.c||0}});W.pairs=(l.pairs||[]).map(function(x){return{t:x.t||'',d:x.d||''}});while(W.qs.length<3)W.qs.push(bq());while(W.pairs.length<3)W.pairs.push(bp());$('#topic').value=W.topic;$('#n1').disabled=false;$('#cwiz .ph h1').textContent=T('Testni tahrirlash');renderOpts();step(2);openWiz()}
 
 /* ===== kutubxona ===== */
@@ -1105,10 +1109,9 @@ function toggleRem(){
   try{var r=Notification.requestPermission(done);if(r&&r.then)r.then(done)}catch(e){say('Bu brauzer bildirishnomalarni qo’llamaydi')}}
 function logout(){var go=function(){try{localStorage.removeItem('idUser');localStorage.removeItem('idProf');Object.keys(localStorage).forEach(function(k){if(/^sb-.*-auth-token/.test(k))localStorage.removeItem(k)})}catch(e){}location.replace('/?home=1')};
   setTimeout(go,1500);try{window.sb?window.sb.auth.signOut().then(go,go):go()}catch(e){go()}}
-function openDetail(id){var l=find(id);if(!l)return;var m=MT[l.m],own=l.id.charAt(0)==='u';
+function openDetail(id){var l=find(id);if(!l)return;var m=MT[l.m],own=l.id.indexOf('u_')===0||l.id.charAt(0)==='u';
   var h='<div class="dh"><span class="tile" style="background:'+m.bg+'">'+m.e+'</span><div><h2>'+esc(l.title)+'</h2><small>'+T(m.n)+' · '+cnt(l)+' '+T(unit(l))+(l.sub?' · '+esc(l.sub):'')+'</small></div><button class="icon-btn" data-dx aria-label="'+T('Yopish')+'">✕</button></div>';
-  if(l.code)h+='<div class="dcode"><span>'+T('Kod')+'</span><b>'+l.code+'</b><button class="go alt" data-dcopy="'+l.code+'">'+T('Kodni nusxalash')+'</button></div>'+(own?'<button class="sr" role="switch" data-dpub="'+l.id+'" aria-checked="'+(l.pub!==false)+'"><i class="si">🌐</i><span>'+T('Hammaga ochiq')+'</span><b class="sw"><i></i></b></button>':'');
-  h+='<div class="drow"><button class="cta" data-dplay="'+l.id+'">▶ '+T('Boshlash')+'</button>'+(l.code?'<button class="go alt" data-dshare="'+l.id+'">'+T('Ulashish')+'</button>':'')+(own?'<button class="go alt" data-ddel="'+l.id+'">'+T('O’chirish')+'</button>':'<button class="go alt" data-dadd="'+l.id+'">'+T('Darslarimga qo’shish')+'</button>')+'</div>';
+  h+='<div class="drow"><button class="cta" data-dplay="'+l.id+'">▶ '+T('Boshlash')+'</button>'+(l.pub!==false?'<button class="go alt" data-dshare="'+l.id+'">'+T('Ulashish')+'</button>':'')+(!own?'<button class="go alt" data-dadd="'+l.id+'">'+T('Darslarimga qo’shish')+'</button>':'')+'</div>';
   $('#dsh').innerHTML=h;$('#dlg').hidden=false;syncOv()}
 /* profil tahriri */
 var EMO=['😀','😎','🦊','🐼','🦁','🐯','🐸','🐵','🦄','🐙','🚀','⭐','🎓','📚','🧠','🎮','🏆'];
@@ -1229,9 +1232,11 @@ $('#pl').addEventListener('click',function(e){var t=e.target,b;
 
 /* ===== umumiy bosish ===== */
 document.addEventListener('click',function(e){var t=e.target,b;
-  if(b=t.closest('[data-edit-test]')){var et=find(b.dataset.editTest);if(et&&et.aiTest){go('ai-test');if(window.aiTestBridge)window.aiTestBridge.edit(b.dataset.editTest)}else editLesson(b.dataset.editTest);return}
+   if(b=t.closest('[data-test-settings]')){var menu=document.querySelector('[data-test-menu="'+b.dataset.testSettings+'"]');if(menu)menu.hidden=!menu.hidden;return}
+   if(b=t.closest('[data-test-pub]')){var pl=find(b.dataset.testPub);if(pl&&(pl.id.indexOf('u_')===0||pl.id.charAt(0)==='u')){pl.pub=pl.pub===false;saveD();cloudPush(pl);renderAll()}return}
+   if(b=t.closest('[data-edit-test]')){var et=find(b.dataset.editTest);if(et&&(et.id.indexOf('u_')===0||et.id.charAt(0)==='u')){if(et.aiTest){go('ai-test');if(window.aiTestBridge)window.aiTestBridge.edit(b.dataset.editTest)}else editLesson(b.dataset.editTest)}return}
   if(b=t.closest('[data-share-test]')){shareL(find(b.dataset.shareTest));return}
-  if(b=t.closest('[data-delete-test]')){var tid=b.dataset.deleteTest;ask('Test o’chiriladimi?','Test butunlay o’chiriladi.','O’chirish',function(){var dl=find(tid);if(dl&&dl.cid)cloudDel(dl.cid);D.lessons=D.lessons.filter(function(x){return x.id!==tid});saveD();renderAll();say('Dars o’chirildi')});return}
+   if(b=t.closest('[data-delete-test]')){var tid=b.dataset.deleteTest,owned=find(tid);if(!owned||!(owned.id.indexOf('u_')===0||owned.id.charAt(0)==='u'))return;ask('Test o’chiriladimi?','Test butunlay o’chiriladi.','O’chirish',function(){var dl=find(tid);if(dl&&dl.cid)cloudDel(dl.cid);D.lessons=D.lessons.filter(function(x){return x.id!==tid});saveD();renderAll();say('Dars o’chirildi')});return}
   if(b=t.closest('[data-manual]')){openWiz();return}
   if(b=t.closest('[data-hub]')){go('yaratish');return}
   if(b=t.closest('[data-inf]')){info(b.dataset.inf);return}
@@ -1292,15 +1297,16 @@ function cloudPull(){return cuid().then(function(uid){if(!uid)return;
     return D.lessons.filter(function(x){return !x.cid}).reduce(function(p,l){return p.then(function(){return cloudPush(l)})},Promise.resolve())})}).catch(function(e){cloudWarn(e)})}
 function cloudPub(){if(!sbc())return;CL.pubAt=Date.now();cuid().then(function(uid){return sbc().from('shared_lessons').select('*').eq('is_public',true).neq('owner_id',uid||'00000000-0000-0000-0000-000000000000').order('created_at',{ascending:false}).limit(40)}).then(function(r){if(r.error)throw r.error;G=(r.data||[]).map(function(x){return lessonOf(x,false)});renderLib()}).catch(function(){})}
 window.cloudPubSoon=function(){if(Date.now()-CL.pubAt>20000)cloudPub()};
+function fetchSharedById(id){if(!sbc())return Promise.resolve(null);return cuid().then(function(){return sbc().from('shared_lessons').select('*').eq('id',id).eq('is_public',true).maybeSingle()}).then(function(r){if(r.error||!r.data)return null;var mine=r.data.owner_id===CL.uid,l=lessonOf(r.data,mine),ex=allL().filter(function(x){return x.cid===l.cid})[0];if(ex)return ex;if(mine){D.lessons.unshift(l);saveD()}else G.unshift(l);return l},function(){return null})}
 function fetchByCode(c){if(!sbc())return Promise.resolve(null);return cuid().then(function(){return sbc().from('shared_lessons').select('*').eq('code',c).maybeSingle()}).then(function(r){if(r.error||!r.data)return null;var mine=r.data.owner_id===CL.uid,l=lessonOf(r.data,mine),ex=allL().filter(function(x){return x.cid===l.cid})[0];if(ex)return ex;if(mine){D.lessons.unshift(l);saveD()}else G.unshift(l);return l},function(){return null})}
-function shareL(l){if(!l||!l.code)return;if(l.pub===false){say('Ulashish uchun “Hammaga ochiq”ni yoqing');return}
-  var url=location.origin+'/home#t='+l.code,txt=T('InterDars’da test:')+' '+l.title;
+function shareL(l){if(!l)return;if(l.pub===false){say('Ulashish uchun “Hammaga ochiq”ni yoqing');return}
+  var send=function(){var url=location.origin+'/home'+(l.cid?'#s='+l.cid:'#t='+l.code),txt=T('InterDars’da test:')+' '+l.title;
   if(navigator.share){navigator.share({title:l.title,text:txt,url:url}).catch(function(){})}
-  else{try{navigator.clipboard.writeText(url).then(function(){say('Havola nusxalandi')},function(){say(url)})}catch(e){say(url)}}}
+  else{try{navigator.clipboard.writeText(url).then(function(){say('Havola nusxalandi')},function(){say(url)})}catch(e){say(url)}}};if(!l.cid&&sbc()){cloudPush(l);var n=0,t=setInterval(function(){if(l.cid||n++>20){clearInterval(t);send()}},100)}else send()}
 function cloudInit(){if(!sbc())return;
-  var pc=(location.hash.match(/^#t=(\d{6})$/)||[])[1]||null;try{if(!pc)pc=localStorage.getItem('idPending');localStorage.removeItem('idPending')}catch(e){}
-  if(pc){try{history.replaceState({interdars:true,page:'bosh'},'','#bosh')}catch(e){}}
-  cuid().then(cloudPull).then(function(){cloudPub();if(pc)return fetchByCode(pc).then(function(l){if(l)openDetail(l.id);else say('Bunday test topilmadi')})})}
+  var pc=(location.hash.match(/^#t=(\d{6})$/)||[])[1]||null,ps=(location.hash.match(/^#s=([0-9a-f-]{36})$/i)||[])[1]||null;try{if(!pc)pc=localStorage.getItem('idPending');if(!ps)ps=localStorage.getItem('idPendingShare');localStorage.removeItem('idPending');localStorage.removeItem('idPendingShare')}catch(e){}
+  if(pc||ps){try{history.replaceState({interdars:true,page:'bosh'},'','#bosh')}catch(e){}}
+  cuid().then(cloudPull).then(function(){cloudPub();if(ps)return fetchSharedById(ps).then(function(l){if(l)openDetail(l.id);else say('Bunday test topilmadi')});if(pc)return fetchByCode(pc).then(function(l){if(l)openDetail(l.id);else say('Bunday test topilmadi')})})}
 window.aiTestBridge={getLessons:function(){return D.lessons},edit:function(id){var b=document.querySelector('#ax-saved [data-open="'+id+'"]');if(b)b.click()},saveLesson:function(l){var i=D.lessons.findIndex(function(x){return x.id===l.id});if(i<0)D.lessons.unshift(l);else{var o=D.lessons[i];if(o.cid)l.cid=o.cid;if(l.pub===undefined&&o.pub!==undefined)l.pub=o.pub;D.lessons[i]=l}saveD();cloudPush(l);renderAll()},deleteLesson:function(id){var dl=find(id);if(dl&&dl.cid)cloudDel(dl.cid);D.lessons=D.lessons.filter(function(x){return x.id!==id});saveD();renderAll()},share:function(id){shareL(find(id))},play:function(id){play(id)},detail:function(id){openDetail(id)},go:function(p){go(p)},MT:MT,ask:ask};renderAll();show();bdot();cloudInit();
 try{if(remOn()){var td=dstr(new Date());if(lsg('idRemDay')!==td&&D.streak.last!==td&&curStreak()>0){lss('idRemDay',td);new Notification('InterDars',{body:T('Seriyangiz uzilmasin — bugun bitta dars bajaring!')})}}}catch(e){}
 })();
@@ -1311,4 +1317,5 @@ window.confetti=function(x,y,n){if(matchMedia('(prefers-reduced-motion: reduce)'
 <script src="/ai-test.js"></script>
 </body>
 </html>
+
 
