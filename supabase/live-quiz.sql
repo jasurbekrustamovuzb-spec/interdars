@@ -17,7 +17,8 @@ create table if not exists public.live_quiz_rooms (
 create table if not exists public.live_quiz_players (
   id uuid primary key default gen_random_uuid(),
   room_id uuid not null references public.live_quiz_rooms(id) on delete cascade,
-  user_id uuid not null references auth.users(id) on delete cascade,
+  user_id uuid references auth.users(id) on delete cascade,
+  guest_token uuid,
   nickname text not null check (char_length(nickname) between 1 and 24),
   avatar text not null default '🦊',
   score integer not null default 0 check (score >= 0),
@@ -25,6 +26,19 @@ create table if not exists public.live_quiz_players (
   joined_at timestamptz not null default now(),
   unique (room_id, user_id)
 );
+
+-- Guests can play without creating a Supabase account. Their random UUID is a
+-- per-room capability token; it is never exposed in participant state.
+alter table public.live_quiz_players alter column user_id drop not null;
+alter table public.live_quiz_players add column if not exists guest_token uuid;
+create unique index if not exists live_quiz_players_room_guest_token_uidx
+  on public.live_quiz_players (room_id, guest_token) where guest_token is not null;
+do $$ begin
+  if not exists (select 1 from pg_constraint where conrelid='public.live_quiz_players'::regclass and conname='live_quiz_players_identity_check') then
+    alter table public.live_quiz_players add constraint live_quiz_players_identity_check
+      check ((user_id is not null and guest_token is null) or (user_id is null and guest_token is not null));
+  end if;
+end $$;
 
 create index if not exists live_quiz_players_room_score_idx
   on public.live_quiz_players (room_id, score desc, joined_at);
@@ -238,4 +252,115 @@ grant execute on function public.live_quiz_answer(uuid,integer) to authenticated
 grant execute on function public.live_quiz_advance(uuid,boolean) to authenticated;
 grant execute on function public.live_quiz_close(uuid) to authenticated;
 grant execute on function public.live_quiz_leave(uuid) to authenticated;
+
+-- Login-free participant API. Every operation is bound to the random token
+-- created by the participant's browser. Host controls remain authenticated.
+create or replace function public.live_quiz_guest_state(p_room_id uuid,p_guest_token uuid)
+returns jsonb language plpgsql stable security definer set search_path = '' as $$
+declare
+  r public.live_quiz_rooms%rowtype;
+  p public.live_quiz_players%rowtype;
+  v_question jsonb;
+  v_players jsonb;
+  v_answer jsonb;
+  v_me jsonb;
+begin
+  select * into r from public.live_quiz_rooms where id=p_room_id;
+  if not found then return null; end if;
+  select * into p from public.live_quiz_players where room_id=r.id and guest_token=p_guest_token;
+  if not found then return null; end if;
+
+  select coalesce(jsonb_agg(jsonb_build_object(
+    'id',ranked.id,'name',ranked.nickname,'avatar',ranked.avatar,'score',ranked.score,
+    'answered',coalesce(ranked.answers ? r.question_index::text,false),'rank',ranked.rank
+  ) order by ranked.score desc,ranked.joined_at asc),'[]'::jsonb)
+    into v_players
+    from (select p0.*,row_number() over(order by p0.score desc,p0.joined_at asc)::integer as rank
+      from public.live_quiz_players p0 where p0.room_id=r.id) ranked;
+
+  v_question := r.questions -> r.question_index;
+  if v_question is not null then
+    v_question := jsonb_build_object('text',v_question->'q','choices',v_question->'a',
+      'index',r.question_index+1,'total',jsonb_array_length(r.questions));
+    if r.status in ('reveal','leaderboard','podium') then
+      v_question := v_question || jsonb_build_object('correctIndex',(r.questions->r.question_index)->'c');
+    end if;
+  end if;
+  select p.answers -> r.question_index::text into v_answer;
+  select jsonb_build_object('id',p.id,'name',p.nickname,'avatar',p.avatar,'score',p.score,'answer',v_answer,
+    'correctCount',(select count(*) from jsonb_each(p.answers) a where coalesce((a.value->>'correct')::boolean,false)),
+    'total',jsonb_array_length(r.questions)) into v_me;
+  return jsonb_build_object('id',r.id,'pin',r.pin,'title',r.title,'hostId',r.host_id,
+    'status',r.status,'questionIndex',r.question_index,'settings',r.settings,'question',v_question,
+    'participants',v_players,'me',v_me,'questionEndsAt',r.question_ends_at,'phaseEndsAt',r.phase_ends_at);
+end $$;
+
+create or replace function public.live_quiz_guest_join(p_pin text,p_nickname text,p_avatar text,p_guest_token uuid)
+returns jsonb language plpgsql security definer set search_path = '' as $$
+declare v_room public.live_quiz_rooms%rowtype; v_name text;
+begin
+  if p_guest_token is null then raise exception 'Qayta urinib ko’ring'; end if;
+  select * into v_room from public.live_quiz_rooms where pin=p_pin and status='waiting' for update;
+  if not found then raise exception 'Test raqami topilmadi yoki test boshlangan'; end if;
+  v_name:=left(trim(coalesce(p_nickname,'')),24);
+  if v_name='' then raise exception 'Ismingizni kiriting'; end if;
+  insert into public.live_quiz_players(room_id,user_id,guest_token,nickname,avatar)
+    values(v_room.id,null,p_guest_token,v_name,left(coalesce(p_avatar,'🦊'),16))
+    on conflict (room_id,guest_token) where guest_token is not null
+    do update set nickname=excluded.nickname,avatar=excluded.avatar;
+  return public.live_quiz_guest_state(v_room.id,p_guest_token);
+end $$;
+
+create or replace function public.live_quiz_guest_profile(p_room_id uuid,p_nickname text,p_avatar text,p_guest_token uuid)
+returns jsonb language plpgsql security definer set search_path = '' as $$
+declare v_status text;
+begin
+  select status into v_status from public.live_quiz_rooms where id=p_room_id for update;
+  if v_status is distinct from 'waiting' then raise exception 'Avatarni faqat kutish xonasida o’zgartirish mumkin'; end if;
+  update public.live_quiz_players set nickname=left(trim(p_nickname),24),avatar=left(coalesce(p_avatar,'🦊'),16)
+    where room_id=p_room_id and guest_token=p_guest_token and char_length(trim(p_nickname)) between 1 and 24;
+  if not found then raise exception 'Ismni kiriting'; end if;
+  return public.live_quiz_guest_state(p_room_id,p_guest_token);
+end $$;
+
+create or replace function public.live_quiz_guest_answer(p_room_id uuid,p_choice integer,p_guest_token uuid)
+returns jsonb language plpgsql security definer set search_path = '' as $$
+declare r public.live_quiz_rooms%rowtype; p public.live_quiz_players%rowtype; v_q jsonb; v_correct boolean; v_points integer; v_elapsed integer; v_seconds integer;
+begin
+  select * into r from public.live_quiz_rooms where id=p_room_id for update;
+  if not found or r.status<>'question' or r.question_ends_at<now() then raise exception 'Javob berish vaqti tugadi'; end if;
+  select * into p from public.live_quiz_players where room_id=p_room_id and guest_token=p_guest_token for update;
+  if not found then raise exception 'Ishtirokchi topilmadi'; end if;
+  if p.answers ? r.question_index::text then raise exception 'Javobingiz qabul qilingan'; end if;
+  v_q:=r.questions->r.question_index;
+  if p_choice<0 or p_choice>=jsonb_array_length(v_q->'a') then raise exception 'Javob varianti noto’g’ri'; end if;
+  v_correct:=p_choice=(v_q->>'c')::integer;
+  v_seconds:=greatest(1,coalesce((r.settings->>'question_seconds')::integer,20));
+  v_elapsed:=greatest(0,(extract(epoch from(clock_timestamp()-r.question_started_at))*1000)::integer);
+  v_points:=case when not v_correct then 0 when r.settings->>'scoring'='accuracy' or v_elapsed<500 then 1000
+    else greatest(0,round(1000*(1-least(v_elapsed::numeric,v_seconds*1000)::numeric/(v_seconds*2000)))::integer) end;
+  update public.live_quiz_players set score=score+v_points,
+    answers=answers||jsonb_build_object(r.question_index::text,jsonb_build_object('choice',p_choice,'correct',v_correct,'points',v_points,'elapsedMs',v_elapsed))
+    where id=p.id;
+  return jsonb_build_object('correct',v_correct,'points',v_points,'state',public.live_quiz_guest_state(p_room_id,p_guest_token));
+end $$;
+
+create or replace function public.live_quiz_guest_leave(p_room_id uuid,p_guest_token uuid)
+returns jsonb language plpgsql security definer set search_path = '' as $$
+begin
+  delete from public.live_quiz_players p using public.live_quiz_rooms r
+    where p.room_id=p_room_id and p.guest_token=p_guest_token and r.id=p.room_id and r.status='waiting';
+  return jsonb_build_object('left',true);
+end $$;
+
+revoke all on function public.live_quiz_guest_state(uuid,uuid) from public,anon,authenticated;
+revoke all on function public.live_quiz_guest_join(text,text,text,uuid) from public,anon,authenticated;
+revoke all on function public.live_quiz_guest_profile(uuid,text,text,uuid) from public,anon,authenticated;
+revoke all on function public.live_quiz_guest_answer(uuid,integer,uuid) from public,anon,authenticated;
+revoke all on function public.live_quiz_guest_leave(uuid,uuid) from public,anon,authenticated;
+grant execute on function public.live_quiz_guest_state(uuid,uuid) to anon,authenticated;
+grant execute on function public.live_quiz_guest_join(text,text,text,uuid) to anon,authenticated;
+grant execute on function public.live_quiz_guest_profile(uuid,text,text,uuid) to anon,authenticated;
+grant execute on function public.live_quiz_guest_answer(uuid,integer,uuid) to anon,authenticated;
+grant execute on function public.live_quiz_guest_leave(uuid,uuid) to anon,authenticated;
 
