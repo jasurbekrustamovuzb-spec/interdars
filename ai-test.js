@@ -212,7 +212,7 @@ function editor(){
     return '<article class="aiq'+(S.bad===i?' bad':'')+'" data-q="'+i+'"><div class="aiq-h"><span class="num">'+(i+1)+'</span><textarea class="aiq-t" data-qtext="'+i+'" maxlength="500" rows="2" aria-label="'+T('Savol matni')+'">'+esc(q.q)+'</textarea><button class="ibtn" data-del-q="'+i+'" aria-label="'+T('O’chirish')+'">🗑</button></div>'+
     '<div class="aiq-o">'+q.options.map(function(o,j){return '<div class="aiq-op'+(q.correctIndex===j?' ok':'')+'"><button class="ltr" data-correct="'+i+'-'+j+'" aria-label="'+T('To’g’ri javob')+'" aria-pressed="'+(q.correctIndex===j)+'">'+(q.correctIndex===j?'✓':letter(j))+'</button><input data-option="'+i+'-'+j+'" maxlength="300" value="'+esc(o)+'" aria-label="'+T('Javob')+' '+letter(j)+'"></div>'}).join('')+'</div>'+
     (q.evidence?'<details class="aiq-ev"><summary>📖 '+T('Manba')+'</summary><p>'+esc(q.evidence)+'</p></details>':'')+'</article>'}).join('');
-  h+='<div class="aibar"><button class="go alt" id="ax-add">＋ '+T('Savol')+'</button>'+(S.saved&&!S.dirty?'<button class="cta" id="ax-play">▶ '+T('O’ynash')+'</button>':'<button class="cta" id="ax-save">💾 '+T('Saqlash')+'</button>')+'</div>';
+  h+='<div class="aibar"><button class="go alt" id="ax-add">＋ '+T('Savol')+'</button>'+(S.saved&&!S.dirty?'<button class="cta" id="ax-play">▶ '+T('O’ynash')+'</button>':'<button class="cta" id="ax-save"><svg class="ico" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg> '+T('Saqlash')+'</button>')+'</div>';
   box.innerHTML=h;$$('#ax-editor .aiq-t').forEach(grow)}
 function grow(t){t.style.height='auto';t.style.height=t.scrollHeight+'px'}
 function save(){
@@ -223,7 +223,8 @@ function save(){
   var m=B.MT[c.m||'quiz'];if(c.questions.length<m.min){status(T(m.n)+' '+T('uchun kamida')+' '+m.min+' '+T('savol kerak'),true);return}
   var old=B.getLessons().filter(function(x){return x.id===S.editId})[0];
   var l={id:S.editId||'u'+Date.now(),code:old&&old.code||String(100000+Math.floor(Math.random()*900000)),title:title,sub:old&&old.sub||'AI · '+c.file,cls:old&&old.cls||'Sinf',m:c.m||'quiz',created:old&&old.created||Date.now(),qs:c.questions.map(function(q){return{q:q.q.trim(),a:q.options.map(function(x){return x.trim()}),c:q.correctIndex,evidence:q.evidence||''}}),aiTest:true};
-  B.saveLesson(l);S.editId=l.id;S.saved=true;S.dirty=false;S.bad=-1;c.topic=title;status('');editor();renderSaved();
+  B.saveLesson(l);S.cur=null;S.editId=null;S.saved=false;S.dirty=false;S.bad=-1;S.files=[];renderFiles();showEditor(false);renderSaved();status('Test saqlandi');
+  var row=$('#ax-saved [data-open="'+l.id+'"]');row=row&&row.closest('.axr');if(row){row.classList.add('new');setTimeout(function(){row.scrollIntoView({block:'center',behavior:'smooth'})},60)}
   if(window.confetti)confetti(innerWidth/2,innerHeight*.5,30)}
 function savedList(){return B.getLessons().filter(function(x){return x.aiTest})}
 function renderSaved(){
@@ -259,7 +260,7 @@ function init(){
     else if(t.dataset.qtext!==undefined){S.cur.questions[+t.dataset.qtext].q=t.value;grow(t)}
     else if(t.dataset.option!==undefined){var x=t.dataset.option.split('-');S.cur.questions[+x[0]].options[+x[1]]=t.value}
     else return;
-    if(S.saved){S.dirty=true;var bar=$('.aibar .cta');if(bar&&bar.id==='ax-play'){bar.id='ax-save';bar.innerHTML='💾 '+T('Saqlash')}}else S.dirty=true});
+    if(S.saved){S.dirty=true;var bar=$('.aibar .cta');if(bar&&bar.id==='ax-play'){bar.id='ax-save';bar.innerHTML='<svg class="ico" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg> '+T('Saqlash')}}else S.dirty=true});
   ed.addEventListener('click',function(e){var t=e.target,b;if(!S.cur)return;
     if(b=t.closest('[data-correct]')){var p=b.dataset.correct.split('-');S.cur.questions[+p[0]].correctIndex=+p[1];S.dirty=true;var y=document.scrollingElement.scrollTop;editor();document.scrollingElement.scrollTop=y;return}
     if(b=t.closest('[data-del-q]')){S.cur.questions.splice(+b.dataset.delQ,1);S.dirty=true;S.bad=-1;editor();return}
