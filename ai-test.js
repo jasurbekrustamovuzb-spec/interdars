@@ -222,7 +222,7 @@ function save(){
   var bad=valid();if(bad>-1){S.bad=bad;editor();status('Belgilangan savolni tekshiring: matn, 4 ta turli javob va bitta to’g’ri javob kerak.',true);var el=$('#ax-editor [data-q="'+bad+'"]');if(el)el.scrollIntoView({block:'center',behavior:'smooth'});return}
   var m=B.MT[c.m||'quiz'];if(c.questions.length<m.min){status(T(m.n)+' '+T('uchun kamida')+' '+m.min+' '+T('savol kerak'),true);return}
   var old=B.getLessons().filter(function(x){return x.id===S.editId})[0];
-  var l={id:S.editId||'u'+Date.now(),code:old&&old.code||String(100000+Math.floor(Math.random()*900000)),title:title,sub:old&&old.sub||'AI · '+c.file,cls:old&&old.cls||'Sinf',m:c.m||'quiz',created:old&&old.created||Date.now(),qs:c.questions.map(function(q){return{q:q.q.trim(),a:q.options.map(function(x){return x.trim()}),c:q.correctIndex,evidence:q.evidence||''}}),aiTest:true};
+   var l={id:S.editId||'u'+Date.now(),title:title,sub:old&&old.sub||'AI · '+c.file,m:c.m||'quiz',created:old&&old.created||Date.now(),qs:c.questions.map(function(q){return{q:q.q.trim(),a:q.options.map(function(x){return x.trim()}),c:q.correctIndex,evidence:q.evidence||''}}),aiTest:true};if(l.m==='live'&&old&&old.code)l.code=old.code;
   B.saveLesson(l);S.cur=null;S.editId=null;S.saved=false;S.dirty=false;S.bad=-1;S.files=[];renderFiles();showEditor(false);renderSaved();status('Test saqlandi');
   var row=$('#ax-saved [data-open="'+l.id+'"]');row=row&&row.closest('.axr');if(row){row.classList.add('new');setTimeout(function(){row.scrollIntoView({block:'center',behavior:'smooth'})},60)}
   if(window.confetti)confetti(innerWidth/2,innerHeight*.5,30)}
@@ -277,3 +277,4 @@ function init(){
 init();
 document.addEventListener('visibilitychange',function(){if(!document.hidden)renderSaved()});
 })();
+
