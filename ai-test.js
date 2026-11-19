@@ -206,13 +206,13 @@ function editor(){
   var n=c.questions.length,M=B.MT,h='';
   h+='<div class="axe-top">'+AI_ORB('sm')+'<div><b>'+T(S.editId?'Testni tahrirlash':'Test tayyor')+'</b><small>'+n+' '+T('savol')+(S.editId?'':' · '+T('Tekshirib, kerak bo’lsa tahrirlang'))+'</small></div></div>';
   h+='<div class="axs"><label><span class="lab">'+T('Test nomi')+'</span><input class="inp" id="ax-title" maxlength="180" value="'+esc(c.topic)+'"></label>';
-  h+='<div><span class="lab">'+T('O’yin turi')+'</span><div class="pills" id="ax-m">'+MS.map(function(k){var m=M[k],ok=n>=m.min;return '<button class="pill" data-m="'+k+'" aria-pressed="'+(c.m===k)+'">'+m.e+' '+T(m.n)+'</button>'}).join('')+'</div></div></div>';
+  h+='<div><span class="lab">'+T('Test turi')+'</span><div class="pills" id="ax-m">'+MS.map(function(k){var m=M[k],ok=n>=m.min;return '<button class="pill" data-m="'+k+'" aria-pressed="'+(c.m===k)+'">'+m.e+' '+T(m.n)+'</button>'}).join('')+'</div></div></div>';
   h+='<p class="axtip"><b class="ltr ok">A</b>'+T('Yashil harf — to’g’ri javob. Boshqa harfni bosib o’zgartiring.')+'</p>';
   h+=c.questions.map(function(q,i){
     return '<article class="aiq'+(S.bad===i?' bad':'')+'" data-q="'+i+'"><div class="aiq-h"><span class="num">'+(i+1)+'</span><textarea class="aiq-t" data-qtext="'+i+'" maxlength="500" rows="2" aria-label="'+T('Savol matni')+'">'+esc(q.q)+'</textarea><button class="ibtn" data-del-q="'+i+'" aria-label="'+T('O’chirish')+'">🗑</button></div>'+
     '<div class="aiq-o">'+q.options.map(function(o,j){return '<div class="aiq-op'+(q.correctIndex===j?' ok':'')+'"><button class="ltr" data-correct="'+i+'-'+j+'" aria-label="'+T('To’g’ri javob')+'" aria-pressed="'+(q.correctIndex===j)+'">'+(q.correctIndex===j?'✓':letter(j))+'</button><input data-option="'+i+'-'+j+'" maxlength="300" value="'+esc(o)+'" aria-label="'+T('Javob')+' '+letter(j)+'"></div>'}).join('')+'</div>'+
     (q.evidence?'<details class="aiq-ev"><summary>📖 '+T('Manba')+'</summary><p>'+esc(q.evidence)+'</p></details>':'')+'</article>'}).join('');
-  h+='<div class="aibar"><button class="go alt" id="ax-add">＋ '+T('Savol')+'</button>'+(S.saved&&!S.dirty?'<button class="cta" id="ax-play">▶ '+T('O’ynash')+'</button>':'<button class="cta" id="ax-save"><svg class="ico" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg> '+T('Saqlash')+'</button>')+'</div>';
+  h+='<div class="aibar"><button class="go alt" id="ax-add">＋ '+T('Savol')+'</button>'+(S.saved&&!S.dirty?'<button class="cta" id="ax-play">▶ '+T('Boshlash')+'</button>':'<button class="cta" id="ax-save"><svg class="ico" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg> '+T('Saqlash')+'</button>')+'</div>';
   box.innerHTML=h;$$('#ax-editor .aiq-t').forEach(grow)}
 function grow(t){t.style.height='auto';t.style.height=t.scrollHeight+'px'}
 function save(){
@@ -229,7 +229,7 @@ function save(){
 function savedList(){return B.getLessons().filter(function(x){return x.aiTest})}
 function renderSaved(){
   var list=savedList(),box=$('#ax-saved');$('#ax-saved-s').hidden=!list.length||!$('#ax-editor').hidden;
-  box.innerHTML=list.map(function(l){return '<div class="axr"><span class="tile" style="background:#EDE6FF">'+AI_ORB('xs')+'</span><div><b>'+esc(l.title)+'</b><small>'+(l.qs||[]).length+' '+T('savol')+' · '+new Date(l.created).toLocaleDateString()+'</small></div><button class="ibtn" data-open="'+esc(l.id)+'" aria-label="'+T('Tahrirlash')+'">✏️</button><button class="ibtn pl" data-play="'+esc(l.id)+'" aria-label="'+T('O’ynash')+'">▶</button><button class="ibtn" data-delsv="'+esc(l.id)+'" aria-label="'+T('O’chirish')+'">🗑</button></div>'}).join('')}
+  box.innerHTML=list.map(function(l){return '<div class="axr"><span class="tile" style="background:#EDE6FF">'+AI_ORB('xs')+'</span><div><b>'+esc(l.title)+'</b><small>'+(l.qs||[]).length+' '+T('savol')+' · '+new Date(l.created).toLocaleDateString()+'</small></div><button class="ibtn" data-open="'+esc(l.id)+'" aria-label="'+T('Tahrirlash')+'">✏️</button><button class="ibtn pl" data-play="'+esc(l.id)+'" aria-label="'+T('Boshlash')+'">▶</button><button class="ibtn" data-share="'+esc(l.id)+'" aria-label="'+T('Ulashish')+'"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 10.6l6.8-4M8.6 13.4l6.8 4"/></svg></button><button class="ibtn" data-delsv="'+esc(l.id)+'" aria-label="'+T('O’chirish')+'">🗑</button></div>'}).join('')}
 function openSaved(id){var l=B.getLessons().filter(function(x){return x.id===id})[0];if(!l||!l.qs)return;
   S.cur={topic:l.title,file:(l.sub||'').replace(/^AI · /,''),m:l.m||'quiz',questions:l.qs.map(function(q){return{q:q.q,options:q.a.slice(),correctIndex:q.c,evidence:q.evidence||''}})};
   S.editId=l.id;S.saved=true;S.dirty=false;S.bad=-1;status('');showEditor(true)}
@@ -270,6 +270,7 @@ function init(){
     if(t.closest('#ax-play')){B.play(S.editId);return}});
   $('#ax-saved').addEventListener('click',function(e){var b;
     if(b=e.target.closest('[data-open]')){openSaved(b.dataset.open);return}
+    if(b=e.target.closest('[data-share]')){B.share(b.dataset.share);return}
     if(b=e.target.closest('[data-delsv]')){var id=b.dataset.delsv;B.ask('Test o’chirilsinmi?','Test butunlay o’chiriladi.','O’chirish',function(){B.deleteLesson(id);renderSaved()})}});
   document.addEventListener('langchange',function(){renderFiles();quota();if(S.cur&&!$('#ax-editor').hidden)editor();renderSaved();upBtn()});
   renderFiles();renderSaved();quota()}
