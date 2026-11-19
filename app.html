@@ -1053,7 +1053,8 @@ $$('[data-back]').forEach(function(b){b.addEventListener('click',function(){step
 $('#mk').addEventListener('click',function(){var m=MT[W.m];if(validN()<m.min)return;
   var old=W.editId?find(W.editId):null,l=old?Object.assign({},old,{title:W.topic,m:W.m}):{id:'u'+Date.now(),code:gen(),title:W.topic,m:W.m,created:Date.now()};
   if(m.t==='qs'){l.qs=validQs();delete l.pairs}else{l.pairs=validPs();delete l.qs}
-  if(old)D.lessons=D.lessons.map(function(x){return x.id===old.id?l:x});else{D.lessons.unshift(l);D.xp+=50;touch();addNote('lesson',l.title)}saveD();cloudPush(l);say(old?'Test saqlandi':'Test yaratildi');resetW();renderAll();go(old?'kutubxona':'bosh');confetti(innerWidth/2,innerHeight*.35,50)});
+  if(m.t==='qs'){l.qs=validQs();delete l.pairs}else{l.pairs=validPs();delete l.qs}
+  if(l.m!=='live')delete l.code;else if(!l.code)l.code=gen();if(old)D.lessons=D.lessons.map(function(x){return x.id===old.id?l:x});else{D.lessons.unshift(l);D.xp+=50;touch();addNote('lesson',l.title)}saveD();cloudPush(l);say(old?'Test saqlandi':'Test yaratildi');resetW();renderAll();go(old?'kutubxona':'bosh');confetti(innerWidth/2,innerHeight*.35,50)});
 function editLesson(id){var l=find(id);if(!l||(!l.qs&&!l.pairs))return;W.editId=l.id;W.topic=l.title;W.m=l.m||'quiz';W.qs=(l.qs||[]).map(function(q){return{q:q.q||'',o:(q.a||[]).slice(),c:q.c||0}});W.pairs=(l.pairs||[]).map(function(x){return{t:x.t||'',d:x.d||''}});while(W.qs.length<3)W.qs.push(bq());while(W.pairs.length<3)W.pairs.push(bp());$('#topic').value=W.topic;$('#n1').disabled=false;$('#cwiz .ph h1').textContent=T('Testni tahrirlash');renderOpts();step(2);openWiz()}
 
 /* ===== kutubxona ===== */
@@ -1273,7 +1274,7 @@ $$('[data-lqjoin]').forEach(function(b){b.addEventListener('click',function(){go
 var CL={uid:null,warned:false,pubAt:0};
 function sbc(){return window.sb&&window.sb.from?window.sb:null}
 function cuid(){if(CL.uid)return Promise.resolve(CL.uid);if(!sbc())return Promise.resolve(null);return sbc().auth.getSession().then(function(r){CL.uid=r.data&&r.data.session?r.data.session.user.id:null;return CL.uid},function(){return null})}
-function rowOf(l,uid){var p={};if(l.qs)p.qs=l.qs;if(l.pairs)p.pairs=l.pairs;if(l.aiTest)p.aiTest=true;return{owner_id:uid,owner_name:String(uinfo().name||'').slice(0,60),code:l.code,title:String(l.title||'').slice(0,180),sub:l.aiTest?'AI':(l.sub||null),method:l.m,cls:l.cls||null,payload:p,is_public:l.pub!==false}}
+function rowOf(l,uid){var p={};if(l.qs)p.qs=l.qs;if(l.pairs)p.pairs=l.pairs;if(l.aiTest)p.aiTest=true;return{owner_id:uid,owner_name:String(uinfo().name||'').slice(0,60),code:l.m==='live'?l.code:null,title:String(l.title||'').slice(0,180),sub:l.aiTest?'AI':(l.sub||null),method:l.m,cls:null,payload:p,is_public:l.pub!==false}}
 function lessonOf(r,mine){var p=r.payload||{},l={id:(mine?'u_':'g_')+r.id,cid:r.id,code:r.code,title:r.title,m:r.method,created:Date.parse(r.created_at)||Date.now(),pub:r.is_public};
   l.sub=mine?(r.sub==='AI'?'AI':r.sub):('👤 '+(r.owner_name||'—'));if(p.qs)l.qs=p.qs;if(p.pairs)l.pairs=p.pairs;if(p.aiTest)l.aiTest=true;return l}
 function cloudWhy(e){var m=String(e&&e.message||e||''),c=String(e&&e.code||'');
@@ -1300,7 +1301,7 @@ window.cloudPubSoon=function(){if(Date.now()-CL.pubAt>20000)cloudPub()};
 function fetchSharedById(id){if(!sbc())return Promise.resolve(null);return cuid().then(function(){return sbc().from('shared_lessons').select('*').eq('id',id).eq('is_public',true).maybeSingle()}).then(function(r){if(r.error||!r.data)return null;var mine=r.data.owner_id===CL.uid,l=lessonOf(r.data,mine),ex=allL().filter(function(x){return x.cid===l.cid})[0];if(ex)return ex;if(mine){D.lessons.unshift(l);saveD()}else G.unshift(l);return l},function(){return null})}
 function fetchByCode(c){if(!sbc())return Promise.resolve(null);return cuid().then(function(){return sbc().from('shared_lessons').select('*').eq('code',c).maybeSingle()}).then(function(r){if(r.error||!r.data)return null;var mine=r.data.owner_id===CL.uid,l=lessonOf(r.data,mine),ex=allL().filter(function(x){return x.cid===l.cid})[0];if(ex)return ex;if(mine){D.lessons.unshift(l);saveD()}else G.unshift(l);return l},function(){return null})}
 function shareL(l){if(!l)return;if(l.pub===false){say('Ulashish uchun “Hammaga ochiq”ni yoqing');return}
-  var send=function(){var url=location.origin+'/home'+(l.cid?'#s='+l.cid:'#t='+l.code),txt=T('InterDars’da test:')+' '+l.title;
+  var send=function(){if(!l.cid){say('Test bulutga saqlanmadi — qayta urinib ko’ring');return}var url=location.origin+'/home#s='+l.cid,txt=T('InterDars’da test:')+' '+l.title;
   if(navigator.share){navigator.share({title:l.title,text:txt,url:url}).catch(function(){})}
   else{try{navigator.clipboard.writeText(url).then(function(){say('Havola nusxalandi')},function(){say(url)})}catch(e){say(url)}}};if(!l.cid&&sbc()){cloudPush(l);var n=0,t=setInterval(function(){if(l.cid||n++>20){clearInterval(t);send()}},100)}else send()}
 function cloudInit(){if(!sbc())return;
