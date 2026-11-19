@@ -2,7 +2,9 @@
 <html lang="uz" data-role="general"><script>try{var _u=JSON.parse(localStorage.getItem("idUser")||"null");var _s=Object.keys(localStorage).some(function(k){return /^sb-.*-auth-token$/.test(k)})||/[?&]code=|access_token=/.test(location.search+location.hash);if(!(_u&&_u.name)&&!_s)location.replace("/")}catch(e){location.replace("/")}</script>
 <script>try{var r=localStorage.getItem("idRole");if(r)document.documentElement.setAttribute("data-role",r)}catch(e){}</script>
 <head>
+<script>try{var th=localStorage.getItem("idTheme");if(th==="dark"||th==="light")document.documentElement.setAttribute("data-theme",th)}catch(e){}</script>
 <meta charset="utf-8">
+<meta name="color-scheme" content="light dark">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>InterDars</title>
 <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Nunito:wght@500;600;700;800&display=swap" rel="stylesheet">
@@ -464,6 +466,135 @@ body.typing nav{display:flex}
 .dlg .es{box-shadow:none;background:var(--bg);margin-top:14px}
 
 .ai-shell{max-width:820px;margin:0 auto}.ai-head{display:flex;align-items:flex-start;gap:14px}.ai-head .icon-btn{flex:none}.ai-banner{margin-top:16px;border-radius:26px;padding:22px;color:#fff;background:linear-gradient(135deg,#3158E8,#8057E8);box-shadow:0 7px 0 #3149D6,0 14px 32px rgba(75,107,255,.23)}.ai-banner h2{font-size:25px}.ai-banner p{opacity:.92;margin-top:6px;max-width:60ch}.ai-private{margin-top:12px;background:rgba(255,255,255,.16);padding:9px 12px;border-radius:14px;font-size:13px}.ai-grid{display:grid;gap:14px;margin-top:16px}@media(min-width:700px){.ai-grid.two{grid-template-columns:1fr 1fr}}.ai-drop{min-height:156px;display:grid;place-items:center;text-align:center;border:2px dashed var(--line);border-radius:20px;padding:18px;cursor:pointer;background:var(--bg);transition:.18s}.ai-drop:hover,.ai-drop.ready{border-color:var(--blue);background:rgba(75,107,255,.07)}.ai-drop strong{font-family:'Baloo 2';font-size:19px}.ai-drop small{color:var(--muted)}.ai-file{overflow-wrap:anywhere;color:var(--blue)}.ai-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}.ai-actions>*{flex:1}.ai-note{font-size:13px;color:var(--muted);margin-top:10px}.ai-status{display:none;margin-top:12px;padding:12px 14px;border-radius:14px;background:var(--bg);color:var(--muted)}.ai-status.on{display:block}.ai-status.error{color:var(--coral);background:rgba(255,111,97,.1)}.ai-qcard{background:var(--bg);border:2px solid var(--line);border-radius:20px;padding:14px;margin-top:12px}.ai-qhead{display:flex;align-items:center;gap:8px}.ai-qhead strong{flex:1}.ai-del{color:var(--coral);font-weight:900;padding:8px}.ai-options{display:grid;gap:7px;margin-top:8px}.ai-option{display:flex;align-items:center;gap:8px}.ai-option input[type=radio]{accent-color:var(--mint)}.ai-option .inp{padding:9px 11px}.ai-evidence{margin-top:9px;color:var(--muted);font-size:12px;border-left:3px solid var(--mint);padding-left:9px}.ai-saved{display:grid;gap:10px;margin-top:12px}.ai-saved-row{display:flex;align-items:center;gap:10px;background:var(--card);padding:12px;border-radius:16px;box-shadow:var(--shadow)}.ai-saved-row>div{flex:1;min-width:0}.ai-saved-row b{display:block;overflow-wrap:anywhere}.ai-saved-row small{color:var(--muted)}.ai-mini{padding:8px 11px;border-radius:12px;background:var(--bg);font-weight:800}.ai-loading{display:inline-flex;align-items:center;gap:9px}.ai-spin{width:17px;height:17px;border:2px solid var(--line);border-top-color:var(--blue);border-radius:50%;animation:aispin .8s linear infinite}@keyframes aispin{to{transform:rotate(360deg)}}
+/* ===== v4: AI uslubidagi dizayn ===== */
+html{background:var(--bg)}
+.orb{--sz:56px;position:relative;display:inline-grid;place-items:center;width:var(--sz);height:var(--sz);border-radius:50%;flex:none;background:linear-gradient(135deg,#5B7CFF 0%,#8A63F5 55%,#FF7AB6 100%);box-shadow:0 0 0 0 rgba(138,99,245,.45);animation:orbp 2.6s ease-out infinite}
+.orb svg{width:62%;height:62%;fill:#fff;overflow:visible}
+.orb.xs{--sz:30px}.orb.sm{--sz:40px}.orb.lg{--sz:84px}.orb.xl{--sz:104px}
+.orb .s1,.orb .s2,.orb .s3{transform-box:fill-box;transform-origin:center;animation:spk 2.4s ease-in-out infinite}
+.orb .s2{animation-delay:-.8s}.orb .s3{animation-delay:-1.6s}
+@keyframes orbp{0%{box-shadow:0 0 0 0 rgba(138,99,245,.45)}70%,100%{box-shadow:0 0 0 16px rgba(138,99,245,0)}}
+@keyframes spk{0%,100%{transform:scale(1) rotate(0)}50%{transform:scale(1.22) rotate(14deg)}}
+.hero{gap:14px}
+.hero-acts{display:flex;flex-wrap:wrap;gap:10px}
+.hero .cta{flex:none;font-size:17px;padding:11px 18px}
+.cta.ghost{background:rgba(255,255,255,.16);color:#fff;border:2px solid rgba(255,255,255,.4);box-shadow:none}
+.cta.ghost:active{transform:translateY(2px)}
+.cta .orb{--sz:26px;animation:none}
+.guide{display:none!important}
+.lqb h2{font-size:clamp(24px,3.6vw,34px);margin:10px 0 16px;max-width:16ch}
+.lqb{padding:24px 20px;gap:20px}
+@media(min-width:820px){.lqb{padding:30px 38px;gap:30px}}
+.lq-lb .r3{display:none}.lq-lb{height:94px}
+#cwiz{display:none}#p-yaratish.wiz #cwiz{display:block}#p-yaratish.wiz #cmode{display:none}
+.modes{display:grid;gap:14px;margin-top:18px}
+@media(min-width:700px){.modes{grid-template-columns:1fr 1fr}}
+.mode{position:relative;text-align:left;border-radius:28px;padding:22px 22px 24px;display:flex;flex-direction:column;gap:4px;min-height:200px;overflow:hidden;transition:transform .15s}
+.mode:hover{transform:translateY(-3px)}.mode:active{transform:scale(.98)}
+.mode.ai{color:#fff;background:linear-gradient(140deg,#4B6BFF 0%,#8A63F5 60%,#C86BFF 100%);box-shadow:0 8px 0 #3149D6,0 18px 36px rgba(75,107,255,.3)}
+.mode.hand{background:var(--card);border:2px solid var(--line);box-shadow:var(--shadow)}
+.mode .mi{width:68px;height:68px;border-radius:22px;display:grid;place-items:center;margin-bottom:10px}
+.mode.ai .mi{background:rgba(255,255,255,.18)}.mode.hand .mi{background:#FFF0C9}
+.mode.ai .orb{--sz:48px;background:rgba(255,255,255,.22);animation:none}
+.mode .mi svg.pen{width:42px;height:42px;overflow:visible}
+.mode b{font-family:"Baloo 2";font-size:28px;line-height:1}
+.mode small{font-size:15px;opacity:.9;max-width:22ch}
+.mode .tags{margin-top:auto;padding-top:12px;display:flex;gap:6px;flex-wrap:wrap}
+.mode .tags i{font-style:normal;background:rgba(255,255,255,.2);border-radius:99px;padding:3px 10px;font-size:12px;font-weight:800}
+.mode .arr{position:absolute;right:18px;bottom:18px;width:42px;height:42px;border-radius:14px;display:grid;place-items:center;font-size:20px;font-weight:800;background:rgba(255,255,255,.22);transition:transform .2s}
+.mode.hand .arr{background:var(--bg)}.mode:hover .arr{transform:translateX(4px)}
+.pen .pg{transform-origin:10px 38px;animation:penw 2.4s ease-in-out infinite}
+.pen .ln{stroke-dasharray:30;animation:penl 2.4s ease-in-out infinite}
+@keyframes penw{50%{transform:translate(8px,0) rotate(-5deg)}}
+@keyframes penl{0%{stroke-dashoffset:30}60%,100%{stroke-dashoffset:0}}
+.back-link{display:inline-flex;align-items:center;gap:6px;color:var(--blue);font-weight:800;font-size:15px;padding:6px 2px;margin-bottom:4px}
+.mc{position:relative}
+.mc .inf{position:absolute;top:12px;right:12px;width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,.26);color:#fff;font:italic 800 17px Georgia,serif;display:grid;place-items:center}
+.mc .inf:active{transform:scale(.9)}
+.mc>div b{padding-right:36px}
+.minfo{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.minfo span{background:var(--bg);border-radius:99px;padding:4px 12px;font-size:13px;font-weight:800;color:var(--muted)}
+.ax{max-width:720px;margin:0 auto}
+.axh{display:flex;align-items:center;gap:12px}
+.axh h1{font-size:32px;flex:1;background:linear-gradient(90deg,var(--blue),var(--violet) 60%,#FF7AB6);-webkit-background-clip:text;background-clip:text;color:transparent}
+.axq{font:800 13px "Baloo 2";background:var(--card);border:2px solid var(--line);border-radius:99px;padding:5px 12px;color:var(--muted)}
+.ax-drop{display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center;margin-top:16px;padding:28px 16px 22px;border-radius:30px;border:3px dashed #B4BFFF;background:linear-gradient(180deg,rgba(75,107,255,.06),rgba(138,99,245,.12));cursor:pointer;transition:transform .2s,border-color .2s}
+.ax-drop:hover,.ax-drop.over{border-color:var(--blue);transform:translateY(-2px)}
+.ax-drop.over{background:rgba(75,107,255,.14)}
+.ax-drop b{font:800 23px "Baloo 2";margin-top:8px}.ax-drop small{color:var(--muted);font-size:14px}
+.ax-drop.has{padding:16px;flex-direction:row;justify-content:center;gap:14px}.ax-drop.has .orb{--sz:44px}.ax-drop.has b{margin:0;font-size:18px}.ax-drop.has small,.ax-drop.has .ftypes{display:none}
+.ftypes{display:flex;gap:8px;margin-top:8px}
+.ft{font-style:normal;font-weight:800;font-size:12px;padding:4px 10px;border-radius:10px;color:#fff}
+.ft.pdf,.fi.pdf{background:#E5484D}.ft.doc,.fi.doc{background:#2F6BFF}.ft.ppt,.fi.ppt{background:#F2761A}
+.ax-files{display:grid;gap:8px;margin-top:12px}
+.axf{display:flex;align-items:center;gap:10px;background:var(--card);border:2px solid var(--line);border-radius:18px;padding:9px 10px;box-shadow:var(--shadow)}
+.axf .fi{flex:none;width:42px;height:42px;border-radius:13px;display:grid;place-items:center;color:#fff;font:800 12px "Baloo 2"}
+.axf div{flex:1;min-width:0}
+.axf b{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:14px}
+.axf small{color:var(--muted);font-size:12.5px}
+.axf.err{border-color:var(--coral)}.axf.err small{color:var(--coral)}
+.axf .x{flex:none;width:32px;height:32px;border-radius:10px;background:var(--bg);font-weight:800;color:var(--muted)}
+.axok{flex:none;width:26px;height:26px;border-radius:50%;background:var(--mint);color:#04382B;display:grid;place-items:center;font-weight:800;font-size:14px}
+.axspin{flex:none;width:22px;height:22px;border:3px solid var(--line);border-top-color:var(--blue);border-radius:50%;animation:aispin .8s linear infinite}
+.axs{margin-top:16px;background:var(--card);border-radius:24px;padding:16px;box-shadow:var(--shadow);display:grid;gap:16px}
+.axs .lab{display:block;margin:0 0 8px}
+.seg{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.seg button{display:flex;flex-direction:column;align-items:center;gap:2px;padding:10px 6px;border-radius:16px;border:2px solid var(--line);background:var(--bg);font-weight:800;font-size:13px;color:var(--muted);transition:transform .12s}
+.seg button span{font-size:24px}.seg button:active{transform:scale(.95)}
+.seg button[aria-pressed=true]{border-color:var(--blue);background:rgba(75,107,255,.1);color:var(--ink);box-shadow:0 3px 0 var(--blue)}
+.axm summary{cursor:pointer;font-weight:800;color:var(--blue);list-style:none;display:flex;align-items:center;gap:8px}
+.axm summary::-webkit-details-marker{display:none}
+.axm summary span{display:inline-grid;place-items:center;width:24px;height:24px;border-radius:8px;background:rgba(75,107,255,.12);transition:transform .2s}
+.axm[open] summary span{transform:rotate(45deg)}
+.axm .inp{margin-top:10px}
+.axb{width:100%;justify-content:center;margin-top:16px;font-size:20px;padding:15px 18px;position:relative;overflow:hidden;color:#fff;background:linear-gradient(120deg,#4B6BFF,#8A63F5 55%,#FF7AB6);box-shadow:0 5px 0 #4A3AB8}
+.axb:active{box-shadow:0 1px 0 #4A3AB8}
+.axb::after{content:"";position:absolute;top:0;bottom:0;width:60px;left:-80px;background:linear-gradient(100deg,transparent,rgba(255,255,255,.45),transparent);animation:shim 3s ease-in-out infinite}
+.axb[disabled]{opacity:.45;pointer-events:none}.axb[disabled]::after{display:none}
+@keyframes shim{0%{left:-80px}60%,100%{left:110%}}
+.ax-hint{text-align:center;color:var(--muted);font-size:13px;margin-top:8px}
+.ax-priv{margin-top:14px;font-size:13px;color:var(--muted)}
+.ax-priv summary{cursor:pointer;font-weight:800;list-style:none;text-align:center}.ax-priv summary::-webkit-details-marker{display:none}
+.ax-priv p{margin-top:8px;background:var(--card);border-radius:16px;padding:12px 14px;line-height:1.45}
+.ax-status{display:none;margin-top:12px;padding:12px 14px;border-radius:16px;background:var(--card);color:var(--muted);font-size:14px;box-shadow:var(--shadow)}
+.ax-status.on{display:block}.ax-status.error{color:#D8402F;background:rgba(255,111,97,.12)}
+.axw{margin-top:18px;border-radius:30px;padding:36px 18px 26px;text-align:center;background:var(--card);box-shadow:var(--shadow)}
+.axw[hidden],#ax-form[hidden],#ax-editor[hidden],#ax-saved-s[hidden],.axq[hidden],.ax-hint[hidden]{display:none}
+.axw .orb{margin:0 auto}
+.axw b{display:block;margin-top:22px;font:800 22px "Baloo 2";min-height:30px}
+.axsteps{display:flex;gap:6px;justify-content:center;margin:12px 0 20px}
+.axsteps i{width:30px;height:6px;border-radius:9px;background:var(--line);transition:background .3s}.axsteps i.on{background:var(--blue)}
+.axe{margin-top:16px;padding-bottom:20px}
+.axe-top{display:flex;align-items:center;gap:12px;background:var(--card);padding:14px;border-radius:22px;box-shadow:var(--shadow)}
+.axe-top b{display:block;font:800 20px "Baloo 2"}.axe-top small{color:var(--muted);font-size:13px}
+.axtip{display:flex;align-items:center;gap:8px;color:var(--muted);font-size:13px;margin:14px 2px 0}
+.ltr{flex:none;width:34px;height:34px;border-radius:11px;background:var(--card);border:2px solid var(--line);font:800 15px "Baloo 2";color:var(--muted);display:inline-grid;place-items:center}
+.ltr.ok{background:var(--mint);border-color:var(--mint);color:#04382B;width:26px;height:26px;font-size:13px;border-radius:9px}
+.aiq{background:var(--card);border-radius:24px;padding:14px;margin-top:12px;box-shadow:var(--shadow);border:2px solid transparent}
+.aiq.bad{border-color:var(--coral)}
+.aiq-h{display:flex;gap:10px;align-items:flex-start}
+.aiq .num{flex:none;width:32px;height:32px;border-radius:11px;background:var(--blue);color:#fff;display:grid;place-items:center;font:800 15px "Baloo 2";margin-top:2px}
+.aiq-t{flex:1;min-width:0;resize:none;border:0;background:transparent;font:inherit;font-weight:800;font-size:16px;line-height:1.35;color:var(--ink);padding:5px 0;overflow:hidden}
+.aiq-t:focus{outline:none}
+.ibtn{flex:none;width:36px;height:36px;border-radius:12px;background:var(--bg);display:grid;place-items:center;font-size:16px;transition:transform .12s}.ibtn:active{transform:scale(.9)}
+.ibtn.pl{background:var(--mint);color:#04382B;font-size:14px}
+.aiq-o{display:grid;gap:8px;margin-top:12px}
+.aiq-op{display:flex;align-items:center;gap:8px;border:2px solid var(--line);border-radius:16px;padding:4px 10px 4px 4px;background:var(--bg);transition:border-color .15s,background .15s}
+.aiq-op.ok{border-color:var(--mint);background:rgba(39,201,154,.12)}
+.aiq-op .ltr{background:var(--card)}.aiq-op.ok .ltr{background:var(--mint);border-color:var(--mint);color:#04382B}
+.aiq-op input{flex:1;min-width:0;border:0;background:transparent;font:inherit;font-weight:700;color:var(--ink);padding:8px 2px}
+.aiq-op input:focus{outline:none}
+.aiq-ev{margin-top:10px;font-size:13px}.aiq-ev summary{cursor:pointer;color:var(--muted);font-weight:800}
+.aiq-ev p{margin-top:6px;color:var(--muted);border-left:3px solid var(--mint);padding-left:10px;line-height:1.45}
+.aibar{position:sticky;bottom:calc(96px + env(safe-area-inset-bottom,0px));z-index:6;display:flex;gap:10px;margin-top:16px;padding:10px;border-radius:22px;background:var(--card);border:2px solid var(--line);box-shadow:0 10px 30px rgba(27,33,80,.2)}
+.aibar .go,.aibar .cta{flex:1;justify-content:center;text-align:center}.aibar .cta{font-size:17px;padding:11px}
+@media(min-width:900px){.aibar{bottom:16px}}
+.ax-saved{display:grid;gap:10px}
+.axr{display:flex;align-items:center;gap:10px;background:var(--card);padding:10px 12px;border-radius:20px;box-shadow:var(--shadow)}
+.axr>div{flex:1;min-width:0}.axr b{display:block;overflow-wrap:anywhere;line-height:1.2}.axr small{color:var(--muted);font-size:13px}
+.axr .tile{width:44px;height:44px}
+.cf{position:fixed;top:0;left:0;width:9px;height:14px;border-radius:2px;z-index:99;pointer-events:none;will-change:transform,opacity}
+@keyframes aispin{to{transform:rotate(360deg)}}
 </style>
 </head>
 <body>
@@ -484,14 +615,9 @@ body.typing nav{display:flex}
 
   <section class="hero">
     <span class="art" aria-hidden="true">🚀</span>
-    <h1>Yangi dars yaratamiz</h1>
-    <p>Mavzu va metodni tanlang, savollarni kiriting — dars tayyor.</p>
-    <button class="cta" data-go="ai-test">✨ AI test yaratish</button>
-    <button class="cta" data-go="yaratish">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
-      Dars yaratish
-    </button>
-    <div class="steps"><span>Mavzu</span><span>Metod</span><span>Savollar</span><span>Boshlash</span></div>
+    <h1>Yangi test yarating</h1>
+    <p>AI yordamida yoki o’zingiz yozib.</p>
+    <div class="hero-acts"><button class="cta" data-go="ai-test"><span class="orb xs" aria-hidden="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path class="s1" d="M11 3l1.9 5.1L18 10l-5.1 1.9L11 17l-1.9-5.1L4 10l5.1-1.9z"/><path class="s2" d="M19 14l.9 2.1L22 17l-2.1.9L19 20l-.9-2.1L16 17l2.1-.9z"/><path class="s3" d="M5 17l.6 1.4L7 19l-1.4.6L5 21l-.6-1.4L3 19l1.4-.6z"/></svg></span>AI bilan</button><button class="cta ghost" data-manual>✍️ Qo’lda</button></div>
   </section>
 
   <section class="join" aria-label="Kod bilan kirish"><span class="key" aria-hidden="true">🔑</span><input class="inp code" id="code" inputmode="numeric" maxlength="6" autocomplete="off" placeholder="Dars kodi" aria-label="Dars kodi, 6 raqam"><button class="go" id="join" disabled>Kirish</button><p class="jerr" id="jerr" role="alert">Bunday kod topilmadi — tekshirib, qayta kiriting.</p></section>
@@ -505,9 +631,7 @@ body.typing nav{display:flex}
   <div class="lq-t">
     <span class="lq-pill"><i></i>JONLI VIKTORINA</span>
     <h2>Sinf bir vaqtda o’ynaydi</h2>
-    <p class="lq-d">O’qituvchi savol beradi, o’quvchilar telefondan kod bilan qo’shilib, tezlikka javob beradi. Reyting har soniya yangilanadi.</p>
-    <ul><li>6 xonali kod bilan bir zumda qo’shilish</li><li>Har savolga taymer: tezroq javob, ko’proq ball</li><li>Jonli reyting va yakunda g’oliblar podiumi</li></ul>
-    <div class="lq-acts"><button class="cta" data-lqjoin>Kod bilan qo’shilish</button><button class="lq-ghost" data-go="yaratish">Viktorina yaratish</button></div>
+    <div class="lq-acts"><button class="cta" data-lqjoin>Kod bilan qo’shilish</button><button class="lq-ghost" data-manual>Viktorina yaratish</button></div>
   </div>
   <div class="lq-s" aria-hidden="true">
     <span class="lq-e" style="left:-6px;top:-14px">🎉</span><span class="lq-e" style="right:-4px;top:-18px;animation-delay:-1.6s">🏆</span><span class="lq-e" style="right:6px;bottom:-20px;animation-delay:-3s">⭐</span>
@@ -537,9 +661,7 @@ body.typing nav{display:flex}
   <div class="lq-t">
     <span class="lq-pill"><i></i>JONLI VIKTORINA</span>
     <h2>Sinf bir vaqtda o’ynaydi</h2>
-    <p class="lq-d">O’qituvchi savol beradi, o’quvchilar telefondan kod bilan qo’shilib, tezlikka javob beradi. Reyting har soniya yangilanadi.</p>
-    <ul><li>6 xonali kod bilan bir zumda qo’shilish</li><li>Har savolga taymer: tezroq javob, ko’proq ball</li><li>Jonli reyting va yakunda g’oliblar podiumi</li></ul>
-    <div class="lq-acts"><button class="cta" data-lqjoin>Kod bilan qo’shilish</button><button class="lq-ghost" data-go="yaratish">Viktorina yaratish</button></div>
+    <div class="lq-acts"><button class="cta" data-lqjoin>Kod bilan qo’shilish</button><button class="lq-ghost" data-manual>Viktorina yaratish</button></div>
   </div>
   <div class="lq-s" aria-hidden="true">
     <span class="lq-e" style="left:-6px;top:-14px">🎉</span><span class="lq-e" style="right:-4px;top:-18px;animation-delay:-1.6s">🏆</span><span class="lq-e" style="right:6px;bottom:-20px;animation-delay:-3s">⭐</span>
@@ -556,8 +678,15 @@ body.typing nav{display:flex}
 </section>
 
 <section class="page" id="p-yaratish">
-  <div class="ph"><button class="icon-btn sbx" data-search aria-label="Qidirish" title="Qidirish"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg></button><h1>Yangi dars</h1><p>To’rt qadamda tayyor.</p></div>
-  <div class="card"><h2>Testni qanday tuzasiz?</h2><p>Darslik faylini yuklab AI’dan savollar tayyorlating yoki pastdagi qo’lda yaratish shaklidan foydalaning.</p><button class="cta" type="button" data-go="ai-test">✨ AI test yaratish</button></div>
+  <div id="cmode">
+  <div class="ph"><button class="icon-btn sbx" data-search aria-label="Qidirish" title="Qidirish"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg></button><h1>Yaratish</h1><p>Qaysi usul qulay?</p></div>
+  <div class="modes">
+    <button class="mode ai" data-go="ai-test" type="button"><span class="mi"><span class="orb " aria-hidden="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path class="s1" d="M11 3l1.9 5.1L18 10l-5.1 1.9L11 17l-1.9-5.1L4 10l5.1-1.9z"/><path class="s2" d="M19 14l.9 2.1L22 17l-2.1.9L19 20l-.9-2.1L16 17l2.1-.9z"/><path class="s3" d="M5 17l.6 1.4L7 19l-1.4.6L5 21l-.6-1.4L3 19l1.4-.6z"/></svg></span></span><b>AI bilan</b><small>Fayl yuklang, test tayyor</small><span class="tags"><i>PDF</i><i>Word</i><i>PowerPoint</i></span><span class="arr" aria-hidden="true">→</span></button>
+    <button class="mode hand" data-manual type="button"><span class="mi"><svg class="pen" viewBox="0 0 48 48" aria-hidden="true"><path class="ln" d="M8 42h32" stroke="#E8A400" stroke-width="3" stroke-linecap="round" fill="none"/><g class="pg"><path d="M30 6l8 8-18 18-10 2 2-10z" fill="#FFC53D" stroke="#B87A00" stroke-width="2" stroke-linejoin="round"/></g></svg></span><b>Qo’lda</b><small>Savollarni o’zingiz yozing</small><span class="arr" aria-hidden="true">→</span></button>
+  </div>
+  </div>
+  <div id="cwiz">
+  <div class="ph"><button class="back-link" data-hub type="button">‹ Usul tanlash</button><h1>Yangi dars</h1><p>To’rt qadamda tayyor.</p></div>
   <div class="stp" aria-hidden="true"><i class="on"></i><i></i><i></i><i></i></div>
   <div class="guide"><span class="gm" id="gm"></span><p id="gt"></p></div>
   <div class="card">
@@ -568,29 +697,34 @@ body.typing nav{display:flex}
     <div class="pane"><h2>2. Metodni tanlang</h2><p>Dars qaysi o’yin shaklida o’tadi?</p><div id="opts"></div>
       <div class="wrow"><button class="go alt" data-back>Orqaga</button><button class="go" id="n2">Davom etish</button></div></div>
     <div class="pane"><h2 id="h3"></h2><p id="h3p"></p><div id="ed"></div>
-      <button class="adq" id="adq"></button><p class="edh" id="edh"></p><p class="dnote">Darslikdan avtomatik savol tayyorlash tez orada qo’shiladi.</p>
+      <button class="adq" id="adq"></button><p class="edh" id="edh"></p>
       <div class="wrow"><button class="go alt" data-back>Orqaga</button><button class="go" id="n3" disabled>Davom etish</button></div></div>
     <div class="pane"><h2>4. Tekshiring va boshlang</h2><p>Hammasi to’g’rimi?</p>
       <div class="sum"><div><span>Mavzu</span><b id="s-t"></b></div><div><span>Kim uchun</span><b id="s-c"></b></div><div><span>Metod</span><b id="s-m"></b></div><div><span>Savollar</span><b id="s-q"></b></div></div>
       <div class="wrow"><button class="go alt" data-back>Orqaga</button><button class="cta" id="mk">Darsni yaratish</button></div></div>
   </div>
+</div>
 </section>
 
-<section class="page" id="p-ai-test"><div class="ai-shell">
-  <div class="ai-head"><button class="icon-btn" id="ai-back" aria-label="Orqaga">←</button><div class="ph"><h1>AI test yaratish</h1><p>Darslikdan mavzuga mos, dalilli savollar tuzing va xohlaganingizcha tahrirlang.</p></div></div>
-  <div class="ai-banner"><h2>📚 Darslik asosida, ishonch bilan</h2><p>AI muhim tushunchalar, atamalar, tasniflar va aniq faktlardan savollar tayyorlaydi. Har bir savolga manbadan dalil biriktiriladi.</p><div class="ai-private">🔒 Fayl qurilmangizda o’qiladi va faylning o’zi yuborilmaydi yoki saqlanmaydi. Ajratilgan matn test tuzish uchun Google Gemini API’ga yuboriladi; Gemini bepul darajasida so’rov matnidan xizmatni yaxshilash uchun foydalanishi mumkin.</div></div>
-  <div class="card"><h2>Material va talablar</h2><p>PDF, DOCX, eski DOC yoki PPTX yuklang. Eng katta fayl: 3 MB.</p>
-    <input id="ai-file" type="file" accept=".pdf,.doc,.docx,.ppt,.pptx,application/pdf,application/msword,application/vnd.ms-powerpoint,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.openxmlformats-officedocument.presentationml.presentation" hidden>
-    <label class="ai-drop" id="ai-drop" for="ai-file"><span><strong>⬆️ Faylni tanlang yoki shu yerga tashlang</strong><br><small>PDF · DOC · DOCX · PPT · PPTX</small><br><b class="ai-file" id="ai-filename">Hozircha fayl tanlanmadi</b></span></label>
-    <div class="ai-grid two"><label><span class="lab">Mavzu <small>(bo’sh qoldirsangiz AI aniqlaydi)</small></span><input id="ai-topic" class="inp" maxlength="180" placeholder="Masalan: Hujayraning tuzilishi"></label>
-    <label><span class="lab">Savollar soni</span><select id="ai-count" class="inp"><option value="5">5 ta</option><option value="10" selected>10 ta</option><option value="15">15 ta</option><option value="20">20 ta</option></select></label></div>
-    <div class="ai-grid two"><label><span class="lab">Qiyinlik darajasi</span><select id="ai-level" class="inp"><option value="oson">Sodda</option><option value="o’rtacha" selected>O’rtacha</option><option value="murakkab">Murakkab</option><option value="aralash">Aralash</option></select></label>
-    <label><span class="lab">Qo’shimcha istak <small>(ixtiyoriy)</small></span><input id="ai-request" class="inp" maxlength="1200" placeholder="Masalan: atamalar va tasniflarga urg’u bering"></label></div>
-    <div class="ai-actions"><button id="ai-generate" class="cta" type="button">✨ Test tayyorlash</button></div>
-    <p class="ai-note">AI ham xato qilishi mumkin. Saqlashdan oldin savollar va belgilangan javoblarni tekshirib chiqing.</p><div id="ai-status" class="ai-status" role="status"></div>
+<section class="page" id="p-ai-test"><div class="ax">
+  <div class="axh"><button class="icon-btn" id="ai-back" aria-label="Orqaga">←</button><h1>AI test</h1><span class="axq" id="ax-quota" hidden></span></div>
+  <div id="ax-status" class="ax-status" role="status"></div>
+  <div id="ax-form">
+    <input id="ax-file" type="file" multiple hidden accept=".pdf,.doc,.docx,.ppt,.pptx,application/pdf,application/msword,application/vnd.ms-powerpoint,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.openxmlformats-officedocument.presentationml.presentation">
+    <label class="ax-drop" id="ax-drop" for="ax-file"><span class="orb lg" aria-hidden="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path class="s1" d="M11 3l1.9 5.1L18 10l-5.1 1.9L11 17l-1.9-5.1L4 10l5.1-1.9z"/><path class="s2" d="M19 14l.9 2.1L22 17l-2.1.9L19 20l-.9-2.1L16 17l2.1-.9z"/><path class="s3" d="M5 17l.6 1.4L7 19l-1.4.6L5 21l-.6-1.4L3 19l1.4-.6z"/></svg></span><b>Fayl tashlang</b><small>yoki bosib tanlang · 3 MB gacha</small><span class="ftypes"><i class="ft pdf">PDF</i><i class="ft doc">Word</i><i class="ft ppt">PowerPoint</i></span></label>
+    <div class="ax-files" id="ax-files"></div>
+    <div class="axs">
+      <div><span class="lab">Nechta savol?</span><div class="pills" id="ax-cnt"><button class="pill" data-n="5" aria-pressed="false">5</button><button class="pill" data-n="10" aria-pressed="true">10</button><button class="pill" data-n="15" aria-pressed="false">15</button><button class="pill" data-n="20" aria-pressed="false">20</button></div></div>
+      <div><span class="lab">Qiyinlik</span><div class="seg" id="ax-lv"><button type="button" data-l="oson" aria-pressed="false"><span>🌱</span>Sodda</button><button type="button" data-l="o’rtacha" aria-pressed="true"><span>⚖️</span>O’rtacha</button><button type="button" data-l="murakkab" aria-pressed="false"><span>🔥</span>Murakkab</button></div></div>
+      <details class="axm"><summary><span>+</span>Mavzu va istak</summary><input class="inp" id="ax-topic" maxlength="180" placeholder="Mavzu (bo’sh qoldirsangiz AI aniqlaydi)" aria-label="Mavzu"><input class="inp" id="ax-req" maxlength="1200" placeholder="Istak: masalan, atamalarga urg’u bering" aria-label="Istak"></details>
+    </div>
+    <button class="cta axb" id="ax-go" type="button" disabled><span class="orb xs" aria-hidden="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path class="s1" d="M11 3l1.9 5.1L18 10l-5.1 1.9L11 17l-1.9-5.1L4 10l5.1-1.9z"/><path class="s2" d="M19 14l.9 2.1L22 17l-2.1.9L19 20l-.9-2.1L16 17l2.1-.9z"/><path class="s3" d="M5 17l.6 1.4L7 19l-1.4.6L5 21l-.6-1.4L3 19l1.4-.6z"/></svg></span><span class="lb">Test tuzish</span></button>
+    <p class="ax-hint" id="ax-hint">Avval fayl tanlang</p>
+    <details class="ax-priv"><summary><span>🔒</span> Faylingizning o’zi saqlanmaydi</summary><p>Fayl qurilmangizda o’qiladi. Faqat undan olingan matn test tuzish uchun Google AI’ga yuboriladi. Bepul rejimda Google bu matndan xizmatni yaxshilash uchun foydalanishi mumkin.</p></details>
   </div>
-  <div id="ai-editor" class="card" hidden></div>
-  <section class="sec"><div class="sh"><h2>Saqlangan testlar</h2></div><div class="ai-saved" id="ai-saved"></div></section>
+  <div class="axw" id="ax-wait" hidden><span class="orb xl" aria-hidden="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path class="s1" d="M11 3l1.9 5.1L18 10l-5.1 1.9L11 17l-1.9-5.1L4 10l5.1-1.9z"/><path class="s2" d="M19 14l.9 2.1L22 17l-2.1.9L19 20l-.9-2.1L16 17l2.1-.9z"/><path class="s3" d="M5 17l.6 1.4L7 19l-1.4.6L5 21l-.6-1.4L3 19l1.4-.6z"/></svg></span><b id="ax-wm">Fayl o’qilmoqda…</b><div class="axsteps" id="ax-wd"><i></i><i></i><i></i><i></i></div><button class="go alt" id="ax-cancel" type="button">Bekor qilish</button></div>
+  <div class="axe" id="ax-editor" hidden></div>
+  <section class="sec" id="ax-saved-s" hidden><div class="sh"><h2>Saqlangan testlar</h2></div><div class="ax-saved" id="ax-saved"></div></section>
 </div></section>
 <section class="page" id="p-kutubxona">
   <div class="ph"><button class="icon-btn sbx" data-search aria-label="Qidirish" title="Qidirish"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg></button><h1>Kutubxona</h1><p>Tayyor darslar — tanlang va bir bosishda ishlating.</p></div>
@@ -720,6 +854,9 @@ Object.assign(window.RX,{'Yangi daraja':'Новый уровень','Avval mavzu
 
 <script>window.EN={"Xush kelibsiz": "Welcome", "Salom,": "Hi,", "Daraja:": "Level:", "Ustoz": "Mentor", "Yangi dars yaratamiz": "Let's create a new lesson", "Mavzu va metodni tanlang, savollarni kiriting — dars tayyor.": "Pick a topic and a method, add questions — your lesson is ready.", "Dars yaratish": "Create lesson", "Mavzu": "Topic", "Metod": "Method", "Boshlash": "Start", "Hammasi": "All", "Barchasi": "All", "Batafsil": "Details", "Viktorina": "Quiz", "Xotira o’yini": "Memory game", "Jamoaviy jang": "Team battle", "Krossvord": "Crossword", "Kim millioner": "Millionaire", "Jamoa bilan": "With a team", "Juftlarni top": "Find the pairs", "Yordam bilan": "With lifelines", "Oxirgi natijalar": "Recent results", "Bosh": "Home", "Kutubxona": "Library", "Yaratish": "Create", "Profil": "Profile", "Bildirishnomalar": "Notifications", "Daraja": "Level", "Haftalik natijalar": "Weekly results", "Asosiy navigatsiya": "Main navigation", "Ketma-ket kunlar": "Day streak", "Tilni almashtirish": "Change language", "Rejimni almashtirish": "Switch theme", "Yangi bildirishnoma yo’q": "No new notifications", "Viktorina tanlandi": "Quiz selected", "Jamoaviy jang tanlandi": "Team battle selected", "Xotira o’yini tanlandi": "Memory game selected", "Krossvord tanlandi": "Crossword selected", "Kim millioner tanlandi": "Millionaire selected", "JONLI VIKTORINA": "LIVE QUIZ", "JONLI": "LIVE", "Sinf bir vaqtda o’ynaydi": "The whole class plays together", "O’qituvchi savol beradi, o’quvchilar telefondan kod bilan qo’shilib, tezlikka javob beradi. Reyting har soniya yangilanadi.": "The teacher asks, students join from their phones with a code and answer against the clock. The ranking updates every second.", "6 xonali kod bilan bir zumda qo’shilish": "Join in seconds with a 6-digit code", "Har savolga taymer: tezroq javob, ko’proq ball": "A timer on every question: faster answer, more points", "Jonli reyting va yakunda g’oliblar podiumi": "Live ranking and a winners’ podium at the end", "Kod bilan qo’shilish": "Join with a code", "Viktorina yaratish": "Create a quiz", "Jonli viktorina": "Live quiz", "Butun sinf bilan": "With the whole class", "Eng katta sayyora qaysi?": "Which planet is the biggest?", "Mars": "Mars", "Yupiter": "Jupiter", "Venera": "Venus", "Yer": "Earth", "Butun sinf bir vaqtda o’ynaydi, reyting jonli yangilanadi.": "The whole class plays at once, the ranking updates live.", "10–20 daq": "10–20 min", "Jonli viktorina tanlandi": "Live quiz selected", "Qidirish": "Search", "Natijalar": "Results", "Yopish": "Close", "Turi": "Type", "Kirish": "Join", "Bunday kod topilmadi — tekshirib, qayta kiriting.": "Code not found — check it and try again.", "Mohir": "Skilled", "Oxirgi darslarim": "My recent lessons", "Foydalanish turi": "Usage type", "Umumiy": "General", "O’qituvchi": "Teacher", "Talaba": "Student", "Kim uchun": "Who is it for", "Guruh": "Group", "Dars yaratuvchi": "Lesson creator", "Metodlar": "Methods", "Dars metodlari": "Lesson methods", "Mavzuga mos o’yinni tanlang — dars shu usulda o’tadi.": "Pick a game that fits the topic — the lesson will run that way.", "Yakka": "Solo", "Jamoa": "Team", "Tanlash": "Choose", "Yangi dars": "New lesson", "To’rt qadamda tayyor.": "Ready in four steps.", "Davom etish": "Continue", "Orqaga": "Back", "Sinf": "Class", "4. Tekshiring va boshlang": "4. Review and start", "Hammasi to’g’rimi?": "Is everything correct?", "Darsni yaratish": "Create the lesson", "Tayyor darslar — tanlang va bir bosishda ishlating.": "Ready lessons — pick one and use it in a click.", "Natijalarim": "My results", "Yaratilgan darslar": "Lessons created", "Nishonlar": "Badges", "Sozlamalar": "Settings", "Til": "Language", "Qorong’i rejim": "Dark mode", "Chiqish": "Log out", "Birinchi dars": "First lesson", "Savollar": "Questions", "Statistika": "Statistics", "Hali dars yo’q": "No lessons yet", "Birinchi darsingizni yarating yoki tayyor darslardan boshlang.": "Create your first lesson or start with a ready one.", "Tayyor darslar": "Ready lessons", "Mening darslarim": "My lessons", "O’ynash": "Play", "Natijalar o’ynagandan keyin shu yerda chiqadi.": "Results will appear here after you play.", "Tez orada": "Coming soon", "Tez orada — hozircha tayyorlanmoqda": "Coming soon — still in the works", "Savol": "Question", "Javob": "Answer", "Savol matni": "Question text", "O’chirish": "Delete", "Savol qo’shish": "Add question", "Juft qo’shish": "Add pair", "Juft": "Pair", "Atama": "Term", "Ta’rif": "Definition", "To’ldirilgan": "Filled in", "kamida": "at least", "savol": "questions", "juft": "pairs", "1. Mavzu": "1. Topic", "Dars qaysi mavzuda bo’ladi?": "What is the lesson about?", "2. Metodni tanlang": "2. Choose a method", "3. Savollarni kiriting": "3. Enter the questions", "3. Juftliklarni kiriting": "3. Enter the pairs", "Har savolga 2–4 ta javob yozing va to’g’risini belgilang.": "Write 2–4 answers for each question and mark the correct one.", "Atama va uning ta’rifini yozing — o’yinda shular juftlanadi.": "Write a term and its definition — they become the pairs in the game.", "Darslikdan avtomatik savol tayyorlash tez orada qo’shiladi.": "Automatic questions from a textbook are coming soon.", "Natija": "Result", "Qayta o’ynash": "Play again", "Keyingisi": "Next", "Natijani ko’rish": "See result", "To’g’ri!": "Correct!", "Noto’g’ri": "Wrong", "Vaqt tugadi": "Time’s up", "Yutuqni olish": "Take the money", "Yutuq": "Winnings", "ball": "points", "Ball": "Score", "Durang": "Draw", "g’olib!": "wins!", "Nechta jamoa o’ynaydi?": "How many teams are playing?", "Savollarga jamoalar navbat bilan javob beradi. Bitta qurilmada o’ynang.": "Teams answer in turn. Play on a single device.", "Qizil jamoa": "Red team", "Ko’k jamoa": "Blue team", "Yashil jamoa": "Green team", "urinish": "attempts", "soniya": "seconds", "bugun": "today", "kecha": "yesterday", "kun oldin": "days ago", "Kod": "Code", "Kod hozircha shu qurilmada ishlaydi.": "The code works on this device only for now.", "Kodni nusxalash": "Copy code", "Kod nusxalandi": "Code copied", "Darslarimga qo’shish": "Add to my lessons", "Darslarimga qo’shildi": "Added to my lessons", "Dars o’chirilsinmi?": "Delete this lesson?", "Dars o’chirildi": "Lesson deleted", "Profilni tahrirlash": "Edit profile", "Ism": "Name", "Avatar": "Avatar", "Rang": "Color", "Saqlash": "Save", "Bekor qilish": "Cancel", "Profil saqlandi": "Profile saved", "Ismingizni kiriting": "Enter your name", "Birinchi o’yin": "First game", "3 kunlik seriya": "3-day streak", "100% natija": "100% result", "5 ta dars": "5 lessons", "20 ta o’yin": "20 games", "Ma’lumotlarni tozalash": "Clear data", "Barcha darslar va natijalar o’chiriladi. Davom etasizmi?": "All lessons and results will be deleted. Continue?", "Ma’lumotlar tozalandi": "Data cleared", "Yangi": "New", "Havaskor": "Amateur", "Usta": "Expert", "Profilingizda ko’rinadi.": "Shown on your profile.", "Tezkor savollar": "Quick questions", "O’yin": "Game", "Savollar soni": "Number of questions", "Yangi daraja": "New level", "Avval mavzuni yozing — qisqa va aniq bo’lsin.": "Start with the topic — keep it short and clear.", "Dars qanday o’yin bo’lishini tanlang.": "Choose what kind of game the lesson will be.", "Savollarni yozing va to’g’ri javobni belgilang.": "Write the questions and mark the right answer.", "Hammasi tayyor! Darsni yarating.": "All set! Create the lesson.", "Savollarga tez javob bering: tezroq javob — ko’proq ball.": "Answer quickly: the faster you answer, the more points you get.", "Jamoalar navbat bilan javob beradi va ball uchun bellashadi.": "Teams answer in turn and compete for points.", "Atama va ta’rifni juftlab, kartalarni ochib toping.": "Flip the cards and match each term with its definition.", "Savollar ketma-ket, xato qilsangiz o’yin tugaydi. 50:50 yordami bor.": "Questions in a row — one mistake ends the game. A 50:50 lifeline is available.", "Butun sinf telefonlardan bir vaqtda o’ynaydi, reyting jonli yangilanadi.": "The whole class plays on phones at once, the ranking updates live.", "Mavzu bo’yicha so’zlarni topib, katakchalarni to’ldiring.": "Find the words on the topic and fill in the grid.", "10–15 daq": "10–15 min", "20–25 daq": "20–25 min", "8–10 daq": "8–10 min", "15–20 daq": "15–20 min", "15 daq": "15 min", "tanlandi": "selected", "Hozircha hech narsa yo’q. Dars yaratsangiz yoki o’ynasangiz, shu yerda chiqadi.": "Nothing yet. When you create a lesson or play, it will show up here.", "Brauzer eslatmalari": "Browser reminders", "Yoqish": "Turn on", "O’chirib qo’yish": "Turn off", "Yoqilgan": "On", "O’chirilgan": "Off", "Seriyangiz uzilmasin — bugun bitta dars o’ynang!": "Keep your streak alive — play one lesson today!", "Ruxsat berilmadi — brauzer sozlamalaridan yoqing": "Permission denied — enable it in your browser settings", "Bu brauzer bildirishnomalarni qo’llamaydi": "This browser does not support notifications", "Eslatmalar yoqildi": "Reminders turned on", "Eslatmalar o’chirildi": "Reminders turned off", "Eslatma har kuni, sayt ochilganda chiqadi.": "The reminder appears once a day when you open the site.", "Dars yaratildi": "Lesson created", "Ro’yxatni tozalash": "Clear list", "Tozalash": "Clear", "Chiqishni xohlaysizmi?": "Log out?", "Hisobingizdan chiqasiz. Darslaringiz shu qurilmada saqlanib qoladi.": "You will be signed out. Your lessons stay saved on this device.", "Yorug’ rejim": "Light mode", "Dars yaratildi — kod:": "Lesson created — code:", "Dars kodi": "Lesson code", "Dars kodi, 6 raqam": "Lesson code, 6 digits", "Masalan: Kasrlar": "For example: Fractions", "Dars nomini qidiring": "Search lesson name", "Metod yoki dars nomi": "Method or lesson name", "Dars butunlay o’chiriladi.": "The lesson will be deleted permanently.", "O’rtacha natija": "Average result", "O’ynalgan": "Played", "Eng yuqori ball": "Best score", "O’rtacha ball": "Average score", "Matematika": "Mathematics", "Tabiat": "Nature", "Biologiya": "Biology", "Serverga saqlanmadi — faqat shu qurilmada": "Not saved to the server — only on this device", "Hech narsa topilmadi — boshqa so’z yozib ko’ring.": "Nothing found — try a different word.", "Kod bilan kirish": "Join with a code", "Dars qaysi o’yin shaklida o’tadi?": "Which game will the lesson be played as?", "Dars": "Lesson", "Darslar": "Lessons", "Yaratilgan": "Created", "Mavzular": "Topics", "Materiallar": "Materials"};window.RX=window.RX||{};Object.assign(window.RX,{"Savollarga tez javob bering: tezroq javob — ko’proq ball.": "Отвечайте быстро: чем быстрее ответ, тем больше баллов.", "Jamoalar navbat bilan javob beradi va ball uchun bellashadi.": "Команды отвечают по очереди и соревнуются за баллы.", "Atama va ta’rifni juftlab, kartalarni ochib toping.": "Открывайте карточки и находите пары: термин и определение.", "Savollar ketma-ket, xato qilsangiz o’yin tugaydi. 50:50 yordami bor.": "Вопросы подряд, ошибка — и игра окончена. Есть подсказка 50:50.", "Butun sinf telefonlardan bir vaqtda o’ynaydi, reyting jonli yangilanadi.": "Весь класс играет с телефонов одновременно, рейтинг обновляется вживую.", "Mavzu bo’yicha so’zlarni topib, katakchalarni to’ldiring.": "Находите слова по теме и заполняйте сетку.", "10–15 daq": "10–15 мин", "20–25 daq": "20–25 мин", "8–10 daq": "8–10 мин", "15–20 daq": "15–20 мин", "15 daq": "15 мин", "tanlandi": "выбрано", "Tezkor savollar": "Быстрые вопросы", "Dars yaratildi — kod:": "Урок создан — код:", "Hozircha hech narsa yo’q. Dars yaratsangiz yoki o’ynasangiz, shu yerda chiqadi.": "Пока пусто. Когда вы создадите урок или сыграете, здесь появятся записи.", "Brauzer eslatmalari": "Напоминания в браузере", "Yoqish": "Включить", "O’chirib qo’yish": "Выключить", "Yoqilgan": "Включено", "O’chirilgan": "Выключено", "Seriyangiz uzilmasin — bugun bitta dars o’ynang!": "Не прерывайте серию — сыграйте сегодня один урок!", "Ruxsat berilmadi — brauzer sozlamalaridan yoqing": "Доступ запрещён — включите в настройках браузера", "Bu brauzer bildirishnomalarni qo’llamaydi": "Этот браузер не поддерживает уведомления", "Eslatmalar yoqildi": "Напоминания включены", "Eslatmalar o’chirildi": "Напоминания выключены", "Eslatma har kuni, sayt ochilganda chiqadi.": "Напоминание появляется раз в день при открытии сайта.", "Dars yaratildi": "Урок создан", "Ro’yxatni tozalash": "Очистить список", "Tozalash": "Очистить", "Chiqishni xohlaysizmi?": "Выйти?", "Hisobingizdan chiqasiz. Darslaringiz shu qurilmada saqlanib qoladi.": "Вы выйдете из аккаунта. Уроки останутся на этом устройстве.", "Yorug’ rejim": "Светлый режим", "Dars kodi": "Код урока", "Dars kodi, 6 raqam": "Код урока, 6 цифр", "Masalan: Kasrlar": "Например: Дроби", "Dars nomini qidiring": "Найдите урок по названию", "Metod yoki dars nomi": "Метод или название урока", "Dars butunlay o’chiriladi.": "Урок будет удалён навсегда.", "Serverga saqlanmadi — faqat shu qurilmada": "Не сохранено на сервере — только на этом устройстве", "Hech narsa topilmadi — boshqa so’z yozib ko’ring.": "Ничего не найдено — попробуйте другое слово.", "Kod bilan kirish": "Вход по коду", "Dars qaysi o’yin shaklida o’tadi?": "В какой игре пройдёт урок?", "Dars": "Урок", "Darslar": "Уроки", "O’rtacha natija": "Средний результат", "O’ynalgan": "Сыграно", "Eng yuqori ball": "Лучший балл", "O’rtacha ball": "Средний балл", "Matematika": "Математика", "Tabiat": "Природа", "Biologiya": "Биология", "Umumiy": "Общие"});</script>
 <script>
+(function(){var RU={"Yangi test yarating": "Создайте новый тест", "AI yordamida yoki o’zingiz yozib.": "С помощью ИИ или вручную.", "AI bilan": "С ИИ", "✍️ Qo’lda": "✍️ Вручную", "Qo’lda": "Вручную", "Qaysi usul qulay?": "Какой способ удобнее?", "Fayl yuklang, test tayyor": "Загрузите файл — тест готов", "Savollarni o’zingiz yozing": "Напишите вопросы сами", "‹ Usul tanlash": "‹ Выбор способа", "Fayl tashlang": "Перетащите файл", "yoki bosib tanlang · 3 MB gacha": "или нажмите, чтобы выбрать · до 3 МБ", "Nechta savol?": "Сколько вопросов?", "Qiyinlik": "Сложность", "Sodda": "Простой", "O’rtacha": "Средний", "Murakkab": "Сложный", "Mavzu va istak": "Тема и пожелания", "Mavzu (bo’sh qoldirsangiz AI aniqlaydi)": "Тема (если пусто, ИИ определит сам)", "Istak: masalan, atamalarga urg’u bering": "Пожелание: например, упор на термины", "Avval fayl tanlang": "Сначала выберите файл", "Faylingizning o’zi saqlanmaydi": "Сам файл не сохраняется", "Fayl qurilmangizda o’qiladi. Faqat undan olingan matn test tuzish uchun Google AI’ga yuboriladi. Bepul rejimda Google bu matndan xizmatni yaxshilash uchun foydalanishi mumkin.": "Файл читается на вашем устройстве. Для составления теста в Google AI отправляется только извлечённый текст. В бесплатном режиме Google может использовать его для улучшения сервиса.", "Saqlangan testlar": "Сохранённые тесты", "AI test": "ИИ-тест", "Batafsil": "Подробнее", "Test tuzish": "Составить тест", "Fayl o’qilmoqda…": "Читаем файл…", "Muhim qismlar ajratilmoqda…": "Выделяем главное…", "Savollar yozilmoqda…": "Пишем вопросы…", "Javoblar tekshirilmoqda…": "Проверяем ответы…", "O’qilmoqda…": "Читается…", "belgi": "символов", "Aloqa xatosi. Internetni tekshirib, qayta urinib ko’ring.": "Ошибка связи. Проверьте интернет и повторите.", "Avval fayl tanlang.": "Сначала выберите файл.", "Bekor qilindi": "Отменено", "Belgilangan savolni tekshiring: matn, 4 ta turli javob va bitta to’g’ri javob kerak.": "Проверьте отмеченный вопрос: нужен текст, 4 разных ответа и один верный.", "Bu format qo’llanmaydi": "Этот формат не поддерживается", "Bugun yana": "Сегодня ещё", "ta": "шт.", "Chiqsangiz, tayyorlangan savollar yo’qoladi.": "Если выйдете, подготовленные вопросы пропадут.", "Ertaga qayta urinib ko’ring": "Попробуйте завтра", "Fayl 3 MB dan katta": "Файл больше 3 МБ", "Fayl parol bilan himoyalangan": "Файл защищён паролем", "Faylni o’qib bo’lmadi": "Не удалось прочитать файл", "Hisobingizga qayta kiring.": "Войдите в аккаунт заново.", "Javob": "Ответ", "Kamida 3 ta savol bo’lsin.": "Нужно минимум 3 вопроса.", "Ko’pi bilan 3 ta fayl": "Не более 3 файлов", "Manba": "Источник", "Matn qisqartirildi — faqat boshlang’ich qismi ishlatildi.": "Текст сокращён — использована только начальная часть.", "Matn topilmadi — skan qilingan bo’lishi mumkin": "Текст не найден — возможно, это скан", "O’yin turi": "Тип игры", "PDF 160 sahifadan oshmasligi kerak": "PDF не должен превышать 160 страниц", "Qayta urinish": "Повтор через", "soniya": "сек.", "Saqlanmagan test": "Несохранённый тест", "Savol matni": "Текст вопроса", "Tekshirib, kerak bo’lsa tahrirlang": "Проверьте и при необходимости отредактируйте", "Test butunlay o’chiriladi.": "Тест будет удалён полностью.", "Test nomi": "Название теста", "Test nomini kiriting.": "Введите название теста.", "Test o’chirilsinmi?": "Удалить тест?", "Test tuzishda xatolik yuz berdi.": "Ошибка при составлении теста.", "To’g’ri javob": "Верный ответ", "Yangi test": "Новый тест", "Yashil harf — to’g’ri javob. Boshqa harfni bosib o’zgartiring.": "Зелёная буква — верный ответ. Нажмите другую букву, чтобы изменить.", "savol": "вопросов", "savol kerak": "вопросов", "uchun kamida": "— минимум", "Test tayyor": "Тест готов", "Testni tahrirlash": "Редактирование теста", "Saqlash": "Сохранить", "O’ynash": "Играть", "Tahrirlash": "Редактировать", "O’chirish": "Удалить", "Chiqish": "Выйти", "Savol": "Вопрос"},EN={"Yangi test yarating": "Create a new test", "AI yordamida yoki o’zingiz yozib.": "With AI or write it yourself.", "AI bilan": "With AI", "✍️ Qo’lda": "✍️ Manual", "Qo’lda": "Manual", "Qaysi usul qulay?": "Which way suits you?", "Fayl yuklang, test tayyor": "Upload a file, get a test", "Savollarni o’zingiz yozing": "Write the questions yourself", "‹ Usul tanlash": "‹ Choose a way", "Fayl tashlang": "Drop a file", "yoki bosib tanlang · 3 MB gacha": "or tap to choose · up to 3 MB", "Nechta savol?": "How many questions?", "Qiyinlik": "Difficulty", "Sodda": "Easy", "O’rtacha": "Medium", "Murakkab": "Hard", "Mavzu va istak": "Topic and wishes", "Mavzu (bo’sh qoldirsangiz AI aniqlaydi)": "Topic (leave empty and AI will find it)", "Istak: masalan, atamalarga urg’u bering": "Wish: e.g. focus on terms", "Avval fayl tanlang": "Choose a file first", "Faylingizning o’zi saqlanmaydi": "Your file itself is not saved", "Fayl qurilmangizda o’qiladi. Faqat undan olingan matn test tuzish uchun Google AI’ga yuboriladi. Bepul rejimda Google bu matndan xizmatni yaxshilash uchun foydalanishi mumkin.": "The file is read on your device. Only the extracted text is sent to Google AI to build the test. On the free tier, Google may use it to improve its service.", "Saqlangan testlar": "Saved tests", "AI test": "AI test", "Batafsil": "Details", "Test tuzish": "Build test", "Fayl o’qilmoqda…": "Reading the file…", "Muhim qismlar ajratilmoqda…": "Picking the key parts…", "Savollar yozilmoqda…": "Writing questions…", "Javoblar tekshirilmoqda…": "Checking answers…", "O’qilmoqda…": "Reading…", "belgi": "characters", "Aloqa xatosi. Internetni tekshirib, qayta urinib ko’ring.": "Connection error. Check your internet and try again.", "Avval fayl tanlang.": "Choose a file first.", "Bekor qilindi": "Cancelled", "Belgilangan savolni tekshiring: matn, 4 ta turli javob va bitta to’g’ri javob kerak.": "Check the marked question: it needs text, 4 different answers and one correct.", "Bu format qo’llanmaydi": "This format is not supported", "Bugun yana": "Left today", "ta": "left", "Chiqsangiz, tayyorlangan savollar yo’qoladi.": "If you leave, the prepared questions will be lost.", "Ertaga qayta urinib ko’ring": "Try again tomorrow", "Fayl 3 MB dan katta": "File is larger than 3 MB", "Fayl parol bilan himoyalangan": "File is password protected", "Faylni o’qib bo’lmadi": "Could not read the file", "Hisobingizga qayta kiring.": "Please sign in again.", "Javob": "Answer", "Kamida 3 ta savol bo’lsin.": "At least 3 questions are needed.", "Ko’pi bilan 3 ta fayl": "Up to 3 files", "Manba": "Source", "Matn qisqartirildi — faqat boshlang’ich qismi ishlatildi.": "Text was shortened — only the beginning was used.", "Matn topilmadi — skan qilingan bo’lishi mumkin": "No text found — it may be a scan", "O’yin turi": "Game type", "PDF 160 sahifadan oshmasligi kerak": "PDF must not exceed 160 pages", "Qayta urinish": "Retry in", "soniya": "sec", "Saqlanmagan test": "Unsaved test", "Savol matni": "Question text", "Tekshirib, kerak bo’lsa tahrirlang": "Review and edit if needed", "Test butunlay o’chiriladi.": "The test will be deleted completely.", "Test nomi": "Test name", "Test nomini kiriting.": "Enter a test name.", "Test o’chirilsinmi?": "Delete the test?", "Test tuzishda xatolik yuz berdi.": "Something went wrong building the test.", "To’g’ri javob": "Correct answer", "Yangi test": "New test", "Yashil harf — to’g’ri javob. Boshqa harfni bosib o’zgartiring.": "Green letter is the correct answer. Tap another letter to change it.", "savol": "questions", "savol kerak": "questions needed", "uchun kamida": "needs at least", "Test tayyor": "Test ready", "Testni tahrirlash": "Edit test", "Saqlash": "Save", "O’ynash": "Play", "Tahrirlash": "Edit", "O’chirish": "Delete", "Chiqish": "Exit", "Savol": "Question"};[['RX',RU],['EN',EN]].forEach(function(p){var o=window[p[0]]=window[p[0]]||{};Object.keys(p[1]).forEach(function(k){if(!(k in o))o[k]=p[1][k]})})})();
+</script>
+<script>
 (function(){
 var R={'Xush kelibsiz':'Добро пожаловать','Salom,':'Привет,','Daraja:':'Уровень:','Ustoz':'Наставник','Yangi dars yaratamiz':'Создаём новый урок','Darslikni yuklang, mavzuni tanlang — qolganini InterDars tayyorlaydi.':'Загрузите учебник, выберите тему — остальное подготовит InterDars.','Dars yaratish':'Создать урок','Yuklash':'Загрузка','Mavzu':'Тема','Metod':'Метод','Boshlash':'Начать','Bugungi darslar':'Уроки на сегодня','Hammasi':'Все','Barchasi':'Все','Batafsil':'Подробнее','Kasrlar va ularning amallari':'Дроби и действия с ними','6-A sinf · 09:00':'6-А класс · 09:00','7-B sinf · 10:40':'7-Б класс · 10:40','8-A sinf · 13:20':'8-А класс · 13:20','Viktorina':'Викторина','O’zbekiston tabiati':'Природа Узбекистана','Xotira o’yini':'Игра на память','Fotosintez':'Фотосинтез','Jamoaviy jang':'Командный бой','Tahrirlash':'Изменить','Bu hafta':'На этой неделе','Sinflar':'Классы','O’tilgan darslar':'Проведено уроков','O’rtacha natija':'Средний результат','Davomat':'Посещаемость','Dars metodlari':'Методы уроков','Jonli reyting':'Живой рейтинг','Jamoa bilan':'Командой','Juftlarni top':'Найди пары','Krossvord':'Кроссворд','So’z topish':'Найди слова','Kim millioner':'Миллионер','Yordam bilan':'С подсказками','Oxirgi natijalar':'Последние результаты','6-A sinf, o’rtacha ball':'6-А класс, средний балл','▲ 6% o’tgan haftadan':'▲ 6% к прошлой неделе','Du':'Пн','Se':'Вт','Ch':'Ср','Pa':'Чт','Ju':'Пт','Bosh':'Главная','Kutubxona':'Библиотека','Yaratish':'Создать','Profil':'Профиль','Bildirishnomalar':'Уведомления','Daraja':'Уровень','Haftalik natijalar':'Результаты за неделю','Asosiy navigatsiya':'Главная навигация','Ketma-ket kunlar':'Дней подряд','Tilni almashtirish':'Сменить язык','Rejimni almashtirish':'Сменить тему','Yangi bildirishnoma yo’q':'Новых уведомлений нет','Yaratish bo’limi ochiladi':'Открывается раздел создания','Dars boshlandi — kod: 482193':'Урок начат — код: 4821','Dars boshlandi — kod: 730518':'Урок начат — код: 7305','Dars tahrirlash uchun ochildi':'Урок открыт для редактирования','Viktorina tanlandi':'Выбрана викторина','Jamoaviy jang tanlandi':'Выбран командный бой','Xotira o’yini tanlandi':'Выбрана игра на память','Krossvord tanlandi':'Выбран кроссворд','Kim millioner tanlandi':'Выбран «Миллионер»','Kutubxona bo’limi tayyorlanmoqda':'Раздел «Библиотека» в разработке','Sinflar bo’limi tayyorlanmoqda':'Раздел «Классы» в разработке','Yaratish bo’limi tayyorlanmoqda':'Раздел «Создать» в разработке','Profil bo’limi tayyorlanmoqda':'Раздел «Профиль» в разработке'};
 Object.assign(R,window.RX);var lang='uz',nodes=[],attrs=[],root=document.documentElement,mq=matchMedia('(prefers-color-scheme: dark)'),lb=document.getElementById('lang'),tb=document.getElementById('theme');
@@ -826,7 +963,8 @@ function badgesHTML(){var s=st(),n=D.lessons.length;
   return [['🚀','Birinchi dars',n>=1],['🎮','Birinchi o’yin',s.p>=1],['🔥','3 kunlik seriya',curStreak()>=3],['🏆','100% natija',s.b>=100],['🧩','5 ta dars',n>=5],['🌟','20 ta o’yin',s.p>=20]].map(function(b){return '<div class="bd'+(b[2]?'':' lock')+'"><span class="em" aria-hidden="true">'+b[0]+'</span><b>'+T(b[1])+'</b></div>'}).join('')}
 var mfv='all',lf='all';
 function mcar(){return MORD.map(function(k){var m=MT[k];return '<button class="m" style="background:linear-gradient(150deg,'+m.g+')" data-mk="'+k+'"><span class="e">'+m.e+'</span><span><b>'+T(m.n)+'</b><small>'+T(m.s)+'</small></span></button>'}).join('')}
-function mcards(){return MORD.map(function(k){var m=MT[k];return '<article class="mc'+(m.soon?' soon':'')+(mfv!=='all'&&m.k!==mfv?' hide':'')+'" data-k="'+m.k+'" style="background:linear-gradient(150deg,'+m.g+')"><span class="e" aria-hidden="true">'+m.e+'</span><div><b>'+T(m.n)+'</b><small>'+T(m.d)+'</small><div class="meta"><span>'+T(m.tm)+'</span><span>'+T(m.k==='solo'?'Yakka':'Jamoa')+'</span></div><button class="pick" data-mk="'+k+'">'+T(m.soon?'Tez orada':'Tanlash')+'</button></div></article>'}).join('')}
+function mcardsOld(){return MORD.map(function(k){var m=MT[k];return '<article class="mc'+(m.soon?' soon':'')+(mfv!=='all'&&m.k!==mfv?' hide':'')+'" data-k="'+m.k+'" style="background:linear-gradient(150deg,'+m.g+')"><span class="e" aria-hidden="true">'+m.e+'</span><div><b>'+T(m.n)+'</b><small>'+T(m.d)+'</small><div class="meta"><span>'+T(m.tm)+'</span><span>'+T(m.k==='solo'?'Yakka':'Jamoa')+'</span></div><button class="pick" data-mk="'+k+'">'+T(m.soon?'Tez orada':'Tanlash')+'</button></div></article>'}).join('')}
+function mcards(){return MORD.map(function(k){var m=MT[k];return '<article class="mc'+(m.soon?' soon':'')+(mfv!=='all'&&m.k!==mfv?' hide':'')+'" data-k="'+m.k+'" style="background:linear-gradient(150deg,'+m.g+')"><span class="e" aria-hidden="true">'+m.e+'</span><div><b>'+T(m.n)+'</b><small>'+T(m.s)+'</small><div class="meta"><span>'+T(m.tm)+'</span><span>'+T(m.k==='solo'?'Yakka':'Jamoa')+'</span></div><button class="pick" data-mk="'+k+'">'+T(m.soon?'Tez orada':'Tanlash')+'</button></div><button class="inf" data-inf="'+k+'" aria-label="'+T('Batafsil')+'" title="'+T('Batafsil')+'">i</button></article>'}).join('')}
 function renderLib(){var q=nz($('#q').value.trim());
   var list=(lf==='own'?D.lessons:lf==='ready'?READY:allL()).filter(function(l){return !q||nz(l.title+' '+(l.sub||'')+' '+MT[l.m].n).indexOf(q)>-1});
   $('#ll').innerHTML=list.map(lcard).join('');$('#le').style.display=list.length?'none':'block'}
@@ -843,7 +981,9 @@ function renderAll(){
 
 /* ===== navigatsiya ===== */
 var P=['bosh','metodlar','yaratish','ai-test','kutubxona','profil'],tabs=$$('.nv');
+var wizNext=false;function openWiz(){wizNext=true;go('yaratish')}
 function show(p){if(typeof p!=='string')p=location.hash.slice(1);if(P.indexOf(p)<0)p='bosh';
+  if(p==='yaratish'){$('#p-yaratish').classList.toggle('wiz',wizNext);wizNext=false}
   $$('.page').forEach(function(e){e.classList.toggle('on',e.id==='p-'+p)});
   tabs.forEach(function(b){if(b.dataset.tab===p&&!b.classList.contains('mk'))b.setAttribute('aria-current','page');else b.removeAttribute('aria-current')});
   window.scrollTo(0,0)}
@@ -918,10 +1058,11 @@ $('#sx').addEventListener('click',closeS);sq.addEventListener('input',renderS);s
 pills('#sf',function(b){sfv=b.dataset.f;renderS()});
 $('#sres').addEventListener('click',function(e){var b=e.target.closest('.sit');if(!b)return;closeS();
   if(b.dataset.t==='m')pickMethod(b.dataset.id);else openDetail(b.dataset.id)});
-function pickMethod(k){if(MT[k].soon){say('Tez orada — hozircha tayyorlanmoqda');return}setM(k);say(T(MT[k].n)+' — '+T('tanlandi'));go('yaratish')}
+function pickMethod(k){if(MT[k].soon){say('Tez orada — hozircha tayyorlanmoqda');return}closeDlg();setM(k);say(T(MT[k].n)+' — '+T('tanlandi'));openWiz()}
 
 /* ===== dars oynasi ===== */
 function closeDlg(){$('#dlg').hidden=true;syncOv()}
+function info(k){var m=MT[k];$('#dsh').innerHTML='<div class="dh"><div><h2>'+T(m.n)+'</h2></div><button class="icon-btn" data-dx aria-label="'+T('Yopish')+'">✕</button></div><div class="tile" style="background:'+m.bg+';margin-top:14px">'+m.e+'</div><p class="dnote" style="font-size:15px;margin-top:12px">'+T(m.d)+'</p><div class="minfo"><span>'+T(m.tm)+'</span><span>'+T(m.k==='solo'?'Yakka':'Jamoa')+'</span></div>'+(m.soon?'':'<div class="drow"><button class="cta" data-mk="'+k+'">'+T('Tanlash')+'</button></div>');$('#dlg').hidden=false;syncOv()}
 var ASK=null;
 function ask(title,text,ok,fn){ASK=fn;$('#dsh').innerHTML='<div class="dh"><div><h2>'+T(title)+'</h2></div><button class="icon-btn" data-dx aria-label="'+T('Yopish')+'">✕</button></div><p class="dnote" style="font-size:14px;margin-top:12px">'+T(text)+'</p><div class="drow"><button class="go alt" data-dx>'+T('Bekor qilish')+'</button><button class="cta" data-askok>'+T(ok)+'</button></div>';$('#dlg').hidden=false;syncOv()}
 function lsg(k){try{return localStorage.getItem(k)}catch(e){return null}}
@@ -1065,6 +1206,9 @@ $('#pl').addEventListener('click',function(e){var t=e.target,b;
 
 /* ===== umumiy bosish ===== */
 document.addEventListener('click',function(e){var t=e.target,b;
+  if(b=t.closest('[data-manual]')){openWiz();return}
+  if(b=t.closest('[data-hub]')){go('yaratish');return}
+  if(b=t.closest('[data-inf]')){info(b.dataset.inf);return}
   if(b=t.closest('[data-play]')){play(b.dataset.play);return}
   if(b=t.closest('.lesson[data-lid]')){openDetail(b.dataset.lid);return}
   if(b=t.closest('[data-mk]')){pickMethod(b.dataset.mk);return}
@@ -1094,9 +1238,12 @@ $$('.cnt').forEach(function(e){var n=+e.textContent||128;setInterval(function(){
 $$('.lq-sec').forEach(function(e){var s=10;setInterval(function(){s=s<=1?10:s-1;e.textContent=s},1000)});
 $$('[data-lqjoin]').forEach(function(b){b.addEventListener('click',function(){go('bosh');setTimeout(function(){code.scrollIntoView({behavior:'smooth',block:'center'});code.focus()},80)})});
 
-window.aiTestBridge={getLessons:function(){return D.lessons},saveLesson:function(l){var i=D.lessons.findIndex(function(x){return x.id===l.id});if(i<0)D.lessons.unshift(l);else D.lessons[i]=l;saveD();renderAll()},deleteLesson:function(id){D.lessons=D.lessons.filter(function(x){return x.id!==id});saveD();renderAll()},play:function(id){play(id)},detail:function(id){openDetail(id)},go:function(p){go(p)}};renderAll();show();bdot();
+window.aiTestBridge={getLessons:function(){return D.lessons},saveLesson:function(l){var i=D.lessons.findIndex(function(x){return x.id===l.id});if(i<0)D.lessons.unshift(l);else D.lessons[i]=l;saveD();renderAll()},deleteLesson:function(id){D.lessons=D.lessons.filter(function(x){return x.id!==id});saveD();renderAll()},play:function(id){play(id)},detail:function(id){openDetail(id)},go:function(p){go(p)},MT:MT,ask:ask};renderAll();show();bdot();
 try{if(remOn()){var td=dstr(new Date());if(lsg('idRemDay')!==td&&D.streak.last!==td&&curStreak()>0){lss('idRemDay',td);new Notification('InterDars',{body:T('Seriyangiz uzilmasin — bugun bitta dars o’ynang!')})}}}catch(e){}
 })();
+</script>
+<script>
+window.confetti=function(x,y,n){if(matchMedia('(prefers-reduced-motion: reduce)').matches||!document.body.animate)return;var C=['#4B6BFF','#8A63F5','#FF7AB6','#FFC53D','#27C99A','#FF6F61'];for(var i=0;i<(n||30);i++){var e=document.createElement('i');e.className='cf';e.style.background=C[i%6];document.body.appendChild(e);var a=Math.random()*Math.PI*2,v=120+Math.random()*220,dx=Math.cos(a)*v,dy=Math.sin(a)*v-140;e.animate([{transform:'translate('+x+'px,'+y+'px) rotate(0)',opacity:1},{transform:'translate('+(x+dx)+'px,'+(y+dy+260)+'px) rotate('+(Math.random()*720)+'deg)',opacity:0}],{duration:1100+Math.random()*600,easing:'cubic-bezier(.2,.7,.4,1)'}).onfinish=(function(el){return function(){el.remove()}})(e)}};
 </script>
 <script src="/ai-test.js"></script>
 </body>
