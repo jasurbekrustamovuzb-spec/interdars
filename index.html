@@ -196,7 +196,7 @@ footer{padding:26px 0 40px;color:var(--muted);font-size:14px;text-align:center}
     <div>
       <span class="lqeb">🚀 InterDars</span>
       <h1>Interaktiv darslar va <span class="hl">metodlar</span> bazasi</h1>
-      <p class="lead">Tayyor darslar, interaktiv metodlar va jonli viktorina — o’qituvchi uchun hammasi bir joyda.</p>
+      <p class="lead">Tayyor testlar, interaktiv mashqlar va jonli viktorina — barcha ishtirokchilar uchun bir joyda.</p>
       <div class="cta">
         <button class="gb xl" data-open><svg><use href="#g"/></svg>Google bilan davom etish</button>
         <a class="sc" href="#metodlar">Metodlarni ko’rish ↓</a>
@@ -229,8 +229,8 @@ footer{padding:26px 0 40px;color:var(--muted);font-size:14px;text-align:center}
 <section id="jonli" style="padding-top:0"><div class="w"><div class="lqb rv">
   <div class="lq-t">
     <span class="lq-pill"><i></i>JONLI VIKTORINA</span>
-    <h2>Sinf bir vaqtda javob beradi</h2>
-    <p class="lq-d">O’qituvchi savol beradi, o’quvchilar telefondan kod bilan qo’shilib, tezlikka javob beradi. Reyting har soniya yangilanadi.</p>
+    <h2>Ishtirokchilar bir vaqtda javob beradi</h2>
+    <p class="lq-d">Tuzuvchi savolni ulashadi, ishtirokchilar kod bilan qo’shilib javob beradi. Reyting har soniya yangilanadi.</p>
     <ul><li>6 xonali kod bilan bir zumda qo’shilish</li><li>Har savolga taymer: tezroq javob, ko’proq ball</li><li>Jonli reyting va yakunda g’oliblar podiumi</li></ul>
     <div class="lq-acts"><button class="gb xl" data-open><svg><use href="#g"/></svg>Google bilan boshlash</button></div>
   </div>
@@ -249,9 +249,9 @@ footer{padding:26px 0 40px;color:var(--muted);font-size:14px;text-align:center}
   <div class="eyebrow">Qanday ishlaydi</div><h2>To’rt qadam — dars tayyor</h2>
   <div class="steps">
     <div class="sp rv"><span class="n">1</span><span class="e">📄</span><h3>Yuklang</h3><p>PDF yoki Word darslik.</p></div>
-    <div class="sp rv"><span class="n">2</span><span class="e">🎯</span><h3>Mavzu</h3><p>Mavzu va sinfni tanlang.</p></div>
+    <div class="sp rv"><span class="n">2</span><span class="e">🎯</span><h3>Mavzu</h3><p>Mavzuni tanlang.</p></div>
     <div class="sp rv"><span class="n">3</span><span class="e">🎮</span><h3>Metod</h3><p>Viktorinadan krossvordgacha.</p></div>
-    <div class="sp rv"><span class="n">4</span><span class="e">🚀</span><h3>Boshlang</h3><p>Kodni ulashing — sinf qo’shiladi.</p></div>
+    <div class="sp rv"><span class="n">4</span><span class="e">🚀</span><h3>Boshlang</h3><p>Kodni ulashing — ishtirokchilar qo’shiladi.</p></div>
   </div>
 </div></section>
 
@@ -280,12 +280,12 @@ var APP="/home";
 var sb=window.supabase.createClient('https://kikehcuwjcucyspxdopd.supabase.co','sb_publishable_aBqimXgAK3ia1K_keuaICg_wIRBHx14');
 var mq=$('#mq');mq.innerHTML+=mq.innerHTML;
 var M=[
-['🔴','Jonli viktorina','Jonli','O’qituvchi savol beradi, sinf kod bilan qo’shilib bir vaqtda javob beradi. Reyting har soniya yangilanadi.',['6 xonali kod bilan qo’shilish','Har savolga taymer','Jonli reyting va podium'],['Jonli','Butun sinf','Mustahkamlash uchun'],'#FF3B5C,#FF8A5B'],
+['🔴','Jonli viktorina','Jonli','Tuzuvchi savolni ulashadi, ishtirokchilar kod bilan bir vaqtda javob beradi. Reyting har soniya yangilanadi.',['6 xonali kod bilan qo’shilish','Har savolga taymer','Jonli reyting va podium'],['Jonli','Barcha ishtirokchilar','Mustahkamlash uchun'],'#FF3B5C,#FF8A5B'],
 ['⚡','Viktorina','10–15 daq','Jonli reyting bilan tezkor savollar. Har javobdan so’ng natija darhol ko’rinadi.',['Ball tezlik va aniqlikka qarab beriladi','Savol har 15 soniyada almashadi','Dars oxirida g’oliblar podiumi'],['10–15 daq','Yakka','Takrorlash uchun'],'#4B6BFF,#7C93FF'],
-['🛡️','Jamoaviy jang','20–25 daq','Sinf jamoalarga bo’linadi, har to’g’ri javob jamoaga ball olib keladi.',['2–6 jamoa avtomatik tuziladi','Kapitan javobni tasdiqlaydi','Jonli jamoalar jadvali'],['20–25 daq','Jamoa','Yangi mavzu uchun'],'#FF6F61,#FFA06B'],
+['🛡️','Jamoaviy jang','20–25 daq','Ishtirokchilar jamoalarga bo’linadi, har to’g’ri javob jamoaga ball olib keladi.',['2–6 jamoa avtomatik tuziladi','Kapitan javobni tasdiqlaydi','Jonli jamoalar jadvali'],['20–25 daq','Jamoa','Yangi mavzu uchun'],'#FF6F61,#FFA06B'],
 ['🧠','Xotira kartalari','8–10 daq','Atama va ta’rifni juftlab, kartalarni ochib toping — yodlash osonlashadi.',['Atama ↔ ta’rif juftliklari','Vaqt va urinishlar hisobi','Murakkab atamalar uchun juda mos'],['8–10 daq','Yakka','Yodlash uchun'],'#1FB98C,#59E0B6'],
 ['🧩','Krossvord','15 daq','Darslik matnidan krossvord: so’zlar mavzu bo’yicha avtomatik tuziladi.',['So’zlar darslikdan olinadi','Juftlikda yoki jamoada yechiladi','Lug’at boyitish uchun ajoyib'],['15 daq','Jamoa','Lug’at uchun'],'#8A63F5,#B093FF'],
-['💰','Kim millioner','15–20 daq','Savollar qiyinlashib boradi, 50/50 va yordam variantlari bor.',['Savollar 3 bosqichli qiyinlikda','50/50 va sinf yordami','Mavzuni mustahkamlash uchun'],['15–20 daq','Yakka','Mustahkamlash uchun'],'#F2A516,#FFCB4A'],
+['💰','Kim millioner','15–20 daq','Savollar qiyinlashib boradi, 50/50 va yordam variantlari bor.',['Savollar 3 bosqichli qiyinlikda','50/50 va ishtirokchilar yordami','Mavzuni mustahkamlash uchun'],['15–20 daq','Yakka','Mustahkamlash uchun'],'#F2A516,#FFCB4A'],
 ['🗺️','Sarguzasht xaritasi','Tez orada','Mavzu bosqichlarga bo’linadi: har bosqichni yengib, xaritada oldinga yuring.',['Bosqichma-bosqich o’rganish','Har bosqichda mukofot','Katta mavzular uchun'],['Tez orada','Yakka','Katta mavzular'],'#1AA9CC,#4FD3F0']];
 var mt=$('#mt'),mp=$('#mp'),cur=0,auto=true,user=null;
 M.forEach(function(m,i){var b=d.createElement('button');b.className='mb';b.innerHTML='<span>'+m[0]+'</span><div>'+m[1]+'<small>'+m[2]+'</small></div>';b.onclick=function(){auto=false;pick(i)};mt.appendChild(b)});
