@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="uz" data-role="general"><script>try{var _u=JSON.parse(localStorage.getItem("idUser")||"null");var _m=location.hash.match(/^#t=(\d{6})$/);if(_m)localStorage.setItem("idPending",_m[1]);var _s=Object.keys(localStorage).some(function(k){return /^sb-.*-auth-token$/.test(k)})||/[?&]code=|access_token=/.test(location.search+location.hash);if(!(_u&&_u.name)&&!_s)location.replace("/")}catch(e){location.replace("/")}</script>
+<html lang="uz" data-role="general"><script>try{var _u=JSON.parse(localStorage.getItem("idUser")||"null");var _m=location.hash.match(/^#([tj])=(\d{6})$/);if(_m)localStorage.setItem(_m[1]==="j"?"idPendingLive":"idPending",_m[2]);var _s=Object.keys(localStorage).some(function(k){return /^sb-.*-auth-token$/.test(k)})||/[?&]code=|access_token=/.test(location.search+location.hash);if(!(_u&&_u.name)&&!_s)location.replace("/")}catch(e){location.replace("/")}</script>
 <script>try{var r=localStorage.getItem("idRole");if(r)document.documentElement.setAttribute("data-role",r)}catch(e){}</script>
 <head>
 <script>try{var th=localStorage.getItem("idTheme");if(th==="dark"||th==="light")document.documentElement.setAttribute("data-theme",th)}catch(e){}</script>
@@ -924,7 +924,7 @@ quiz:{n:'Viktorina',e:'⚡',g:'#4B6BFF,#6F8BFF',t:'qs',min:3,k:'solo',tm:'10–1
 team:{n:'Jamoaviy jang',e:'🛡️',g:'#FF6F61,#FF9A6B',t:'qs',min:4,k:'team',tm:'20–25 daq',s:'Jamoa bilan',d:'Jamoalar navbat bilan javob beradi va ball uchun bellashadi.',bg:'#FFE1DD',fg:'#B8362B'},
 memory:{n:'Xotira kartalari',e:'🧠',g:'#27C99A,#59E0B6',t:'pairs',min:3,k:'solo',tm:'8–10 daq',s:'Juftlarni top',d:'Atama va ta’rifni juftlab, kartalarni ochib toping.',bg:'#DDF7EE',fg:'#0F7A5A'},
 mill:{n:'Kim millioner',e:'💰',g:'#F2A516,#FFC53D',t:'qs',min:4,k:'solo',tm:'15–20 daq',s:'Yordam bilan',d:'Savollar ketma-ket, xato qilsangiz test to’xtaydi. 50:50 yordami bor.',bg:'#FFF0C9',fg:'#8A5B00'},
-live:{n:'Jonli viktorina',e:'🔴',g:'#FF3B5C,#FF8A5B',t:'qs',min:3,k:'team',tm:'10–20 daq',s:'Tez orada',d:'Butun sinf telefonlardan bir vaqtda javob beradi, reyting jonli yangilanadi.',bg:'#FFE1E6',fg:'#B81E3A',soon:1},
+live:{n:'Jonli viktorina',e:'🔴',g:'#FF3B5C,#FF8A5B',t:'qs',min:3,k:'team',tm:'10–20 daq',s:'Kahoot uslubida',d:'Butun sinf telefonlardan bir vaqtda javob beradi, reyting jonli yangilanadi.',bg:'#FFE1E6',fg:'#B81E3A'},
 cross:{n:'Krossvord',e:'🧩',g:'#8A63F5,#AE8BFF',t:'pairs',min:3,k:'team',tm:'15 daq',s:'Tez orada',d:'Mavzu bo’yicha so’zlarni topib, katakchalarni to’ldiring.',bg:'#EDE6FF',fg:'#5B38C7',soon:1}};
 var MORD=['quiz','team','memory','mill','live','cross'];
 var PR=[100,200,300,500,1000,2000,4000,8000,16000,32000,64000,125000,250000,500000,1000000];
@@ -1055,7 +1055,12 @@ var code=$('#code'),jb=$('#join'),je=$('#jerr');
 code.addEventListener('input',function(){this.value=this.value.replace(/\D/g,'').slice(0,6);jb.disabled=this.value.length<6;je.classList.remove('on');code.classList.remove('bad')});
 function joinCode(){if(jb.disabled)return;var c=code.value,l=null;allL().forEach(function(x){if(x.code===c)l=x});
   if(l){code.value='';jb.disabled=true;play(l.id);return}
-  jb.disabled=true;fetchByCode(c).then(function(f){jb.disabled=code.value.length<6;if(f){code.value='';jb.disabled=true;play(f.id)}else{je.classList.add('on');code.classList.add('bad')}})}
+  jb.disabled=true;
+  var lv=window.LiveQuiz?window.LiveQuiz.join(c):Promise.resolve('none');
+  Promise.all([lv,fetchByCode(c)]).then(function(r){jb.disabled=code.value.length<6;
+    if(r[0]==='ok'){code.value='';jb.disabled=true;return}
+    if(r[0]==='closed'){say(window.LiveQuiz.err||'Xonaga kirib bo’lmadi');return}
+    var f=r[1];if(f){code.value='';jb.disabled=true;play(f.id)}else{je.classList.add('on');code.classList.add('bad')}})}
 jb.addEventListener('click',joinCode);code.addEventListener('keydown',function(e){if(e.key==='Enter')joinCode()});
 
 /* ===== qidiruv ===== */
@@ -1102,7 +1107,7 @@ function logout(){var go=function(){try{localStorage.removeItem('idUser');localS
 function openDetail(id){var l=find(id);if(!l)return;var m=MT[l.m],own=l.id.charAt(0)==='u';
   var h='<div class="dh"><span class="tile" style="background:'+m.bg+'">'+m.e+'</span><div><h2>'+esc(l.title)+'</h2><small>'+T(m.n)+' · '+cnt(l)+' '+T(unit(l))+(l.sub?' · '+esc(l.sub):'')+'</small></div><button class="icon-btn" data-dx aria-label="'+T('Yopish')+'">✕</button></div>';
   if(l.code)h+='<div class="dcode"><span>'+T('Kod')+'</span><b>'+l.code+'</b><button class="go alt" data-dcopy="'+l.code+'">'+T('Kodni nusxalash')+'</button></div>'+(own?'<button class="sr" role="switch" data-dpub="'+l.id+'" aria-checked="'+(l.pub!==false)+'"><i class="si">🌐</i><span>'+T('Hammaga ochiq')+'</span><b class="sw"><i></i></b></button>':'');
-  h+='<div class="drow"><button class="cta" data-dplay="'+l.id+'">▶ '+T('Boshlash')+'</button>'+(l.code?'<button class="go alt" data-dshare="'+l.id+'">'+T('Ulashish')+'</button>':'')+(own?'<button class="go alt" data-ddel="'+l.id+'">'+T('O’chirish')+'</button>':'<button class="go alt" data-dadd="'+l.id+'">'+T('Darslarimga qo’shish')+'</button>')+'</div>';
+  h+='<div class="drow"><button class="cta" data-dplay="'+l.id+'">▶ '+T('Boshlash')+'</button>'+(l.qs&&l.m!=='live'?'<button class="go alt" data-dlive="'+l.id+'">🔴 '+T('Jonli o’tkazish')+'</button>':'')+(l.code?'<button class="go alt" data-dshare="'+l.id+'">'+T('Ulashish')+'</button>':'')+(own?'<button class="go alt" data-ddel="'+l.id+'">'+T('O’chirish')+'</button>':'<button class="go alt" data-dadd="'+l.id+'">'+T('Darslarimga qo’shish')+'</button>')+'</div>';
   $('#dsh').innerHTML=h;$('#dlg').hidden=false;syncOv()}
 /* profil tahriri */
 var EMO=['😀','😎','🦊','🐼','🦁','🐯','🐸','🐵','🦄','🐙','🚀','⭐','🎓','📚','🧠','🎮','🏆'];
@@ -1129,6 +1134,7 @@ $('#dlg').addEventListener('click',function(e){var t=e.target,b;
   if(t.closest('#nrem')){toggleRem();return}
   if(t.closest('[data-nclr]')){D.notes=[];saveD();openNotes();return}
   if(b=t.closest('[data-dplay]')){play(b.dataset.dplay);return}
+  if(b=t.closest('[data-dlive]')){closeDlg();var ll=find(b.dataset.dlive);if(ll&&window.LiveQuiz)window.LiveQuiz.host(ll);return}
   if(b=t.closest('[data-dshare]')){shareL(find(b.dataset.dshare));return}
   if(b=t.closest('[data-dpub]')){var pl=find(b.dataset.dpub);if(pl){pl.pub=pl.pub===false;saveD();cloudPush(pl);openDetail(pl.id)}return}
   if(b=t.closest('[data-dcopy]')){try{navigator.clipboard.writeText(b.dataset.dcopy).then(function(){say('Kod nusxalandi')},function(){})}catch(x){}return}
@@ -1147,7 +1153,7 @@ var PL={timer:null,t2:null,les:null};
 function stopT(){clearInterval(PL.timer);PL.timer=null}
 function closePlay(){stopT();clearTimeout(PL.t2);$('#play').hidden=true;syncOv()}
 function top(title,sub,right){return '<div class="pl-top"><button class="icon-btn" data-x aria-label="'+T('Yopish')+'">✕</button><div class="pl-t"><b>'+esc(title)+'</b><small>'+sub+'</small></div><div class="pl-s">'+(right||'')+'</div></div>'}
-function play(id){var l=find(id);if(!l)return;$('#dlg').hidden=true;sov.hidden=true;$('#play').hidden=false;syncOv();$('#play').scrollTop=0;start(l)}
+function play(id){var l=find(id);if(!l)return;if(l.m==='live'){$('#dlg').hidden=true;sov.hidden=true;syncOv();if(window.LiveQuiz)window.LiveQuiz.host(l);return}$('#dlg').hidden=true;sov.hidden=true;$('#play').hidden=false;syncOv();$('#play').scrollTop=0;start(l)}
 function start(l){PL.les=l;stopT();clearTimeout(PL.t2);PL.ans=PL.nx=PL.fifty=PL.take=PL.card=PL.tn=PL.ts=null;PL.tcount=2;
   if(l.m==='memory')runMem(l);else if(l.m==='team')teamSetup(l);else runQs(l,l.m)}
 function result(l,pct,pts,xp,line,extra){stopT();
@@ -1300,6 +1306,7 @@ try{if(remOn()){var td=dstr(new Date());if(lsg('idRemDay')!==td&&D.streak.last!=
 window.confetti=function(x,y,n){if(matchMedia('(prefers-reduced-motion: reduce)').matches||!document.body.animate)return;var C=['#4B6BFF','#8A63F5','#FF7AB6','#FFC53D','#27C99A','#FF6F61'];for(var i=0;i<(n||30);i++){var e=document.createElement('i');e.className='cf';e.style.background=C[i%6];document.body.appendChild(e);var a=Math.random()*Math.PI*2,v=120+Math.random()*220,dx=Math.cos(a)*v,dy=Math.sin(a)*v-140;e.animate([{transform:'translate('+x+'px,'+y+'px) rotate(0)',opacity:1},{transform:'translate('+(x+dx)+'px,'+(y+dy+260)+'px) rotate('+(Math.random()*720)+'deg)',opacity:0}],{duration:1100+Math.random()*600,easing:'cubic-bezier(.2,.7,.4,1)'}).onfinish=(function(el){return function(){el.remove()}})(e)}};
 </script>
 <script src="/ai-test.js"></script>
+<script src="/live.js"></script>
 </body>
 </html>
 
