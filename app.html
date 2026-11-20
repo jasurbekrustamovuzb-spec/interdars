@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="uz" data-role="general"><script>try{var _u=JSON.parse(localStorage.getItem("idUser")||"null");var _m=location.hash.match(/^#([tj])=(\d{6})$/);if(_m)localStorage.setItem(_m[1]==="j"?"idPendingLive":"idPending",_m[2]);var _s=Object.keys(localStorage).some(function(k){return /^sb-.*-auth-token$/.test(k)})||/[?&]code=|access_token=/.test(location.search+location.hash);if(!(_u&&_u.name)&&!_s)location.replace("/")}catch(e){location.replace("/")}</script>
+<html lang="uz" data-role="general"><script>try{var _u=JSON.parse(localStorage.getItem("idUser")||"null");var _m=location.hash.match(/^#([tj])=(\d{6})$/);if(_m)localStorage.setItem(_m[1]==="j"?"idPendingLive":"idPending",_m[2]);var _s=Object.keys(localStorage).some(function(k){return /^sb-.*-auth-token$/.test(k)})||/[?&]code=|access_token=/.test(location.search+location.hash);if(!(_u&&_u.name)&&!_s&&!(_m&&_m[1]==="j"))location.replace("/")}catch(e){location.replace("/")}</script>
 <script>try{var r=localStorage.getItem("idRole");if(r)document.documentElement.setAttribute("data-role",r)}catch(e){}</script>
 <head>
 <script>try{var th=localStorage.getItem("idTheme");if(th==="dark"||th==="light")document.documentElement.setAttribute("data-theme",th)}catch(e){}</script>
