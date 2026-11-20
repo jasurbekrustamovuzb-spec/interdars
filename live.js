@@ -17,7 +17,13 @@ var AV=[
 ['🤖','Robot','#27C9E6,#8A63F5','a'],['👽','Mehmon','#27C99A,#6B4BD6','a'],
 ['🐕','Doge','#FFD95E,#F2A516','a','/media/meme-doge.jpg'],['😾','Grumpy Cat','#8A63F5,#4B6BFF','a','/media/meme-grumpy-cat.jpg'],['🦉','O RLY?','#27C99A,#1AA9CC','a','/media/meme-orly.jpg'],
 ['🐹','Yumaloq xomyak','#FF8A5B,#FFB400','a'],['🦦','Suvsar','#27C9E6,#4B6BFF','a'],['🐼','Qizil panda','#FF6FB1,#8A63F5','a'],['🐈','Kulib turgan mushuk','#27C99A,#4B6BFF','a'],['🐨','Koala','#6B4BD6,#27C9E6','a'],['🦄','Yakkashox','#FF6FB1,#8A63F5','a']];
-var PFAV=[0,1,2,3,4,5,8,9,10,12,13,14,15,16,17,18,21,22,24,25,26,27,29,31,34,35,36,37,38,39,40,41];
+var PFAV=[34,35,36];
+var AV_MEDIA=[
+['✨','Stiker 1','#8A63F5,#FF6FB1','a','/media/avatars/motion/01-sticker.webm','video','50% 50%','contain'],['💫','Stiker 2','#4B6BFF,#8A63F5','a','/media/avatars/motion/02-b.webm','video','50% 50%','contain'],['🌟','Stiker 3','#FF8A5B,#FFC53D','a','/media/avatars/motion/03-v.webm','video','50% 50%','contain'],['🎈','Stiker 4','#27C99A,#27C9E6','a','/media/avatars/motion/04-c.webm','video','50% 50%','contain'],['🎉','Stiker 5','#FF3B5C,#FF6FB1','a','/media/avatars/motion/05-x.webm','video','50% 50%','contain'],['🪄','Stiker 6','#8A63F5,#4B6BFF','a','/media/avatars/motion/06-k.webm','video','50% 50%','contain'],['🌈','Stiker 7','#27C9E6,#4B6BFF','a','/media/avatars/motion/07-u.webm','video','50% 50%','contain'],['🧸','Stiker 8','#FFB400,#FF6FB1','a','/media/avatars/motion/08-n.webm','video','50% 50%','contain'],['🐣','Stiker 9','#27C99A,#FFC53D','a','/media/avatars/motion/09-j.webm','video','50% 50%','contain'],['🌙','Stiker 10','#6B4BD6,#27C9E6','a','/media/avatars/motion/10-hh.webm','video','50% 50%','contain'],['🦊','Stiker 11','#FF8A5B,#FFB400','a','/media/avatars/motion/11-stickerd.webm','video','50% 50%','contain'],['🐼','Stiker 12','#4B6BFF,#27C99A','a','/media/avatars/motion/12-d.webm','video','50% 50%','contain'],['🦋','Stiker 13','#C05DFF,#27C9E6','a','/media/avatars/motion/13-rr.webm','video','50% 50%','contain'],['🐰','Stiker 14','#FF6FB1,#FFC53D','a','/media/avatars/motion/14-stickerw.webm','video','50% 50%','contain'],['🎀','Stiker 15','#FF3B5C,#8A63F5','a','/media/avatars/motion/15-stickerq.webm','video','50% 50%','contain'],
+['👭','Masha va Dasha','#FF6FB1,#8A63F5','a','/media/avatars/images/01-masha-friends.jpg','image','24% 45%','cover'],['👸','Rapunzel','#8A63F5,#FFB400','a','/media/avatars/images/02-rapunzel-window.jpg','image','51% 48%','cover'],['🎨','Rapunzel rassom','#A653D1,#FF6FB1','a','/media/avatars/images/03-rapunzel-art.jpg','image','70% 48%','cover'],['👑','Malika Sofiya','#9A72E8,#FF6FB1','a','/media/avatars/images/04-princess-sofia.jpg','image','50% 32%','cover'],['🌅','Quyosh botishi','#FF8A5B,#8A63F5','a','/media/avatars/images/05-sunset-girl.jpg','image','50% 47%','cover'],['🌄','Kechki sayr','#FFC53D,#27C99A','a','/media/avatars/images/06-golden-hour-girl.jpg','image','55% 43%','cover'],['🦋','Binafsha kapalak','#B35CFF,#4B6BFF','a','/media/avatars/images/07-purple-butterfly.jpg','image','50% 50%','contain'],['🤔','Qiziquvchan yigit','#4B6BFF,#27C9E6','a','/media/avatars/images/08-curious-meme.jpg','image','51% 26%','cover'],['⚽','Neymar','#4B6BFF,#27C9E6','a','/media/avatars/images/09-neymar.jpg','image','50% 28%','cover'],['⚽','Mbappé','#4B6BFF,#FF6FB1','a','/media/avatars/images/10-mbappe.jpg','image','50% 28%','cover'],['⚽','Messi','#4B6BFF,#FFC53D','a','/media/avatars/images/11-messi.jpg','image','50% 24%','cover'],['⚽','Ronaldo','#27C9E6,#FF8A5B','a','/media/avatars/images/12-ronaldo.jpg','image','50% 29%','cover'],['💚','Shrek','#87B83C,#F2C14E','a','/media/avatars/images/13-shrek.jpg','image','50% 40%','cover'],['🕴️','Sirli qahramon','#6B4BD6,#8A63F5','a','/media/avatars/images/14-meme-man.webp','image','50% 30%','cover']
+];
+AV_MEDIA.forEach(function(d){PFAV.push(AV.length);AV.push(d)});
+var AVCache={},AVLoadStarted=false,AVObserver=null,AVLegacyMap={};
 
 /* ===== yordamchilar ===== */
 function $(s,r){return (r||document).querySelector(s)}
@@ -32,8 +38,14 @@ function uinfo(){return ls('idUser')||{}}
 function rid(){var s='',c='abcdefghjkmnpqrstuvwxyz23456789';for(var k=0;k<10;k++)s+=c.charAt(Math.floor(Math.random()*c.length));return s}
 function pinFmt(p){return p.slice(0,3)+' '+p.slice(3)}
 function randAv(){return PFAV[Math.floor(Math.random()*PFAV.length)]}
+function normalizeAv(a,key){a=+a;if(PFAV.indexOf(a)>=0)return a;var id=key||String(a);if(AVLegacyMap[id]==null)AVLegacyMap[id]=randAv();return AVLegacyMap[id]}
 function cleanName(s,d){s=String(s||'').replace(/[<>]/g,'').replace(/\s+/g,' ').trim().slice(0,20);return s||d||'Ishtirokchi'}
-function av(a,sz){var d=AV[a]||AV[0];return '<span class="jq-av" style="--s:'+(sz||56)+'px;background:linear-gradient(135deg,'+d[2]+')">'+(d[4]?'<img src="'+d[4]+'" alt="" loading="lazy">':d[0])+'</span>'}
+function avContent(i){var d=AV[i]||AV[0],src=AVCache[i];if(!src)return '<span class="jq-av-fallback">'+d[0]+'</span>';var fit=d[7]||'cover',pos=d[6]||'50% 50%';return d[5]==='video'?'<video class="jq-av-video" src="'+src+'" autoplay muted loop playsinline preload="none" style="object-fit:'+fit+';object-position:'+pos+'"></video>':'<img src="'+src+'" alt="" loading="lazy" style="object-fit:'+fit+';object-position:'+pos+'">'}
+function av(a,sz){var i=normalizeAv(a),d=AV[i]||AV[0];return '<span class="jq-av" data-avatar-index="'+i+'" style="--s:'+(sz||56)+'px;background:linear-gradient(135deg,'+d[2]+')">'+avContent(i)+'</span>'}
+function observeAvVideos(root){if(!root)return;var videos=$$('.jq-av-video',root);if(!videos.length)return;if(!AVObserver&&'IntersectionObserver'in window)AVObserver=new IntersectionObserver(function(entries){entries.forEach(function(e){if(e.isIntersecting){var p=e.target.play();if(p&&p.catch)p.catch(function(){})}else e.target.pause()})},{rootMargin:'64px'});videos.forEach(function(v){if(AVObserver)AVObserver.observe(v);else{var p=v.play();if(p&&p.catch)p.catch(function(){})}})}
+function refreshAvNodes(i){var nodes=$$('[data-avatar-index="'+i+'"]');nodes.forEach(function(n){n.innerHTML=avContent(i);var media=$('img,video',n);if(media)media.addEventListener('error',function(){n.innerHTML='<span class="jq-av-fallback">'+(AV[i]||AV[0])[0]+'</span>'},{once:true})});if(R)observeAvVideos(R)}
+function loadAvAt(pos){if(pos>=PFAV.length)return;var i=PFAV[pos],d=AV[i];fetch(d[4],{cache:'force-cache',credentials:'same-origin'}).then(function(r){if(!r.ok)throw new Error('avatar '+r.status);return r.blob()}).then(function(b){AVCache[i]=URL.createObjectURL(b);refreshAvNodes(i)}).catch(function(){}) .then(function(){setTimeout(function(){loadAvAt(pos+1)},70)})}
+function startAvQueue(){if(AVLoadStarted)return;AVLoadStarted=true;var begin=function(){setTimeout(function(){loadAvAt(0)},1600)};if(document.readyState==='complete')begin();else window.addEventListener('load',begin,{once:true})}
 function say(m){var t=$('#jqtoast');if(!t){t=document.createElement('div');t.id='jqtoast';t.className='jq-toast';document.body.appendChild(t)}t.textContent=m;t.classList.add('on');clearTimeout(say.t);say.t=setTimeout(function(){t.classList.remove('on')},2800)}
 function pulse(el){if(!el)return;el.classList.remove('pulse');void el.offsetWidth;el.classList.add('pulse')}
 function after(ms,fn){var t=setTimeout(fn,ms);TM.push(t);return t}
@@ -91,15 +103,15 @@ document.addEventListener('visibilitychange',function(){if(document.hidden||!(H|
 /* ===== overlay ===== */
 var R=null,M=null,CSS_ON=false;
 function mount(){
-  if(!CSS_ON){var st=document.createElement('style');st.textContent=CSS;document.head.appendChild(st);var ux=document.createElement('style');ux.textContent='.jq-av img{width:100%;height:100%;border-radius:50%;object-fit:cover}.jq-pickhead{display:flex;align-items:center;justify-content:space-between;gap:10px;text-align:left}.jq-credit{font-size:10px;line-height:1.35;opacity:.75}.jq-credit a{color:#fff;text-decoration:underline}.jq .jq-set{grid-template-columns:minmax(0,1fr);width:100%;min-width:0}.jq .jq-set .rw{width:100%;min-width:0}.jq .jq-set>.sw{width:100%;min-width:0}.jq .sw{width:100%;height:auto;min-height:58px;flex:none;position:relative;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:11px 14px}.jq .sw>span{display:block;flex:1;min-width:0;line-height:1.3}.jq .sw i{position:relative;left:auto;top:auto;width:46px;height:26px;display:block;flex:none;border-radius:99px;background:rgba(255,255,255,.25);box-shadow:none}.jq .sw i::after{content:"";position:absolute;left:3px;top:3px;width:20px;height:20px;border-radius:50%;background:#fff;transition:transform .2s}.jq .sw.on i{background:#27C99A}.jq .sw.on i::after{transform:translateX(20px)}.sw small{line-height:1.35;margin-top:4px}.jq-set{gap:12px}.jq-set .rw{gap:8px}.jq-set .seg button{min-height:40px;line-height:1.15}.jq-avg{grid-template-columns:repeat(auto-fill,minmax(52px,1fr))}@media(max-width:560px){.jq-mod{align-items:start;padding:10px 12px calc(10px + env(safe-area-inset-bottom,0px))}.jq-mb{width:100%;max-height:calc(100dvh - 20px - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px));padding:16px;gap:12px;border-radius:22px}.jq-mb h3{font-size:24px}.jq-btns{gap:8px}.jq-btn{padding:10px 16px}.jq-avg{grid-template-columns:repeat(auto-fill,minmax(48px,1fr));max-height:32vh}.jq-avg button{padding:2px}.jq-credit{line-height:1.35}}';document.head.appendChild(ux);CSS_ON=true}
+  if(!CSS_ON){var st=document.createElement('style');st.textContent=CSS;document.head.appendChild(st);var ux=document.createElement('style');ux.textContent='.jq-av{overflow:hidden}.jq-av img,.jq-av video{display:block;width:100%;height:100%;border-radius:inherit;background:transparent}.jq-av video{pointer-events:none}.jq-av-fallback{display:grid;place-items:center;width:100%;height:100%;font-size:calc(var(--s)*.58)}.jq-pickhead{display:flex;align-items:center;justify-content:space-between;gap:10px;text-align:left}.jq-credit{font-size:10px;line-height:1.35;opacity:.75}.jq-credit a{color:#fff;text-decoration:underline}.jq .jq-set{grid-template-columns:minmax(0,1fr);width:100%;min-width:0}.jq .jq-set .rw{width:100%;min-width:0}.jq .jq-set>.sw{width:100%;min-width:0}.jq .sw{width:100%;height:auto;min-height:58px;flex:none;position:relative;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:11px 14px}.jq .sw>span{display:block;flex:1;min-width:0;line-height:1.3}.jq .sw i{position:relative;left:auto;top:auto;width:46px;height:26px;display:block;flex:none;border-radius:99px;background:rgba(255,255,255,.25);box-shadow:none}.jq .sw i::after{content:"";position:absolute;left:3px;top:3px;width:20px;height:20px;border-radius:50%;background:#fff;transition:transform .2s}.jq .sw.on i{background:#27C99A}.jq .sw.on i::after{transform:translateX(20px)}.sw small{line-height:1.35;margin-top:4px}.jq-set{gap:12px}.jq-set .rw{gap:8px}.jq-set .seg button{min-height:40px;line-height:1.15}.jq-avg{grid-template-columns:repeat(auto-fill,minmax(52px,1fr))}@media(max-width:560px){.jq-mod{align-items:start;padding:10px 12px calc(10px + env(safe-area-inset-bottom,0px))}.jq-mb{width:100%;max-height:calc(100dvh - 20px - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px));padding:16px;gap:12px;border-radius:22px}.jq-mb h3{font-size:24px}.jq-btns{gap:8px}.jq-btn{padding:10px 16px}.jq-avg{grid-template-columns:repeat(auto-fill,minmax(48px,1fr));max-height:32vh}.jq-avg button{padding:2px}.jq-credit{line-height:1.35}}';document.head.appendChild(ux);CSS_ON=true}
   if(R)return;R=document.createElement('div');R.className='jq';R.hidden=true;R.setAttribute('role','dialog');R.setAttribute('aria-label','Jonli viktorina');
   R.innerHTML='<div class="jq-bg"></div><div class="jq-main" id="jqm"></div><canvas class="jq-fx"></canvas><div class="jq-mod" id="jqmod" hidden></div><div class="jq-conn" id="jqconn" hidden>⚠️ Aloqa uzildi — qayta ulanmoqda…</div>';
   document.body.appendChild(R);M=$('#jqm');FX.c=$('.jq-fx',R);FX.x=FX.c.getContext('2d');fxSize();window.addEventListener('resize',fxSize);
   R.addEventListener('click',onClick);R.addEventListener('input',function(e){if(e.target.id==='jqname')E.n=e.target.value})}
 function openOv(){mount();R.hidden=false;document.body.style.overflow='hidden';guardOn();wake()}
 function closeOv(){if(R)R.hidden=true;document.body.style.overflow='';guardOff();fxStop()}
-function view(html,cls){M.className='jq-main '+(cls||'');M.innerHTML=html}
-function modal(html,k){var m=$('#jqmod');m.dataset.k=k||'';m.innerHTML='<div class="jq-mb">'+html+'</div>';m.hidden=false}
+function view(html,cls){M.className='jq-main '+(cls||'');M.innerHTML=html;observeAvVideos(M)}
+function modal(html,k){var m=$('#jqmod');m.dataset.k=k||'';m.innerHTML='<div class="jq-mb">'+html+'</div>';m.hidden=false;observeAvVideos(m)}
 function modalClose(){var m=$('#jqmod');if(m){m.hidden=true;m.innerHTML='';m.dataset.k=''}}
 function conn(bad){var c=$('#jqconn');if(c)c.hidden=!bad}
 function topbar(extra){return '<div class="jq-top"><button class="jq-ib" data-act="exit" aria-label="Chiqish">✕</button><span class="jq-pill"><i></i>JONLI</span>'+extra+'<span class="sp"></span><button class="jq-ib" data-act="snd" id="jqsnd" aria-label="Tovush">'+(SND?'🔊':'🔇')+'</button></div>'}
@@ -158,7 +170,7 @@ function host(l){
 function hBoot(){SND=H.set.snd;openOv();
   netOpen(H.pin,hMsg,function(s){var bad=s==='CHANNEL_ERROR'||s==='TIMED_OUT'||s==='CLOSED';conn(bad);if(s==='SUBSCRIBED')bcast()});
   persistH(1);hRender();clearInterval(HT);HT=setInterval(hTick,150)}
-function hResume(h){H=h;hBoot()}
+function hResume(h){H=h;Object.keys(H.pl||{}).forEach(function(k){var p=H.pl[k];if(p)p.a=normalizeAv(p.a,'host:'+H.pin+':'+(p.pid||k))});lsSet(LSH,H);hBoot()}
 function roster(){return Object.keys(H.pl).map(function(k){return H.pl[k]}).filter(function(p){return !p.gone}).sort(function(a,b){return a.i-b.i}).map(function(p){return[p.i,p.n,p.a]})}
 function ranked(){return Object.keys(H.pl).map(function(k){return H.pl[k]}).sort(function(a,b){return b.s-a.s||a.i-b.i})}
 function snap(pid){
@@ -268,7 +280,8 @@ function join(pin){
   return new Promise(function(resolve){
     if(H||P){resolve('none');return}
     var prof=ls(LSF)||{},u=uinfo();LiveQuiz.err='';
-    P={pin:pin,pid:rid(),n:prof.n||u.name||'',a:prof.a!=null?prof.a:randAv(),ph:'conn',max:4,probe:true,tot:0,my:-1};
+    P={pin:pin,pid:rid(),n:prof.n||u.name||'',a:prof.a!=null?normalizeAv(prof.a):randAv(),ph:'conn',max:4,probe:true,tot:0,my:-1};
+    if(prof.a!=null&&prof.a!==P.a){prof.a=P.a;lsSet(LSF,prof)}
     SND=prof.snd!==false;var me=P;
     me.done=function(r){if(me.fin)return;me.fin=true;if(r!=='ok'){clearInterval(me.hl);if(P===me){P=null;netClose()}}resolve(r)};
     me.fail=function(){me.done('none')};
@@ -278,7 +291,7 @@ function pNet(){netOpen(P.pin,pMsg,function(s){var bad=s==='CHANNEL_ERROR'||s===
 function pHello(){if(P)send({t:'hi',p:P.pid,n:P.n,a:P.a})}
 function pLoop(){var me=P;clearInterval(me.hl);var k=0;pHello();me.hl=setInterval(function(){if(P!==me||me.got){clearInterval(me.hl);return}if(++k>=me.max){clearInterval(me.hl);me.fail&&me.fail();return}pHello()},800)}
 function pResume(s){
-  P={pin:s.pin,pid:s.pid,n:s.n,a:s.a,ph:'conn',max:9,tot:0,my:-1};var me=P;SND=(ls(LSF)||{}).snd!==false;openOv();
+  P={pin:s.pin,pid:s.pid,n:s.n,a:normalizeAv(s.a),ph:'conn',max:9,tot:0,my:-1};var me=P;if(P.a!==s.a){s.a=P.a;lsSet(LSP,s)}SND=(ls(LSF)||{}).snd!==false;openOv();
   view(topbar('')+'<div class="jq-cd"><div class="jq-spin"></div><p>Xonaga qayta ulanmoqda…</p></div>','pl');
   me.fail=function(){if(P!==me)return;view(topbar('')+'<div class="jq-cd"><div class="em big">📡</div><h2>Tashkilotchi bilan aloqa yo‘q</h2><p>Internetni tekshiring yoki qayta urinib ko‘ring.</p><div class="jq-btns"><button class="jq-btn go" data-act="retry">↻ Qayta urinish</button><button class="jq-btn ghost" data-act="exitok">Chiqish</button></div></div>','pl')};
   pNet()}
@@ -333,7 +346,7 @@ function pBoard(){var top=P.top||[],max=top.length?top[0][3]:1,r=P.res&&P.res[P.
 function pFin(){var all=P.all||[],k=-1;all.forEach(function(r,j){if(r[0]===P.i)k=j});var me=k>=0?all[k]:null;
   view(pTop()+'<div class="jq-fin sm"><h2 class="jq-ft">'+(k>=0&&k<3?'🏆 Tabriklaymiz!':'🎉 Test yakunlandi!')+'</h2>'+podiumHTML(all)+'</div>'+(me?'<div class="jq-mine big">Siz: <b>#'+(k+1)+'</b> · '+fmt(me[3])+' ball · '+me[4]+'/'+P.nq+' to‘g‘ri</div>':'')+'<div class="jq-btns r"><button class="jq-btn go" data-act="exitok">Chiqish</button></div>','pl fin');celebrate(all);
   if(k>=0&&k<3)after(5200,function(){confetti(innerWidth/2,innerHeight*.5,80)})}
-function pEdit(){E={n:P.n,a:P.a,g:AV[P.a]?AV[P.a][3]:'f'};pEditModal()}
+function pEdit(){P.a=normalizeAv(P.a);E={n:P.n,a:P.a,g:AV[P.a]?AV[P.a][3]:'f'};pEditModal()}
 function pEditModal(){
   var list=PFAV.map(function(i){return{d:AV[i],i:i}});
   modal('<h3>'+(P&&P.joining?'Testga qo‘shiling':'Profilingiz')+'</h3><label class="jq-lab" for="jqname">Ismingiz</label><input id="jqname" class="jq-inp" maxlength="20" value="'+esc(E.n)+'" placeholder="Ismingizni yozing" autocomplete="given-name"><div class="jq-prev">'+av(E.a,64)+'<b>'+esc((AV[E.a]||AV[0])[1])+'</b></div><div class="jq-pickhead"><b>Avatar tanlang</b><button class="jq-btn ghost sm" data-act="pfrnd">🎲 Tasodifiy</button></div><div class="jq-avg" role="group" aria-label="Avatarlar">'+list.map(function(x){return '<button class="'+(E.a===x.i?'on':'')+'" data-act="pfav" data-v="'+x.i+'" aria-label="'+esc(x.d[1])+'" title="'+esc(x.d[1])+'">'+av(x.i,48)+'</button>'}).join('')+'</div><small class="jq-credit">Mem avatarlari: <a href="https://commons.wikimedia.org/wiki/File:Doge_meme_example.jpg" target="_blank" rel="noreferrer">Doge — likeaduck, CC BY 2.0</a> · <a href="https://commons.wikimedia.org/wiki/File:Grumpy_Cat_meme_example.jpg" target="_blank" rel="noreferrer">Grumpy Cat — Gage Skidmore, CC BY-SA 4.0</a> · <a href="https://commons.wikimedia.org/wiki/File:O_RLY.jpg" target="_blank" rel="noreferrer">O RLY? — public domain</a></small><div class="jq-btns"><button class="jq-btn ghost" data-act="'+(P&&P.joining?'joincancel':'mclose')+'">'+(P&&P.joining?'Bekor':'Yopish')+'</button><button class="jq-btn go" data-act="pfsave">'+(P&&P.joining?'Testga kirish':'Saqlash')+'</button></div>','edit');
@@ -369,6 +382,7 @@ window.LiveQuiz=LiveQuiz;
 function cancelJoin(){if(!P||!P.joining)return;var me=P;P=null;me.done('cancelled');modalClose();closeOv()}
 function boot(){
   mount();
+  startAvQueue();
   var h=ls(LSH),p=ls(LSP),m=location.hash.match(/^#j=(\d{6})$/),pend=null;try{pend=localStorage.getItem('idPendingLive');localStorage.removeItem('idPendingLive')}catch(e){}
   var pin=m?m[1]:pend;if(m){try{history.replaceState(null,'','#bosh')}catch(e){}}
   if(h&&h.pin&&Date.now()-h.ts<STALE){hResume(h);return}else if(h)lsDel(LSH);
