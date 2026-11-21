@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="uz" data-role="general"><script>try{var _u=JSON.parse(localStorage.getItem("idUser")||"null");var _m=location.hash.match(/^#([tj])=(\d{6})$/);if(_m)localStorage.setItem(_m[1]==="j"?"idPendingLive":"idPending",_m[2]);var _s=Object.keys(localStorage).some(function(k){return /^sb-.*-auth-token$/.test(k)})||/[?&]code=|access_token=/.test(location.search+location.hash);if(!(_u&&_u.name)&&!_s)location.replace("/")}catch(e){location.replace("/")}</script>
+<html lang="uz" data-role="general"><script>try{var _u=JSON.parse(localStorage.getItem("idUser")||"null");var _m=location.hash.match(/^#([tj])=(\d{6})$/);if(_m){localStorage.setItem(_m[1]==="j"?"idPendingLive":"idPending",_m[2]);if(_m[1]==="j"){document.documentElement.dataset.liveJoinPending="1";document.documentElement.style.visibility="hidden";setTimeout(function(){if(document.documentElement.dataset.liveJoinPending){document.documentElement.style.visibility="";delete document.documentElement.dataset.liveJoinPending}},12000)}}var _s=Object.keys(localStorage).some(function(k){return /^sb-.*-auth-token$/.test(k)})||/[?&]code=|access_token=/.test(location.search+location.hash);if(!(_u&&_u.name)&&!_s&&!(_m&&_m[1]==="j"))location.replace("/")}catch(e){location.replace("/")}</script>
 <script>try{var r=localStorage.getItem("idRole");if(r)document.documentElement.setAttribute("data-role",r)}catch(e){}</script>
 <head>
 <script>try{var th=localStorage.getItem("idTheme");if(th==="dark"||th==="light")document.documentElement.setAttribute("data-theme",th)}catch(e){}</script>
@@ -1052,7 +1052,7 @@ pills('#mf',function(b){mfv=b.dataset.f;$('#mg').innerHTML=mcards()});
 
 /* ===== kod bilan kirish ===== */
 var code=$('#code'),jb=$('#join'),je=$('#jerr');
-code.addEventListener('input',function(){this.value=this.value.replace(/\D/g,'').slice(0,6);jb.disabled=this.value.length<6;je.classList.remove('on');code.classList.remove('bad')});
+code.addEventListener('input',function(){this.value=this.value.replace(/\D/g,'').slice(0,6);jb.disabled=this.value.length<6;je.textContent='Bunday kod topilmadi — tekshirib, qayta kiriting.';je.classList.remove('on');code.classList.remove('bad')});
 function joinCode(){if(jb.disabled)return;var c=code.value,l=null;allL().forEach(function(x){if(x.code===c)l=x});
   if(l){code.value='';jb.disabled=true;play(l.id);return}
   jb.disabled=true;
@@ -1060,7 +1060,7 @@ function joinCode(){if(jb.disabled)return;var c=code.value,l=null;allL().forEach
   Promise.all([lv,fetchByCode(c)]).then(function(r){jb.disabled=code.value.length<6;
     if(r[0]==='ok'){code.value='';jb.disabled=true;return}
     if(r[0]==='closed'){say(window.LiveQuiz.err||'Xonaga kirib bo’lmadi');return}
-    var f=r[1];if(f){code.value='';jb.disabled=true;play(f.id)}else{je.classList.add('on');code.classList.add('bad')}})}
+    var f=r[1];if(f){code.value='';jb.disabled=true;play(f.id)}else{je.textContent=window.LiveQuiz&&window.LiveQuiz.err||'Bunday kod topilmadi — tekshirib, qayta kiriting.';je.classList.add('on');code.classList.add('bad')}})}
 jb.addEventListener('click',joinCode);code.addEventListener('keydown',function(e){if(e.key==='Enter')joinCode()});
 
 /* ===== qidiruv ===== */
