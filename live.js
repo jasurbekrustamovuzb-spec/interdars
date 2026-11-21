@@ -88,7 +88,7 @@ function netOpen(pin,onMsg,onSt){netClose();var sb=window.sb;if(!sb||!sb.channel
   ch.on('broadcast',{event:'m'},function(e){try{if(NET.ch===ch)onMsg(e.payload||{})}catch(err){console.warn('live',err)}});
   ch.subscribe(function(s){if(NET.ch!==ch)return;NET.ok=s==='SUBSCRIBED';onSt(s)});NET.ch=ch;return true}
 function netClose(delay){var ch=NET.ch;NET.ch=null;NET.ok=false;if(!ch)return;setTimeout(function(){try{window.sb.removeChannel(ch)}catch(e){}},delay||0)}
-function send(p){var ch=NET.ch;if(!ch)return;try{var r=ch.send({type:'broadcast',event:'m',payload:p});if(r&&r.catch)r.catch(function(){})}catch(e){}}
+function send(p){var ch=NET.ch;if(!ch)return;if(ch.state?ch.state!=='joined':!NET.ok)return;try{var r=ch.send({type:'broadcast',event:'m',payload:p});if(r&&r.catch)r.catch(function(){})}catch(e){}}
 
 /* ===== qo‘riqlash: orqaga tugmasi, yangilash, chiqish ===== */
 var guard=false;
