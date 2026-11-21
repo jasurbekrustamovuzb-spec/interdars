@@ -276,16 +276,16 @@ function hCSV(){var rows=[['O‘rin','Ism','Ball','To‘g‘ri javoblar','Savoll
 
 /* ================= ISHTIROKCHI (PLAYER) ================= */
 var P=null,PT=null,E={n:'',a:0,g:'f'};
-function join(pin){
+function join(pin,forceProfile){
   return new Promise(function(resolve){
     if(H||P){resolve('none');return}
     var prof=ls(LSF)||{},u=uinfo();LiveQuiz.err='';
     P={pin:pin,pid:rid(),n:prof.n||u.name||'',a:prof.a!=null?normalizeAv(prof.a):randAv(),ph:'conn',max:4,probe:true,tot:0,my:-1};
     if(prof.a!=null&&prof.a!==P.a){prof.a=P.a;lsSet(LSF,prof)}
     SND=prof.snd!==false;var me=P;
-    me.done=function(r){if(me.fin)return;me.fin=true;if(r!=='ok'){clearInterval(me.hl);if(P===me){P=null;netClose()}}resolve(r)};
-    me.fail=function(){me.done('none')};
-    if(!prof.n){me.joining=true;openOv();E={n:me.n,a:me.a,g:AV[me.a]?AV[me.a][3]:'a'};pEditModal();return}
+    me.done=function(r){if(me.fin)return;me.fin=true;if(r!=='ok'){clearInterval(me.hl);if(P===me){P=null;netClose()}if(me.profileGate){modalClose();closeOv()}}resolve(r)};
+    me.fail=function(){LiveQuiz.err='Faol jonli test topilmadi yoki tashkilotchi bilan aloqa uzildi. PIN/QR va internetni tekshiring.';me.done('none')};
+    if(forceProfile||!prof.n){me.joining=true;me.profileGate=true;openOv();view(topbar('')+'<div class="jq-cd"><div class="jq-spin"></div><p>Jonli testga ulanmoqda…</p></div>','pl');E={n:me.n,a:me.a,g:AV[me.a]?AV[me.a][3]:'a'};pEditModal();return}
     pNet();setTimeout(function(){if(!me.got&&!me.fin)me.fail()},7000)})}
 function pNet(){netOpen(P.pin,pMsg,function(s){var bad=s==='CHANNEL_ERROR'||s==='TIMED_OUT'||s==='CLOSED';conn(bad&&P&&P.got);if(s==='SUBSCRIBED'&&P)pLoop()})}
 function pHello(){if(P)send({t:'hi',p:P.pid,n:P.n,a:P.a})}
@@ -350,6 +350,7 @@ function pEdit(){P.a=normalizeAv(P.a);E={n:P.n,a:P.a,g:AV[P.a]?AV[P.a][3]:'f'};p
 function pEditModal(){
   var list=PFAV.map(function(i){return{d:AV[i],i:i}});
   modal('<h3>'+(P&&P.joining?'Testga qo‘shiling':'Profilingiz')+'</h3><label class="jq-lab" for="jqname">Ismingiz</label><input id="jqname" class="jq-inp" maxlength="20" value="'+esc(E.n)+'" placeholder="Ismingizni yozing" autocomplete="given-name"><div class="jq-prev">'+av(E.a,64)+'<b>'+esc((AV[E.a]||AV[0])[1])+'</b></div><div class="jq-pickhead"><b>Avatar tanlang</b><button class="jq-btn ghost sm" data-act="pfrnd">🎲 Tasodifiy</button></div><div class="jq-avg" role="group" aria-label="Avatarlar">'+list.map(function(x){return '<button class="'+(E.a===x.i?'on':'')+'" data-act="pfav" data-v="'+x.i+'" aria-label="'+esc(x.d[1])+'" title="'+esc(x.d[1])+'">'+av(x.i,48)+'</button>'}).join('')+'</div><small class="jq-credit">Mem avatarlari: <a href="https://commons.wikimedia.org/wiki/File:Doge_meme_example.jpg" target="_blank" rel="noreferrer">Doge — likeaduck, CC BY 2.0</a> · <a href="https://commons.wikimedia.org/wiki/File:Grumpy_Cat_meme_example.jpg" target="_blank" rel="noreferrer">Grumpy Cat — Gage Skidmore, CC BY-SA 4.0</a> · <a href="https://commons.wikimedia.org/wiki/File:O_RLY.jpg" target="_blank" rel="noreferrer">O RLY? — public domain</a></small><div class="jq-btns"><button class="jq-btn ghost" data-act="'+(P&&P.joining?'joincancel':'mclose')+'">'+(P&&P.joining?'Bekor':'Yopish')+'</button><button class="jq-btn go" data-act="pfsave">'+(P&&P.joining?'Testga kirish':'Saqlash')+'</button></div>','edit');
+  if(document.documentElement.dataset.liveJoinPending){document.documentElement.style.visibility='';delete document.documentElement.dataset.liveJoinPending}
   if(P&&P.joining)setTimeout(function(){var n=$('#jqname');if(n)n.focus()},80)}
 function pSave(){var raw=($('#jqname')||{}).value||'',joining=!!P.joining;if(joining&&!raw.trim()){say('Ismingizni kiriting');var input=$('#jqname');if(input)input.focus();return}P.n=cleanName(raw,P.n);P.a=E.a;var p=ls(LSF)||{};p.n=P.n;p.a=P.a;lsSet(LSF,p);var s=ls(LSP);if(s){s.n=P.n;s.a=P.a;lsSet(LSP,s)}modalClose();if(joining){P.joining=false;pNet();var me=P;setTimeout(function(){if(!me.got&&!me.fin)me.fail()},7000)}else{pHello();if(P.ph==='lobby')pLobby();say('Profil saqlandi')}}
 
@@ -385,8 +386,8 @@ function boot(){
   startAvQueue();
   var h=ls(LSH),p=ls(LSP),m=location.hash.match(/^#j=(\d{6})$/),pend=null;try{pend=localStorage.getItem('idPendingLive');localStorage.removeItem('idPendingLive')}catch(e){}
   var pin=m?m[1]:pend;if(m){try{history.replaceState(null,'','#bosh')}catch(e){}}
+  if(pin){if(p&&p.pin!==pin)lsDel(LSP);join(pin,true).then(function(r){if(r==='none')say(LiveQuiz.err||'Faol jonli xona topilmadi — PIN/QRni tekshiring');else if(r==='closed')say(LiveQuiz.err||'Xonaga kirib bo‘lmadi')});return}
   if(h&&h.pin&&Date.now()-h.ts<STALE){hResume(h);return}else if(h)lsDel(LSH);
-  if(pin){if(p&&p.pin!==pin)lsDel(LSP);setTimeout(function(){join(pin).then(function(r){if(r==='none')say('Jonli xona topilmadi — PIN kodni tekshiring');else if(r==='closed')say(LiveQuiz.err||'Xonaga kirib bo‘lmadi')})},0);return}
   if(p&&p.pin&&Date.now()-p.ts<STALE){pResume(p);return}else if(p)lsDel(LSP)}
 
 var CSS='.jq{position:fixed;inset:0;z-index:90;color:#fff;font-family:Nunito,system-ui,sans-serif;font-weight:700;overflow:hidden;background:#0E1034;overscroll-behavior:none;-webkit-user-select:none;user-select:none}.jq[hidden]{display:none}.jq *{box-sizing:border-box;margin:0}:where(.jq) button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}.jq h1,.lv h2,.lv h3,.lv .disp{font-family:"Baloo 2",Nunito,sans-serif;font-weight:800;line-height:1.05}'
