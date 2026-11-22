@@ -713,16 +713,15 @@ html{background:var(--bg)}
 .my-tm .tag{position:absolute;top:-11px;left:12px;background:#FFD84A;color:#3F2E00;border-radius:99px;font-size:11px;font-weight:800;padding:1px 9px;letter-spacing:.05em}
 .my-tm .ab{display:flex;gap:4px}.my-tm .ab button{width:30px;height:30px;border-radius:10px;background:#fff;color:#1B2150;font-weight:800;font-size:18px;line-height:1}
 .my-grid{flex:1;min-height:0;overflow:hidden;display:grid;justify-content:center;align-content:center;padding:6px 12px 12px;grid-template-columns:repeat(var(--cols,5),var(--cw,120px));grid-auto-rows:var(--ch,160px)}
-.my-c{position:relative;width:var(--cw);height:var(--ch);border-radius:calc(var(--cw)*.09);background:linear-gradient(155deg,var(--k1),var(--k2));border:calc(var(--cw)*.03) solid #fff;box-shadow:0 calc(var(--cw)*.04) 0 rgba(0,0,0,.28),0 calc(var(--cw)*.08) calc(var(--cw)*.14) rgba(0,0,0,.25);color:#fff;display:flex;flex-direction:row;align-items:center;justify-content:space-between;gap:calc(var(--cw)*.03);padding:calc(var(--cw)*.04) calc(var(--cw)*.07);cursor:pointer;transition:transform .18s;overflow:hidden}
-.my-c::before{content:"";position:absolute;inset:calc(var(--cw)*.028);border:2px dashed rgba(255,255,255,.55);border-radius:calc(var(--cw)*.065);pointer-events:none}
-.my-c::after{content:"";position:absolute;inset:0;background:radial-gradient(circle at 25% 20%,rgba(255,255,255,.34),transparent 46%),repeating-linear-gradient(45deg,rgba(255,255,255,.07) 0 8px,transparent 8px 16px);pointer-events:none}
+.my-c{position:relative;width:var(--cw);height:var(--ch);border-radius:calc(var(--cw)*.09);background:radial-gradient(ellipse at 50% 42%,rgba(126,103,255,.42),transparent 54%),linear-gradient(145deg,#242052,#11142f);border:calc(var(--cw)*.03) solid #E4CE91;box-shadow:0 calc(var(--cw)*.04) 0 rgba(0,0,0,.28),0 calc(var(--cw)*.08) calc(var(--cw)*.14) rgba(0,0,0,.25),inset 0 0 0 3px rgba(255,255,255,.1);color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:transform .18s;overflow:hidden}
+.my-c::before{content:"";position:absolute;inset:calc(var(--cw)*.055);border:1px solid rgba(228,206,145,.76);border-radius:calc(var(--cw)*.065);background:repeating-linear-gradient(45deg,rgba(255,255,255,.025) 0 2px,transparent 2px 9px);pointer-events:none}
+.my-c::after{content:"?";position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:calc(var(--cw)*.34);height:calc(var(--cw)*.34);border:2px solid rgba(228,206,145,.85);border-radius:50%;background:radial-gradient(circle,#5c4caa,#29234f 72%);box-shadow:0 0 0 5px rgba(228,206,145,.1),0 5px 16px rgba(0,0,0,.3);display:grid;place-items:center;color:#F5E4B1;font-family:"Baloo 2",Nunito,system-ui,sans-serif;font-weight:800;font-size:calc(var(--cw)*.22);line-height:1;pointer-events:none}
 .my-c:hover{transform:translateY(-4px) rotate(-1.2deg)}.my-c:active{transform:scale(.96)}
-.my-c .pic{flex:1;display:grid;place-items:center;font-size:calc(var(--cw)*.36);line-height:1;filter:drop-shadow(0 4px 0 rgba(0,0,0,.2));position:relative;z-index:1}
-.my-c .nm{position:relative;z-index:1;min-width:calc(var(--cw)*.27);height:calc(var(--cw)*.27);border-radius:99px;background:#fff;color:var(--k1);font-family:"Baloo 2",Nunito,system-ui,sans-serif;font-weight:800;font-size:calc(var(--cw)*.17);line-height:1;display:grid;place-items:center;padding:0 calc(var(--cw)*.05);box-shadow:0 3px 0 rgba(0,0,0,.2)}
-.my-c .q{position:absolute;z-index:1;top:calc(var(--cw)*.04);right:calc(var(--cw)*.09);font-family:"Baloo 2",Nunito,system-ui,sans-serif;font-weight:800;font-size:calc(var(--cw)*.1);opacity:.8}
-.my-c.dn{cursor:default;background:linear-gradient(155deg,var(--d1),var(--d2));opacity:.72;box-shadow:0 calc(var(--cw)*.02) 0 rgba(0,0,0,.25);border-style:dashed;border-color:rgba(255,255,255,.7)}
+.my-c .pic,.my-c .nm,.my-c .q{display:none}
+.my-c.dn{cursor:default;background:linear-gradient(145deg,#363153,#282442);opacity:.72;box-shadow:0 calc(var(--cw)*.02) 0 rgba(0,0,0,.25);border-style:solid;border-color:rgba(228,206,145,.6)}
 .my-c.dn:hover,.my-c.dn:active{transform:none}
-.my-c.dn::before{display:none}
+.my-c.dn::after{content:none;display:none}
+.my-c .my-reveal{position:relative;z-index:1;font-family:"Baloo 2",Nunito,system-ui,sans-serif;font-size:calc(var(--cw)*.2);font-weight:800;color:#fff}
 .my-c.dn .pic{font-size:calc(var(--cw)*.26)}
 .my-c.dn .nm{background:rgba(0,0,0,.4);color:#fff;font-size:calc(var(--cw)*.15)}
 .my-c.dn .tb{position:absolute;z-index:1;top:calc(var(--cw)*.035);left:calc(var(--cw)*.06);font-size:calc(var(--cw)*.14);line-height:1}
@@ -864,15 +863,13 @@ html{background:var(--bg)}
 .my.t-edu .my-tm.on{border-color:#4B6BFF;background:#EEF2FF;box-shadow:0 0 0 3px rgba(75,107,255,.22)}
 .my.t-edu .my-tm .tag{background:#4B6BFF;color:#fff}
 .my.t-edu .my-tm .ab button{background:#EEF2FF;color:#1B2150}
-.my.t-edu .my-c{background:#fff;border:2px solid #D6DDF5;border-radius:calc(var(--cw)*.08);box-shadow:0 calc(var(--cw)*.03) 0 #D6DDF5;overflow:hidden}
-.my.t-edu .my-c::before{inset:0 0 auto 0;height:16%;border:0;border-radius:0;background:linear-gradient(90deg,var(--k1),var(--k2))}
-.my.t-edu .my-c::after{display:none}
-.my.t-edu .my-c .q{display:none}
-.my.t-edu .my-c .pic{font-family:Nunito,system-ui,sans-serif;font-weight:800;color:var(--k1);filter:none;font-size:calc(var(--cw)*.36);margin-top:14%}
-.my.t-edu .my-c .nm{background:var(--k1);color:#fff;box-shadow:none}
+.my.t-edu .my-c{background:radial-gradient(ellipse at 50% 42%,rgba(126,103,255,.42),transparent 54%),linear-gradient(145deg,#242052,#11142f);border:calc(var(--cw)*.03) solid #E4CE91;border-radius:calc(var(--cw)*.09);box-shadow:0 calc(var(--cw)*.04) 0 rgba(0,0,0,.28),0 calc(var(--cw)*.08) calc(var(--cw)*.14) rgba(0,0,0,.25),inset 0 0 0 3px rgba(255,255,255,.1);overflow:hidden}
+.my.t-edu .my-c::before{inset:calc(var(--cw)*.055);height:auto;border:1px solid rgba(228,206,145,.76);border-radius:calc(var(--cw)*.065);background:repeating-linear-gradient(45deg,rgba(255,255,255,.025) 0 2px,transparent 2px 9px)}
+.my.t-edu .my-c::after{content:"?";display:grid;left:50%;top:50%;width:calc(var(--cw)*.34);height:calc(var(--cw)*.34);transform:translate(-50%,-50%);border:2px solid rgba(228,206,145,.85);border-radius:50%;background:radial-gradient(circle,#5c4caa,#29234f 72%);box-shadow:0 0 0 5px rgba(228,206,145,.1),0 5px 16px rgba(0,0,0,.3);place-items:center;color:#F5E4B1;font-family:"Baloo 2",Nunito,system-ui,sans-serif;font-weight:800;font-size:calc(var(--cw)*.22);line-height:1}
+.my.t-edu .my-c.dn::after{content:none;display:none}
 .my.t-edu .my-c:hover{transform:translateY(-3px)}
-.my.t-edu .my-c.dn{background:linear-gradient(155deg,var(--d1),var(--d2));border:2px solid transparent;opacity:.92;box-shadow:none}
-.my.t-edu .my-c.dn::before{display:none}
+.my.t-edu .my-c.dn{background:linear-gradient(145deg,#363153,#282442);border:calc(var(--cw)*.03) solid rgba(228,206,145,.6);opacity:.72;box-shadow:0 calc(var(--cw)*.02) 0 rgba(0,0,0,.25)}
+.my.t-edu .my-c.dn::before{display:block}
 .my.t-edu .my-c.dn .pic{font-family:inherit;font-weight:400;font-size:calc(var(--cw)*.26);color:inherit;margin-top:0}
 .my.t-edu .my-c.dn .nm{background:rgba(0,0,0,.4);color:#fff}
 .ms-th.t-edu{color:#1B2150;border-radius:22px;border-color:#D6DDF5}
@@ -1674,7 +1671,7 @@ var MYORD=['edu','animals','space','cars','fun'];
 var MYC=['Javobni 10 soniya ichida ayting','Javobni o’rnidan turib, to’liq gap bilan ayting','Javobni bitta misol keltirib izohlang','Javob berishdan oldin mavzuga oid bitta atama ayting','Javobni guruh bo’lib, bir ovozdan ayting'];
 function mysLoad(){var s={};try{s=JSON.parse(lsg('idMys')||'{}')||{}}catch(e){}
   return{theme:MYT[s.theme]?s.theme:'edu',n:Math.min(6,Math.max(2,+s.n||3)),cnt:[12,16,20,24].indexOf(+s.cnt)>-1?+s.cnt:20,c:s.c!==false,b:s.b!==false,m:s.m!==false,custom:String(s.custom||'').slice(0,600),pt:mysPt(s.pt),nm:null,ed:{}}}
-function mysPt(p){p=p||{};function g(k,d,lo,hi){var v=Math.round(+p[k]);return isFinite(v)&&v>=lo&&v<=hi?v:d}return{q:g('q',1,0,100),c:g('c',1,0,100),b:g('b',1,0,100),m:g('m',1,0,100),w:g('w',0,0,100)}}
+function mysPt(p){p=p||{};function g(k,d,lo,hi,old){var v=Math.round(+p[k]);if(v===old)v=d;return isFinite(v)&&v>=lo&&v<=hi?v:d}return{q:g('q',1,0,100,20),c:g('c',1,0,100,40),b:g('b',1,0,100,30),m:g('m',1,0,100,10),w:g('w',0,0,100)}}
 function mysNames(th,old,ed){return MYT[th].teams.map(function(x,i){return{e:x[0],n:(old&&ed&&ed[i]&&old[i])?old[i].n:(i+1)+'-'+T('guruh')}})}
 function mysPlan(nq,t0,o){var cap=Math.max(1,Math.floor(nq/4)),nm=o.m?Math.min(Math.max(1,Math.round(t0*.1)),cap):0,nb=o.b?Math.min(Math.max(1,Math.round(t0*.1)),cap):0,
   qc=Math.min(nq,t0-nm-nb),nc=o.c?Math.min(Math.max(1,Math.round(qc*.25)),qc-2):0;
@@ -1731,12 +1728,11 @@ function mysShell(){
   +'<div class="my-sc" id="my-sc"></div><div class="my-grid" id="my-grid"></div><div class="my-ov" id="my-ov"></div></div>';
   mysScore();mysCards();mysTop()}
 function mysTop(){var n=MY.cards.length;$('#my-cn').textContent='🃏 '+MY.done+' / '+n;$('#my-pg').style.width=(MY.done/n*100)+'%'}
-function mysScore(){$('#my-sc').innerHTML=MY.teams.map(function(t,j){return '<div class="my-tm'+(j===MY.turn?' on':'')+'" data-my="turn" data-t="'+j+'">'+(j===MY.turn?'<span class="tag">'+T('NAVBAT')+'</span>':'')+'<span class="e">'+t.e+'</span><span class="n">'+esc(t.n)+'</span><b class="s">'+t.s+'</b>'+(MY.adj?'<span class="ab"><button data-my="adj" data-t="'+j+'" data-d="-10" aria-label="−10">−</button><button data-my="adj" data-t="'+j+'" data-d="10" aria-label="+10">+</button></span>':'')+'</div>'}).join('');
+function mysScore(){$('#my-sc').innerHTML=MY.teams.map(function(t,j){return '<div class="my-tm'+(j===MY.turn?' on':'')+'" data-my="turn" data-t="'+j+'">'+(j===MY.turn?'<span class="tag">'+T('NAVBAT')+'</span>':'')+'<span class="e">'+t.e+'</span><span class="n">'+esc(t.n)+'</span><b class="s">'+t.s+'</b>'+(MY.adj?'<span class="ab"><button data-my="adj" data-t="'+j+'" data-d="-1" aria-label="−1">−</button><button data-my="adj" data-t="'+j+'" data-d="1" aria-label="+1">+</button></span>':'')+'</div>'}).join('');
   var a=$('#my-adj');if(a)a.classList.toggle('on',!!MY.adj)}
 function mysCardHTML(c,i){
-  if(c.st){var K=MYK[c.k],t=c.team!=null?MY.teams[c.team]:null;
-    return '<div class="my-c dn k-'+c.k+'" style="--d1:'+K.d1+';--d2:'+K.d2+'" aria-label="'+T('Karta')+' '+(i+1)+': '+fpt(c.res)+'"><span class="q">'+(i+1)+'</span><span class="tb">'+(t?t.e:'')+'</span><span class="pic">'+K.e+'</span><span class="nm">'+fpt(c.res)+'</span></div>'}
-  return '<button class="my-c" data-my="open" data-i="'+i+'" style="--k1:'+c.pal[0]+';--k2:'+c.pal[1]+'" aria-label="'+T('Karta')+' '+(i+1)+'"><span class="q">?</span><span class="pic">'+c.pic+'</span><span class="nm">'+(i+1)+'</span></button>'}
+  if(c.st)return '<div class="my-c dn" aria-label="'+T('Ochildi')+' · '+T('Karta')+' '+(i+1)+': '+fpt(c.res)+'"><span class="my-reveal">'+fpt(c.res)+'</span></div>';
+  return '<button class="my-c" data-my="open" data-i="'+i+'" aria-label="'+T('Karta')+' '+(i+1)+'"></button>'}
 function mysCards(){$('#my-grid').innerHTML=MY.cards.map(mysCardHTML).join('');mysFit()}
 function mysFit(){var g=$('#my-grid');if(!g||!MY)return;var W=g.clientWidth-24,H=g.clientHeight-18,n=MY.cards.length,r=1.35,gap=Math.max(6,Math.min(16,Math.round(Math.min(W,H)/55))),best=null;
   for(var c=1;c<=n;c++){var rows=Math.ceil(n/c),cw=Math.min((W-gap*(c-1))/c,(H-gap*(rows-1))/rows*r),a=cw*cw;if(cw>0&&(!best||a>best.a+1))best={c:c,cw:cw,a:a}}
@@ -1748,7 +1744,7 @@ function mysFitOv(){var bb=document.querySelector('#my-ov .my-bb');if(!bb)return
 function mysView(){var c=MY.cards[MY.open],K=MYK[c.k],q=c.k==='q'||c.k==='c',rev=MY.rev,it=c.it;
   var bd=c.k==='m'?'−'+Math.abs(c.p):c.k==='b'?'+'+c.p:(c.k==='c'?'✅ ':'')+c.p;
   var h='<div class="my-big k-'+c.k+(MY.fresh?' fresh':'')+'" style="--d1:'+K.d1+';--d2:'+K.d2+'"><div class="my-bh"><span class="mic">'+K.e+'</span><div class="tt"><b>'+T(K.n)+'</b><small>'+T('Karta')+' № '+(MY.open+1)+'</small></div>'
-   +(q?'<button class="my-tmr" id="my-tmr" data-my="tmr" aria-label="'+T('Taymer')+'">⏱ 30</button>':'')+'<span class="my-pt"><button data-my="cp" data-d="-5" aria-label="−5">−</button>'+bd+' '+T('ball')+'<button data-my="cp" data-d="5" aria-label="+5">+</button></span></div><div class="my-bb">';
+   +(q?'<button class="my-tmr" id="my-tmr" data-my="tmr" aria-label="'+T('Taymer')+'">⏱ 30</button>':'')+'<span class="my-pt"><button data-my="cp" data-d="-1" aria-label="−1">−</button>'+bd+' '+T('ball')+'<button data-my="cp" data-d="1" aria-label="+1">+</button></span></div><div class="my-bb">';
   if(q){if(c.k==='c')h+='<div class="my-cond">⚡ '+T('SHART')+': '+esc(c.cond)+'</div>';
     h+='<div class="my-qt" style="font-size:'+myQFs(it.q)+'">'+esc(it.q)+'</div>'+(it.text?(rev?'<div class="my-ans">'+esc(it.ans)+'</div>':'<div class="my-ans ph">'+T('Javobni og’zaki ayting')+'</div>'):'')+'<div class="my-ops" style="font-size:'+myOFs(it.a)+'">'+it.a.map(function(t,j){return '<div class="my-op o'+j+(rev?(j===it.c?' ok':' dim'):'')+'"><u>'+MYSH[j]+'</u><span>'+esc(t)+'</span></div>'}).join('')+'</div>'}
   else if(c.k==='b')h+='<div class="my-fx">🎁</div><div class="my-qt" style="font-size:clamp(26px,min(5vw,8vh),72px)">'+(c.tt?esc(c.tt):T('Yutuqli karta!'))+'</div><div class="my-sub">'+T('Kimga beramiz? Guruhni tanlang.')+'</div>';
@@ -1959,7 +1955,8 @@ function shareL(l){if(!l||!l.code)return;if(l.pub===false){say('Ulashish uchun �
 function cloudInit(){if(!sbc())return;
   var pc=(location.hash.match(/^#t=(\d{6})$/)||[])[1]||null;try{if(!pc)pc=localStorage.getItem('idPending');localStorage.removeItem('idPending')}catch(e){}
   if(pc){try{history.replaceState(null,'','#bosh')}catch(e){}}
-  cuid().then(cloudPull).then(function(){cloudPub();if(pc)return fetchByCode(pc).then(function(l){if(l){if(l.m==='mystery'&&l.my)mysShared(l);else openDetail(l.id)}else say('Bunday test topilmadi')})})}
+  var session=cuid();session.then(function(){cloudPull();cloudPub()});
+  if(pc)session.then(function(){return fetchByCode(pc)}).then(function(l){if(l){if(l.m==='mystery'&&l.my)mysShared(l);else openDetail(l.id)}else say('Bunday test topilmadi')})}
 window.aiTestBridge={getLessons:function(){return D.lessons},saveLesson:function(l){var i=D.lessons.findIndex(function(x){return x.id===l.id});if(i<0)D.lessons.unshift(l);else{var o=D.lessons[i];if(o.cid)l.cid=o.cid;if(l.pub===undefined&&o.pub!==undefined)l.pub=o.pub;D.lessons[i]=l}saveD();cloudPush(l);renderAll()},deleteLesson:function(id){var dl=find(id);if(dl&&dl.cid)cloudDel(dl.cid);D.lessons=D.lessons.filter(function(x){return x.id!==id});saveD();renderAll()},share:function(id){shareL(find(id))},play:function(id){play(id)},detail:function(id){openDetail(id)},go:function(p){go(p)},MT:MT,ask:ask,xc:XC,QE:QE};renderAll();show();bdot();cloudInit();
 try{if(remOn()){var td=dstr(new Date());if(lsg('idRemDay')!==td&&D.streak.last!==td&&curStreak()>0){lss('idRemDay',td);new Notification('InterDars',{body:T('Seriyangiz uzilmasin — bugun bitta dars bajaring!')})}}}catch(e){}
 })();
