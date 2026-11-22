@@ -224,7 +224,7 @@ function host(l,opts){
   var pin;pin=String(100000+Math.floor(Math.random()*900000));
   H={v:1,pin:pin,lid:l.id,title:l.title,set:defSet(cls),ph:'lobby',qi:-1,t0:0,dur:0,pl:{},n:0,qs:[],ts:Date.now(),lock:false,qst:[]};
   if(cls){H.mode='class';H.raw=l.qs.map(function(x){var o={};Object.keys(x).forEach(function(k){o[k]=x[k]});if(o.a)o.a=o.a.slice();if(o.acc)o.acc=o.acc.slice();return o});H.src=composeItems(l.title,H.raw,H.set)}
-  else{H.src=l.qs.filter(function(x){return x.a&&x.a.length>=2&&x.c!=null&&(!x.k||x.k==='mcq')}).map(function(x){return{q:x.q,a:x.a.slice(),c:x.c}});if(!H.src.length){H=null;say('Savollar topilmadi');return false}}
+  else{H.src=l.qs.filter(function(x){return x.a&&x.a.length>=2&&x.c!=null&&(!x.k||x.k==='mcq'||x.k==='tf')}).map(function(x){return{q:x.q,a:x.a.slice(),c:x.c}});if(!H.src.length){H=null;say('Savollar topilmadi');return false}}
   H.set.snd=(ls(LSF)||{}).snd!==false;hBoot();return true}
 function hBoot(){H.qst=H.qst||[];SND=H.set.snd;openOv();
   netOpen(H.pin,hMsg,function(s){var bad=s==='CHANNEL_ERROR'||s==='TIMED_OUT'||s==='CLOSED';conn(bad);if(s==='SUBSCRIBED')bcast()});
