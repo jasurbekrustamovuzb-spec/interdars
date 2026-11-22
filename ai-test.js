@@ -122,7 +122,7 @@ var SPARK='<svg viewBox="0 0 24 24" aria-hidden="true"><path class="s1" d="M11 3
 window.AI_ORB=function(c){return '<span class="orb '+(c||'')+'">'+SPARK+'</span>'};
 var S={kind:'mcq',files:[],count:10,counts:{mcq:10,text:0,tf:0},mixCounts:{mcq:6,text:2,tf:2},level:'o’rtacha',busy:false,ctl:null,cool:0,coolT:null,remain:null,cur:null,editId:null,saved:false,dirty:false,wt:null,bad:-1};
  var LV=[['oson','🌱','Sodda'],['o’rtacha','⚖️','O’rtacha'],['murakkab','🔥','Murakkab']];
-var MS=['quiz','team','mill'];
+var MS=['quiz','team','mill','class'];
 
 /* ---- yordamchilar ---- */
 function total(){var c=S.counts;return c.mcq+c.text+c.tf}
@@ -217,20 +217,21 @@ function showEditor(on){$('#ax-form').hidden=on;$('#ax-editor').hidden=!on;$('#a
 function letter(j){return 'ABCDE'.charAt(j)}
 function valid(){var qs=S.cur.questions;for(var i=0;i<qs.length;i++){var w=B.QE.bad(qs[i]);if(w){S.why=w;return i}}return -1}
 function usable(c){var m=B.MT[c.m||'quiz'];return c.questions.filter(function(x){return m.txt||x.k!=='text'}).length}
+ function allowedMethods(c){return c.questions.some(function(x){return x.k==='text'})?['class']:MS.filter(function(k){return k!=='class'})}
 function editor(){
   var box=$('#ax-editor'),c=S.cur;if(!c){box.innerHTML='';return}
   if(c.m==='mystery'&&!Array.isArray(c.xc))c.xc=B.xc.def(c.questions.length);
-  var n=c.questions.length,M=B.MT,h='';
+  var n=c.questions.length,M=B.MT,h='',methods=allowedMethods(c);if(methods.indexOf(c.m)<0)c.m=methods[0];
   h+='<div class="axe-top">'+AI_ORB('sm')+'<div><b>'+T(S.editId?'Testni tahrirlash':'Test tayyor')+'</b><small>'+n+' '+T('savol')+(S.editId?'':' · '+T('Tekshirib, kerak bo’lsa tahrirlang'))+'</small></div></div>';
   h+='<div class="axs"><label><span class="lab">'+T('Test nomi')+'</span><input class="inp" id="ax-title" maxlength="180" value="'+esc(c.topic)+'"></label>';
-  h+='<div><span class="lab">'+T('Qaysi metodda sinaymiz?')+'</span><div class="pills" id="ax-m">'+MS.map(function(k){var m=M[k];return '<button class="pill" data-m="'+k+'" aria-pressed="'+(c.m===k)+'">'+m.e+' '+T(m.n)+'</button>'}).join('')+'</div></div></div>';
+  h+='<div><span class="lab">'+T(methods.length===1?"Mos metod":"Qaysi metodda sinaymiz?")+'</span><div class="pills" id="ax-m">'+methods.map(function(k){var m=M[k];return '<button class="pill" data-m="'+k+'" aria-pressed="'+(c.m===k)+'">'+m.e+' '+T(m.n)+'</button>'}).join('')+'</div>'+(methods.length===1&&methods[0]==='class'?'<p class="qe-tip">'+T('Savol-javob savollari uchun Interaktiv dars tanlandi.')+'</p>':'')+'</div></div>';
   h+='<div id="ax-qe"></div>';
   if(c.m==='mystery')h+='<div id="xc-ai"></div>';
   h+='<div class="aibar">'+(S.saved&&!S.dirty?'<button class="cta" id="ax-play">▶ '+T('Boshlash')+'</button>':'<button class="cta" id="ax-save"><svg class="ico" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg> '+T('Saqlash')+'</button>')+'</div>';
   box.innerHTML=h;
   B.QE.mount($('#ax-qe'),c.questions,{max:30,noText:!M[c.m||'quiz'].txt,change:markDirty,bad:S.bad,why:S.why});
   if(c.m==='mystery')B.xc.mount($('#xc-ai'),c.xc,markDirty)}
-function markDirty(){if(S.saved){S.dirty=true;var bar=$('.aibar .cta');if(bar&&bar.id==='ax-play'){bar.id='ax-save';bar.innerHTML='<svg class="ico" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg> '+T('Saqlash')}}else S.dirty=true}
+function markDirty(){if(S.cur){var choices=allowedMethods(S.cur);if(choices.indexOf(S.cur.m)<0){S.cur.m=choices[0];S.dirty=true;editor();return}}if(S.saved){S.dirty=true;var bar=$('.aibar .cta');if(bar&&bar.id==='ax-play'){bar.id='ax-save';bar.innerHTML='<svg class="ico" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg> '+T('Saqlash')}}else S.dirty=true}
 function save(){
   var c=S.cur,title=$('#ax-title').value.trim();
   if(!title){status('Test nomini kiriting.',true);$('#ax-title').focus();return}
