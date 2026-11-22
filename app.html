@@ -1964,7 +1964,7 @@ function shareL(l){if(!l||!l.code)return;if(l.pub===false){say('Ulashish uchun â
 function cloudInit(){if(!sbc())return;
   var pc=(location.hash.match(/^#t=(\d{6})$/)||[])[1]||null;try{if(!pc)pc=localStorage.getItem('idPending');localStorage.removeItem('idPending')}catch(e){}
   if(pc){try{history.replaceState(null,'','#bosh')}catch(e){}}
-  var session=cuid();session.then(function(){cloudPull();cloudPub()});
+  var session=cuid();session.then(function(){cloudPull();window.cloudPubSoon()});
   if(pc)session.then(function(){return fetchByCode(pc)}).then(function(l){if(l){if(l.m==='mystery'&&l.my)mysShared(l);else openDetail(l.id)}else say('Bunday test topilmadi')})}
 window.aiTestBridge={getLessons:function(){return D.lessons},saveLesson:function(l){var i=D.lessons.findIndex(function(x){return x.id===l.id});if(i<0)D.lessons.unshift(l);else{var o=D.lessons[i];if(o.cid)l.cid=o.cid;if(l.pub===undefined&&o.pub!==undefined)l.pub=o.pub;D.lessons[i]=l}saveD();cloudPush(l);renderAll()},deleteLesson:function(id){var dl=find(id);if(dl&&dl.cid)cloudDel(dl.cid);D.lessons=D.lessons.filter(function(x){return x.id!==id});saveD();renderAll()},share:function(id){shareL(find(id))},play:function(id){play(id)},detail:function(id){openDetail(id)},go:function(p){go(p)},MT:MT,ask:ask,xc:XC,QE:QE};renderAll();show();bdot();cloudInit();
 try{if(remOn()){var td=dstr(new Date());if(lsg('idRemDay')!==td&&D.streak.last!==td&&curStreak()>0){lss('idRemDay',td);new Notification('InterDars',{body:T('Seriyangiz uzilmasin â€” bugun bitta dars bajaring!')})}}}catch(e){}
