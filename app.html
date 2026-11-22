@@ -849,7 +849,7 @@ html{background:var(--bg)}
 .qe-add{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:14px}
 .qe-add button{padding:9px 14px;border-radius:12px;border:2px dashed var(--line);font-weight:800;background:var(--card)}
 .qe-add button:disabled{opacity:.4}.qe-empty{color:var(--muted);margin:10px 0}
-.axt{display:grid;gap:8px}.axt-r{display:flex;align-items:center;gap:10px;padding:8px 12px;border:2px solid var(--line);border-radius:14px;background:var(--bg)}
+.axt{display:grid;gap:8px}.ax-kinds{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.ax-kind{display:flex;align-items:center;gap:9px;min-height:50px;padding:8px 11px;border:2px solid var(--line);border-radius:15px;background:var(--bg);color:var(--ink);font:800 14px Nunito,sans-serif;text-align:left}.ax-kind i{font-style:normal;font-size:19px}.ax-kind[aria-pressed=true]{border-color:var(--blue);background:rgba(75,107,255,.1);box-shadow:0 3px 0 var(--blue)}.ax-count{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 12px;border:2px solid var(--line);border-radius:14px;background:var(--bg);font-weight:800}.ax-count select{min-width:92px;padding:8px 10px;border:2px solid var(--line);border-radius:11px;background:var(--card);color:var(--ink);font:800 16px Nunito,sans-serif}.axt-r{display:flex;align-items:center;gap:10px;padding:8px 12px;border:2px solid var(--line);border-radius:14px;background:var(--bg)}
 .axt-r>span{font-size:20px;width:26px;text-align:center;font-weight:800;color:var(--blue)}.axt-r div{flex:1;min-width:0}.axt-r b{display:block}.axt-r small{color:var(--muted);font-size:12.5px;font-weight:700}
 .axt-r button{width:36px;height:36px;border-radius:10px;border:2px solid var(--line);background:var(--card);font-weight:800;font-size:18px}.axt-r button:disabled{opacity:.35}
 .axt-r em{min-width:30px;text-align:center;font-style:normal;font-weight:800;font-size:18px}
@@ -1010,19 +1010,19 @@ html{background:var(--bg)}
 </section>
 
 <section class="page" id="p-ai-test"><div class="ax">
-  <div class="axh"><button class="icon-btn" id="ai-back" aria-label="Orqaga">←</button><h1>AI test</h1><span class="axq" id="ax-quota" hidden></span></div>
+  <div class="axh"><button class="icon-btn" id="ai-back" aria-label="Orqaga">←</button><h1>AI bilan savol tuzish</h1><span class="axq" id="ax-quota" hidden></span></div>
   <div id="ax-status" class="ax-status" role="status"></div>
   <div id="ax-form">
     <input id="ax-file" type="file" multiple hidden accept=".pdf,.doc,.docx,.ppt,.pptx,application/pdf,application/msword,application/vnd.ms-powerpoint,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.openxmlformats-officedocument.presentationml.presentation">
     <label class="ax-drop" id="ax-drop" for="ax-file"><span class="orb lg" aria-hidden="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path class="s1" d="M11 3l1.9 5.1L18 10l-5.1 1.9L11 17l-1.9-5.1L4 10l5.1-1.9z"/><path class="s2" d="M19 14l.9 2.1L22 17l-2.1.9L19 20l-.9-2.1L16 17l2.1-.9z"/><path class="s3" d="M5 17l.6 1.4L7 19l-1.4.6L5 21l-.6-1.4L3 19l1.4-.6z"/></svg></span><b>Fayl tashlang</b><small>yoki bosib tanlang · 3 MB gacha</small><span class="ftypes"><i class="ft pdf">PDF</i><i class="ft doc">Word</i><i class="ft ppt">PowerPoint</i></span></label>
     <div class="ax-files" id="ax-files"></div>
     <div class="axs">
-      <div><span class="lab">Nechta va qanday savol?</span><div class="axt" id="ax-types"></div><p class="axt-sum" id="ax-tsum"></p></div>
+      <div><span class="lab">Savol turi va soni</span><div class="axt" id="ax-types"></div><p class="axt-sum" id="ax-tsum"></p></div>
       <div><span class="lab">Qiyinlik</span><div class="seg" id="ax-lv"><button type="button" data-l="oson" aria-pressed="false"><span>🌱</span>Sodda</button><button type="button" data-l="o’rtacha" aria-pressed="true"><span>⚖️</span>O’rtacha</button><button type="button" data-l="murakkab" aria-pressed="false"><span>🔥</span>Murakkab</button></div></div>
       <details class="axm"><summary><span>+</span>Mavzu va istak</summary><input class="inp" id="ax-topic" maxlength="180" placeholder="Mavzu (bo’sh qoldirsangiz AI aniqlaydi)" aria-label="Mavzu"><input class="inp" id="ax-req" maxlength="1200" placeholder="Istak: masalan, atamalarga urg’u bering" aria-label="Istak"></details>
     </div>
-    <button class="axmys" id="ax-mys" type="button" aria-pressed="false"><span class="e" aria-hidden="true">🃏</span><span><b>Sirli kartalar uchun</b><small>Savol va javob faqat manbadan, mavzuning eng muhim va esda qolarli joylaridan. Yutuqli, shartli va zararli kartalarni keyin tahrirlaysiz.</small></span><span class="sw2" aria-hidden="true"></span></button>
-    <button class="cta axb" id="ax-go" type="button" disabled><span class="orb xs" aria-hidden="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path class="s1" d="M11 3l1.9 5.1L18 10l-5.1 1.9L11 17l-1.9-5.1L4 10l5.1-1.9z"/><path class="s2" d="M19 14l.9 2.1L22 17l-2.1.9L19 20l-.9-2.1L16 17l2.1-.9z"/><path class="s3" d="M5 17l.6 1.4L7 19l-1.4.6L5 21l-.6-1.4L3 19l1.4-.6z"/></svg></span><span class="lb">Test tuzish</span></button>
+    
+    <button class="cta axb" id="ax-go" type="button" disabled><span class="orb xs" aria-hidden="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path class="s1" d="M11 3l1.9 5.1L18 10l-5.1 1.9L11 17l-1.9-5.1L4 10l5.1-1.9z"/><path class="s2" d="M19 14l.9 2.1L22 17l-2.1.9L19 20l-.9-2.1L16 17l2.1-.9z"/><path class="s3" d="M5 17l.6 1.4L7 19l-1.4.6L5 21l-.6-1.4L3 19l1.4-.6z"/></svg></span><span class="lb">Savollarni yaratish</span></button>
     <p class="ax-hint" id="ax-hint">Avval fayl tanlang</p>
     <details class="ax-priv"><summary><span>🔒</span> Faylingizning o’zi saqlanmaydi</summary><p>Fayl qurilmangizda o’qiladi. Faqat undan olingan matn test tuzish uchun Google AI’ga yuboriladi. Bepul rejimda Google bu matndan xizmatni yaxshilash uchun foydalanishi mumkin.</p></details>
   </div>
@@ -1506,14 +1506,14 @@ function logout(){var go=function(){try{localStorage.removeItem('idUser');localS
   setTimeout(go,1500);try{window.sb?window.sb.auth.signOut().then(go,go):go()}catch(e){go()}}
 function openDetail(id){var l=find(id);if(!l)return;var m=MT[l.m],own=l.id.charAt(0)==='u';
   var h='<div class="dh"><span class="tile" style="background:'+m.bg+'">'+m.e+'</span><div><h2>'+esc(l.title)+'</h2><small>'+T(m.n)+' · '+cnt(l)+' '+T(unit(l))+(l.sub?' · '+esc(l.sub):'')+'</small></div><button class="icon-btn" data-dx aria-label="'+T('Yopish')+'">✕</button></div>';
-  h+='<div class="drow"><button class="cta" data-dplay="'+l.id+'">▶ '+T(hostLbl(l.m))+'</button>'+(l.qs&&!hostM(l.m)?'<button class="go alt" data-dlive="'+l.id+'">🔴 '+T('Jonli o’tkazish')+'</button><button class="go alt" data-dclass="'+l.id+'">📺 '+T('Interaktiv dars')+'</button>':'')+(own?'<button class="go alt" data-dedit="'+l.id+'">✏️ '+T('Tahrirlash')+'</button><button class="go alt" data-ddel="'+l.id+'">'+T('O’chirish')+'</button>':'<button class="go alt" data-dadd="'+l.id+'">'+T('Testlarimga qo’shish')+'</button>')+'</div>';
+  h+='<div class="drow"><button class="cta" data-dplay="'+l.id+'">▶ '+T(hostLbl(l.m))+'</button>'+(l.qs&&!hostM(l.m)?'<button class="go alt" data-dlive="'+l.id+'">🔴 '+T('Jonli o’tkazish')+'</button>':'')+(own?'<button class="go alt" data-dedit="'+l.id+'">✏️ '+T('Tahrirlash')+'</button><button class="go alt" data-ddel="'+l.id+'">'+T('O’chirish')+'</button>':'<button class="go alt" data-dadd="'+l.id+'">'+T('Testlarimga qo’shish')+'</button>')+'</div>';
   $('#dsh').className='dsh';$('#dsh').innerHTML=h;$('#dlg').hidden=false;syncOv()}
 /* karta menyusi (⚙) */
 var CM=null;
 function closeCM(){if(CM){CM.remove();CM=null}}
 function openCM(id,btn){closeCM();var l=find(id);if(!l)return;var own=l.id.charAt(0)==='u',it=[];
   it.push(['play','▶',hostLbl(l.m)]);
-  if(l.qs&&!hostM(l.m)){it.push(['live','🔴','Jonli o’tkazish']);it.push(['class','📺','Interaktiv dars'])}
+  if(l.qs&&!hostM(l.m)){it.push(['live','🔴','Jonli o’tkazish'])}
   if(own){it.push(['edit','✏️','Tahrirlash']);it.push(['pub','🌐','Hammaga ochiq',l.pub!==false]);it.push(['-']);it.push(['del','🗑️','O’chirish','dng'])}
   else it.push(['add','➕','Testlarimga qo’shish']);
   var el=document.createElement('div');el.className='cmenu';el.setAttribute('role','menu');

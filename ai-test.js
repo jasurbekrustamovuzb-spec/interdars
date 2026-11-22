@@ -120,24 +120,26 @@ function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){retur
 var B=window.aiTestBridge,MAXF=3,MAXB=3*1024*1024,MAXC=120000;
 var SPARK='<svg viewBox="0 0 24 24" aria-hidden="true"><path class="s1" d="M11 3l1.9 5.1L18 10l-5.1 1.9L11 17l-1.9-5.1L4 10l5.1-1.9z"/><path class="s2" d="M19 14l.9 2.1L22 17l-2.1.9L19 20l-.9-2.1L16 17l2.1-.9z"/><path class="s3" d="M5 17l.6 1.4L7 19l-1.4.6L5 21l-.6-1.4L3 19l1.4-.6z"/></svg>';
 window.AI_ORB=function(c){return '<span class="orb '+(c||'')+'">'+SPARK+'</span>'};
-var MYS_HINT='Bu savollar «Sirli kartalar» sinf o’yini uchun. Har bir savol va to’g’ri javob faqat yuklangan manbadagi aniq ma’lumotga tayansin; manbada yo’q narsani o’ylab topma. Mavzuning eng muhim va esda qolarli joylaridan tuz: asosiy tushunchalar, ta’riflar, sanalar, nomlar, sonlar, sabab va natija. Savollar qisqa va aniq bo’lsin, katta ekranda tez o’qilsin; javob variantlari qisqa va bir-biridan aniq farq qilsin; to’g’ri javob manbadagi iboraga mos bo’lsin.';
-var S={mys:false,files:[],count:10,counts:{mcq:6,text:2,tf:2},level:'o’rtacha',busy:false,ctl:null,cool:0,coolT:null,remain:null,cur:null,editId:null,saved:false,dirty:false,wt:null,bad:-1};
-var LV=[['oson','🌱','Sodda'],['o’rtacha','⚖️','O’rtacha'],['murakkab','🔥','Murakkab']];
-var MS=['quiz','team','mill','mystery'];
+var S={kind:'mcq',files:[],count:10,counts:{mcq:10,text:0,tf:0},mixCounts:{mcq:6,text:2,tf:2},level:'o’rtacha',busy:false,ctl:null,cool:0,coolT:null,remain:null,cur:null,editId:null,saved:false,dirty:false,wt:null,bad:-1};
+ var LV=[['oson','🌱','Sodda'],['o’rtacha','⚖️','O’rtacha'],['murakkab','🔥','Murakkab']];
+var MS=['quiz','team','mill'];
 
 /* ---- yordamchilar ---- */
 function total(){var c=S.counts;return c.mcq+c.text+c.tf}
 var TY=[['mcq','A','Test','4 variant, bitta to’g’ri'],['text','✎','Savol-javob','variantsiz, qisqa javob'],['tf','✓✕','To’g’ri/Noto’g’ri','tasdiq: to’g’rimi yoki yo’q']];
-function renderTypes(){var c=S.counts,t=total();
-  $('#ax-types').innerHTML=TY.map(function(x){return '<div class="axt-r"><span>'+x[1]+'</span><div><b>'+T(x[2])+'</b><small>'+T(x[3])+'</small></div><button type="button" data-axt="'+x[0]+'" data-d="-1" aria-label="−"'+(c[x[0]]<=0?' disabled':'')+'>−</button><em>'+c[x[0]]+'</em><button type="button" data-axt="'+x[0]+'" data-d="1" aria-label="+"'+(t>=20?' disabled':'')+'>+</button></div>'}).join('');
-  $('#ax-tsum').textContent=T('Jami')+': '+t+' / 20'+(t?'':' — '+T('kamida bittasini tanlang'));upBtn()}
-function typeHint(){var c=S.counts,p=[];if(c.mcq)p.push(c.mcq+' ta test (4 variant, bitta to’g’ri, variantlar ishonarli va bir-biriga yaqin)');if(c.text)p.push(c.text+' ta ochiq savol-javob (variantsiz, qisqa aniq javob)');if(c.tf)p.push(c.tf+' ta to’g’ri/noto’g’ri tasdiq (to’liq gap, yarmiga yaqini noto’g’ri va ishonarli)');return 'Faqat shu turlarda tuz: '+p.join(', ')+'. Har tur o’z shaklida so’ralsin; bir xil faktni turli turlarda takrorlama.'}
-function normQ(q){var k=(q.k||q.type)==='tf'?'tf':(q.k||q.type)==='text'?'text':'mcq',o={k:k,q:String(q.q||''),evidence:q.evidence||''};
+ function renderTypes(){var c=S.counts,t=total(),kinds=[['mcq','A','Test'],['text','✎','Savol-javob'],['tf','✓✕','To’g’ri / noto’g’ri'],['mixed','◉','Aralash']];
+   var h='<div class="ax-kinds" role="group" aria-label="Savol turi">'+kinds.map(function(x){return '<button type="button" class="ax-kind" data-kind="'+x[0]+'" aria-pressed="'+(S.kind===x[0])+'"><i>'+x[1]+'</i>'+T(x[2])+'</button>'}).join('')+'</div>';
+   if(S.kind==='mixed')h+='<div class="axt-mix">'+TY.map(function(x){return '<div class="axt-r"><span>'+x[1]+'</span><div><b>'+T(x[2])+'</b><small>'+T(x[3])+'</small></div><button type="button" data-axt="'+x[0]+'" data-d="-1" aria-label="−"'+(c[x[0]]<=0||t<=3?' disabled':'')+'>−</button><em>'+c[x[0]]+'</em><button type="button" data-axt="'+x[0]+'" data-d="1" aria-label="+"'+(t>=20?' disabled':'')+'>+</button></div>'}).join('')+'</div>';
+   else h+='<label class="ax-count"><span>'+T('Savollar soni')+'</span><select id="ax-count" aria-label="Savollar soni">'+[3,5,10,15,20].map(function(n){return '<option value="'+n+'"'+(S.count===n?' selected':'')+'>'+n+' ta</option>'}).join('')+'</select></label>';
+   $('#ax-types').innerHTML=h;$('#ax-tsum').textContent=S.kind==='mixed'?T('Aralash savollar jami')+': '+t+' / 20':T('Tanlangan savollar')+': '+S.count;upBtn()}
+ function setKind(kind){if(!['mcq','text','tf','mixed'].includes(kind))return;S.kind=kind;if(kind==='mixed')S.counts=Object.assign({},S.mixCounts);else{S.counts={mcq:0,text:0,tf:0};S.counts[kind]=S.count}renderTypes()}
+ function typeHint(){var c=S.counts,p=[];if(c.mcq)p.push(c.mcq+' ta test (4 variant, bitta to’g’ri javob)');if(c.text)p.push(c.text+' ta savol-javob (qisqa, variantsiz javob)');if(c.tf)p.push(c.tf+' ta to’g’ri yoki noto’g’ri tasdiq');return 'Faqat so’ralgan turlarda tuz: '+p.join(', ')+'. Har turga mos shakl ishlat; bir xil faktni takrorlama.'}
+ function normQ(q){var k=(q.k||q.type)==='tf'?'tf':(q.k||q.type)==='text'?'text':'mcq',o={k:k,q:String(q.q||''),evidence:q.evidence||''};
   if(k==='mcq'){o.a=(q.options||q.a||[]).slice(0,4);o.c=q.correctIndex!=null?q.correctIndex:(q.c||0)}
   else if(k==='tf'){var tr=q.correct!=null?!!q.correct:q.answer!=null?(q.answer===true||String(q.answer).toLowerCase()==='true'):q.correctIndex!=null?q.correctIndex===0:q.c!=null?q.c===0:true;o.c=tr?0:1}
   else o.ans=String(q.answer||(q.acc&&q.acc[0])||'');
   return o}
-function reqText(){var r=$('#ax-req').value.trim();return (typeHint()+(S.mys?' '+MYS_HINT:'')+(r?' '+r:'')).slice(0,1200)}
+function reqText(){var r=$('#ax-req').value.trim();return (typeHint()+(r?' '+r:'')).slice(0,1200)}
 function status(m,err){var e=$('#ax-status');if(!m){e.className='ax-status';e.textContent='';return}e.textContent=T(m);e.className='ax-status on'+(err?' error':'')}
 function fsize(n){return n>1048576?(n/1048576).toFixed(1)+' MB':Math.max(1,Math.round(n/1024))+' KB'}
 function ext(n){return(n.split('.').pop()||'').toLowerCase()}
@@ -156,7 +158,7 @@ function renderFiles(){
 function upBtn(){var b=$('#ax-go'),ready=okFiles().length>0&&total()>0,cd=Date.now()<S.cool;
   b.disabled=!ready||S.busy||cd;
   $('#ax-hint').hidden=ready||S.files.some(function(f){return f.st==='read'})||!okFiles().length;
-  if(!cd)b.querySelector('.lb').textContent=T('Test tuzish')}
+  if(!cd)b.querySelector('.lb').textContent=T('Savollarni yaratish')}
 async function addFiles(list){
   list=[].slice.call(list||[]);if(!list.length)return;status('');
   for(var i=0;i<list.length;i++){var file=list[i];
@@ -195,11 +197,10 @@ async function generate(){
   var text=fs.map(function(f){return f.text}).join('\n\n').replace(/\s+/g,' ').trim(),cut=text.length>MAXC;if(cut)text=text.slice(0,MAXC);
   S.busy=true;status('');wait(true);S.ctl=window.AbortController?new AbortController():null;
   try{
-    var res=await fetch('/api/generate-test',{method:'POST',headers:await authH(),signal:S.ctl&&S.ctl.signal,body:JSON.stringify({text:text,topic:$('#ax-topic').value.trim(),count:total(),counts:S.counts,level:S.level,request:reqText()})});
+    var res=await fetch('/api/generate-test',{method:'POST',headers:await authH(),signal:S.ctl&&S.ctl.signal,body:JSON.stringify({text:text,topic:$('#ax-topic').value.trim(),kind:S.kind,count:total(),counts:S.counts,level:S.level,request:reqText()})});
     var data={};try{data=await res.json()}catch(e){}
     if(!res.ok){var er=Error(data.error||T('Test tuzishda xatolik yuz berdi.'));er.retry=Number(data.retryAfter)||0;er.raw=true;throw er}
-    S.cur={topic:$('#ax-topic').value.trim()||data.topic||T('Yangi test'),questions:B.QE.from(data.questions.map(normQ).filter(function(x,i,a){var n=x.q.trim().toLowerCase();return a.findIndex(function(y){return y.q.trim().toLowerCase()===n})===i})),file:fs.map(function(f){return f.name}).join(', '),m:S.mys?'mystery':'quiz'};
-    if(S.mys)S.cur.xc=B.xc.def(S.cur.questions.length);
+    S.cur={topic:$('#ax-topic').value.trim()||data.topic||T('Yangi test'),questions:B.QE.from(data.questions.map(normQ).filter(function(x,i,a){var n=x.q.trim().toLowerCase();return a.findIndex(function(y){return y.q.trim().toLowerCase()===n})===i})),file:fs.map(function(f){return f.name}).join(', '),m:'quiz'};
     S.editId=null;S.saved=false;S.dirty=true;S.bad=-1;
     if(typeof data.remainingToday==='number'){S.remain=data.remainingToday;quota()}
     wait(false);showEditor(true);
@@ -247,7 +248,7 @@ function renderSaved(){
   var list=savedList(),box=$('#ax-saved');$('#ax-saved-s').hidden=!list.length||!$('#ax-editor').hidden;
   box.innerHTML=list.map(function(l){return '<div class="axr"><span class="tile" style="background:#EDE6FF">'+AI_ORB('xs')+'</span><div><b>'+esc(l.title)+'</b><small>'+(l.qs||[]).length+' '+T('savol')+' · '+new Date(l.created).toLocaleDateString()+'</small></div><button class="ibtn" data-open="'+esc(l.id)+'" aria-label="'+T('Tahrirlash')+'">✏️</button><button class="ibtn pl" data-play="'+esc(l.id)+'" aria-label="'+T('Boshlash')+'">▶</button><button class="ibtn" data-share="'+esc(l.id)+'" aria-label="'+T('Ulashish')+'"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 10.6l6.8-4M8.6 13.4l6.8 4"/></svg></button><button class="ibtn" data-delsv="'+esc(l.id)+'" aria-label="'+T('O’chirish')+'">🗑</button></div>'}).join('')}
 function openSaved(id){var l=B.getLessons().filter(function(x){return x.id===id})[0];if(!l||!l.qs)return;
-  S.cur={topic:l.title,file:(l.sub||'').replace(/^AI · /,''),m:l.m||'quiz',xc:Array.isArray(l.xc)?JSON.parse(JSON.stringify(l.xc)):undefined,questions:B.QE.from(l.qs)};
+  S.cur={topic:l.title,file:(l.sub||'').replace(/^AI · /,''),m:MS.indexOf(l.m)>=0?l.m:'quiz',xc:Array.isArray(l.xc)?JSON.parse(JSON.stringify(l.xc)):undefined,questions:B.QE.from(l.qs)};
   S.editId=l.id;S.saved=true;S.dirty=false;S.bad=-1;status('');showEditor(true)}
 function leave(){
   if(!$('#ax-editor').hidden){
@@ -258,7 +259,6 @@ function closeEd(){S.cur=null;S.editId=null;showEditor(false);renderSaved()}
 
 /* ---- hodisalar ---- */
 function init(){
-  var mb=$('#ax-mys');if(mb)mb.addEventListener('click',function(){S.mys=!S.mys;mb.setAttribute('aria-pressed',S.mys)});
   var inp=$('#ax-file');
   inp.addEventListener('change',function(){addFiles(this.files);this.value=''});
   var dz=$('#ax-drop');
@@ -266,7 +266,8 @@ function init(){
   ['dragleave','drop'].forEach(function(ev){dz.addEventListener(ev,function(e){e.preventDefault();dz.classList.remove('over')})});
   dz.addEventListener('drop',function(e){addFiles(e.dataTransfer&&e.dataTransfer.files)});
   $('#ax-files').addEventListener('click',function(e){var b=e.target.closest('[data-rmf]');if(!b)return;S.files.splice(+b.dataset.rmf,1);status('');renderFiles()});
-  $('#ax-types').addEventListener('click',function(e){var b=e.target.closest('[data-axt]');if(!b)return;var k=b.dataset.axt,d=+b.dataset.d;if(d>0&&total()>=20)return;S.counts[k]=Math.max(0,S.counts[k]+d);renderTypes()});
+  $('#ax-types').addEventListener('click',function(e){var kind=e.target.closest('[data-kind]');if(kind){setKind(kind.dataset.kind);return}var b=e.target.closest('[data-axt]');if(!b)return;var k=b.dataset.axt,d=+b.dataset.d;if(d>0&&total()>=20)return;S.counts[k]=Math.max(0,S.counts[k]+d);S.mixCounts=Object.assign({},S.counts);renderTypes()});
+  $('#ax-types').addEventListener('change',function(e){if(e.target.id!=='ax-count')return;S.count=+e.target.value||10;S.counts={mcq:0,text:0,tf:0};S.counts[S.kind]=S.count;renderTypes()});
   $('#ax-lv').addEventListener('click',function(e){var b=e.target.closest('[data-l]');if(!b)return;S.level=b.dataset.l;$$('#ax-lv button').forEach(function(p){p.setAttribute('aria-pressed',p===b)})});
   $('#ax-go').addEventListener('click',generate);
   $('#ax-cancel').addEventListener('click',function(){if(S.ctl)S.ctl.abort()});
