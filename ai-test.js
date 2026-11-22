@@ -238,7 +238,7 @@ function save(){
   if(c.questions.length<3){status('Kamida 3 ta savol bo’lsin.',true);return}
   S.why='';
   var bad=valid();if(bad>-1){S.bad=bad;editor();status(S.why,true);var el=$('#ax-editor [data-qe="'+bad+'"]');if(el)el.scrollIntoView({block:'center',behavior:'smooth'});return}
-  var m=B.MT[c.m||'quiz'];if(usable(c)<m.min){status(T(m.n)+' '+T('uchun kamida')+' '+m.min+' '+T('savol kerak (savol-javob bu metodda ishlamaydi)'),true);return}
+  var m=B.MT[c.m||'quiz'];if(usable(c)<m.min){status(T('Kamida')+' '+m.min+' '+T('ta ushbu metodga mos savol kerak. Savol-javob savollari uchun Interaktiv dars ishlaydi.'),true);return}
   var old=B.getLessons().filter(function(x){return x.id===S.editId})[0];
   var l={id:S.editId||'u'+Date.now(),code:old&&old.code||String(100000+Math.floor(Math.random()*900000)),title:title,sub:old&&old.sub||'AI · '+c.file,cls:old&&old.cls||'Sinf',m:c.m||'quiz',created:old&&old.created||Date.now(),xc:(c.m==='mystery'&&Array.isArray(c.xc))?B.xc.clean(c.xc):undefined,qs:B.QE.clean(c.questions),aiTest:true};
   B.saveLesson(l);S.cur=null;S.editId=null;S.saved=false;S.dirty=false;S.bad=-1;S.files=[];renderFiles();showEditor(false);renderSaved();status('Test saqlandi');

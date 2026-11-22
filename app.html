@@ -1291,7 +1291,7 @@ function renderLib(){var q=nz($('#q').value.trim());
   var list=libPool().filter(function(l){return !q||nz(l.title+' '+(l.sub||'')+' '+MT[l.m].n).indexOf(q)>-1});
   if(!list.length&&lf==='own'&&!q){$('#ll').innerHTML=emptyCard();$('#le').style.display='none';return}
   $('#ll').innerHTML=list.map(lcard).join('');$('#le').style.display=list.length?'none':'block'}
-function renderOpts(){$('#opts').innerHTML=MORD.map(function(k){var m=MT[k];return '<button class="opt" aria-pressed="'+(W.m===k)+'" data-mk2="'+k+'"'+(m.soon?' disabled':'')+'><span class="tile" style="background:'+m.bg+'">'+m.e+'</span><b>'+T(m.n)+'</b>'+(m.soon?'<em class="sn">'+T('Tez orada')+'</em>':'')+'</button>'}).join('')}
+function renderOpts(){var methods=W.qs.some(function(x){return x.k==='text'})?['class']:MORD;if(methods.indexOf(W.m)<0)W.m=methods[0];$('#opts').innerHTML=methods.map(function(k){var m=MT[k];return '<button class="opt" aria-pressed="'+(W.m===k)+'" data-mk2="'+k+'"'+(m.soon?' disabled':'')+'><span class="tile" style="background:'+m.bg+'">'+m.e+'</span><b>'+T(m.n)+'</b>'+(m.soon?'<em class="sn">'+T('Tez orada')+'</em>':'')+'</button>'}).join('')}
 function renderAll(){
   $('#lv1').innerHTML=levelHTML();$('#lv2').innerHTML=levelHTML();
   $('#hl').innerHTML=D.lessons.length?D.lessons.slice(0,3).map(lcard).join(''):emptyCard();
@@ -1392,13 +1392,13 @@ var GD=[['idle','Avval mavzuni yozing — qisqa va aniq bo’lsin.'],['idle','Da
 function guide(){var g=GD[W.s]||GD[0];$('#gm').innerHTML=MS(g[0]);$('#gt').textContent=T(g[1])}
 function step(n){W.s=n;guide();panes.forEach(function(p,i){p.classList.toggle('on',i===n)});bars.forEach(function(b,i){b.classList.toggle('on',i<=n)});
   if(n===2)renderEditor();if(n===3)renderSummary();window.scrollTo(0,0)}
-function setM(k){if(MT[k]&&!MT[k].soon){W.m=k;renderOpts();if(W.s===2)renderEditor()}}
+function setM(k){if(MT[k]&&!MT[k].soon&&!(W.qs.some(function(x){return x.k==='text'})&&!MT[k].txt)){W.m=k;renderOpts();if(W.s===2)renderEditor()}}
 function validQs_old(){var out=[];W.qs.forEach(function(x){var q=x.q.trim();if(!q)return;var o=[],ci=-1;x.o.forEach(function(t,i){t=t.trim();if(!t)return;if(i===x.c)ci=o.length;o.push(t)});if(o.length>=2&&ci>-1)out.push({q:q,a:o,c:ci})});return out}
 function validPs(){return W.pairs.filter(function(p){return p.t.trim()&&p.d.trim()}).map(function(p){return{t:p.t.trim(),d:p.d.trim()}})}
 function validQs(){return QE.clean(W.qs)}
 function validN(){return MT[W.m].t==='qs'?validQs().filter(function(x){return usableQ(x,W.m)}).length:validPs().length}
 function maxN(){var n=MT[W.m].t==='qs'?(W.m==='mystery'?20:20):12,c=(MT[W.m].t==='qs'?W.qs:W.pairs).length;return W.edit?Math.max(n,c):n}
-function hint(){var m=MT[W.m],n=validN();$('#edh').textContent=T('To’ldirilgan')+': '+n+' · '+T('kamida')+' '+m.min;$('#n3').disabled=n<m.min}
+function hint(){if(W.qs.some(function(x){return x.k==='text'})&&!MT[W.m].txt){W.m='class';renderOpts();renderEditor();$('#h3p').textContent=T('Savol-javob uchun Interaktiv dars avtomatik tanlandi.');return}var m=MT[W.m],n=validN();$('#edh').textContent=T('To’ldirilgan')+': '+n+' · '+T('kamida')+' '+m.min;$('#n3').disabled=n<m.min}
 function renderEditor(){var m=MT[W.m],isQ=m.t==='qs',box=$('#ed');
   $('#h3').textContent=T(isQ?'3. Savollarni kiriting':'3. Juftliklarni kiriting');
   $('#h3p').textContent=T(isQ?'Har savol uchun turini tanlang: test, savol-javob yoki to’g’ri/noto’g’ri.':'Atama va uning ta’rifini yozing — topshiriqda shular juftlanadi.');
@@ -1974,6 +1974,7 @@ try{if(remOn()){var td=dstr(new Date());if(lsg('idRemDay')!==td&&D.streak.last!=
 window.confetti=function(x,y,n){if(matchMedia('(prefers-reduced-motion: reduce)').matches||!document.body.animate)return;var C=['#4B6BFF','#8A63F5','#FF7AB6','#FFC53D','#27C99A','#FF6F61'];for(var i=0;i<(n||30);i++){var e=document.createElement('i');e.className='cf';e.style.background=C[i%6];document.body.appendChild(e);var a=Math.random()*Math.PI*2,v=120+Math.random()*220,dx=Math.cos(a)*v,dy=Math.sin(a)*v-140;e.animate([{transform:'translate('+x+'px,'+y+'px) rotate(0)',opacity:1},{transform:'translate('+(x+dx)+'px,'+(y+dy+260)+'px) rotate('+(Math.random()*720)+'deg)',opacity:0}],{duration:1100+Math.random()*600,easing:'cubic-bezier(.2,.7,.4,1)'}).onfinish=(function(el){return function(){el.remove()}})(e)}};
 </script>
 <script src="/ai-test.js"></script>
+<script src="/qrcode.js"></script>
 <script src="/live.js"></script>
 </body>
 </html>
