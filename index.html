@@ -5,10 +5,12 @@
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27%3E%3Ctext y=%27.9em%27 font-size=%2790%27%3E%F0%9F%9A%80%3C/text%3E%3C/svg%3E">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <script>try{var th=localStorage.getItem("idTheme");if(th==="dark"||th==="light")document.documentElement.setAttribute("data-theme",th)}catch(e){}</script>
-<script>try{var _t=location.hash.match(/^#t=(\d{6})$/);if(_t){localStorage.setItem("idPending",_t[1]);location.replace("/home")}var u=JSON.parse(localStorage.getItem("idUser")||"null");if(u&&u.name&&!/[?&]home=1/.test(location.search))location.replace("/home")}catch(e){}</script>
+<script>try{var _t=location.hash.match(/^#t=(\d{6})$/),pending=!!_t;if(_t)localStorage.setItem("idPending",_t[1]);else pending=!!localStorage.getItem("idPending");var u=JSON.parse(localStorage.getItem("idUser")||"null");if(u&&u.name&&!pending&&!/[?&]home=1/.test(location.search))location.replace("/home")}catch(e){}</script>
 <title>InterDars — interaktiv darslar va metodlar bazasi</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Nunito:wght@600;700;800&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Nunito:wght@600;700;800&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+<noscript><link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Nunito:wght@600;700;800&display=swap" rel="stylesheet"></noscript>
 <style>
 :root{--bg:#F3F5FF;--card:#fff;--ink:#1B2150;--muted:#6B7199;--line:#E3E7F8;--glass:rgba(243,245,255,.86);--blue:#4B6BFF;--blue-d:#3149D6;--sun:#FFC53D;--mint:#27C99A;--coral:#FF6F61;--violet:#8A63F5;--sh:0 6px 0 rgba(27,33,80,.08),0 14px 30px rgba(27,33,80,.08);box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 @media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#10142F;--card:#1A2048;--ink:#EEF0FF;--muted:#9AA1D0;--line:#2A3166;--glass:rgba(16,20,47,.86);--sh:0 6px 0 rgba(0,0,0,.25),0 14px 30px rgba(0,0,0,.3)}}
@@ -277,7 +279,7 @@ footer{padding:26px 0 40px;color:var(--muted);font-size:14px;text-align:center}
 (function(){
 var d=document,$=function(s){return d.querySelector(s)},$$=function(s){return [].slice.call(d.querySelectorAll(s))};
 d.documentElement.classList.add('js');
-var APP="/home";
+var APP="/home",pendingLink=!!localStorage.getItem('idPending');
 var sb=window.supabase.createClient('https://kikehcuwjcucyspxdopd.supabase.co','sb_publishable_aBqimXgAK3ia1K_keuaICg_wIRBHx14');
 var mq=$('#mq');mq.innerHTML+=mq.innerHTML;
 var M=[
@@ -305,11 +307,9 @@ sb.auth.signInWithOAuth({provider:'google',options:{redirectTo:location.origin+A
 function paint(u){var m=u.user_metadata||{},nm=m.full_name||m.name||(u.email||'').split('@')[0]||'Foydalanuvchi';
 try{localStorage.setItem('idUser',JSON.stringify({name:nm,email:u.email||'',avatar:'',photo:m.avatar_url||''}))}catch(e){}
 user=u;$('#hb').innerHTML='<span class="pf" style="width:26px;height:26px;font-size:15px">'+nm.charAt(0).toUpperCase()+'</span><span>'+nm.split(' ')[0]+'</span>'}
-sb.auth.getSession().then(function(r){var ss=r.data&&r.data.session;if(ss)paint(ss.user);else try{localStorage.removeItem('idUser')}catch(e){}})
+sb.auth.getSession().then(function(r){var ss=r.data&&r.data.session;if(ss){paint(ss.user);if(pendingLink)location.replace(APP)}else{try{localStorage.removeItem('idUser')}catch(e){}if(pendingLink)open()}})
 function close(){md.hidden=true;d.body.style.overflow=''}
-function signIn(i){view(1);setTimeout(function(){var a=i===2?['🙂','Yangi foydalanuvchi','yangi@gmail.com','linear-gradient(135deg,#8A63F5,#FF6F61)']:A[i];user=a;try{localStorage.setItem('idUser',JSON.stringify({name:a[1],email:a[2],avatar:a[0],bg:a[3]}))}catch(e){}
-var p=$('#bp');p.textContent=a[0];p.style.background=a[3];$('#bn').textContent='Salom, '+a[1].split(' ')[0]+'!';$('#be').textContent=a[2];view(2);
-$('#hb').innerHTML='<span class="pf" style="width:26px;height:26px;font-size:15px;background:'+a[3]+'">'+a[0]+'</span><span>'+a[1].split(' ')[0]+'</span>'},900)}
+function signIn(i){view(1);open()}
 function bind(r){[].slice.call(r.querySelectorAll('[data-open]')).forEach(function(b){b.onclick=open})}
 bind(d);$('#mx').onclick=close;md.addEventListener('click',function(e){if(e.target===md)close()});
 d.addEventListener('keydown',function(e){if(e.key==='Escape'&&!md.hidden)close()});
