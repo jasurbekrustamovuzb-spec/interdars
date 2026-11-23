@@ -416,7 +416,7 @@ function pMsg(m){
   else if(m.t==='r'){if(P.got&&P.ph==='lobby'){P.ros=m.l;pLobbyUpdate()}}
   else if(m.t==='h'){P.lastH=Date.now();if(P.got&&(m.ph!==P.ph||m.qi!==P.qi))pHello()}
   else if(m.t==='k'){P.ak=true}
-  else if(m.t==='lg'&&window.League&&P.probe){var lgme=P,lgs={pin:P.pin,pid:P.pid,n:P.n,a:P.a};clearInterval(lgme.hl);P=null;netClose();modalClose();closeOv();if(lgme.done)lgme.done('ok');setTimeout(function(){window.League.join(lgs)},450)}
+  else if(m.t==='lg'&&P.probe){var lgme=P,lgs={pin:P.pin,pid:P.pid,n:P.n,a:P.a};clearInterval(lgme.hl);P=null;netClose();modalClose();closeOv();if(lgme.done)lgme.done('ok');function enterLeague(){if(window.League)setTimeout(function(){window.League.join(lgs)},450)}if(window.League)enterLeague();else if(window.loadLeague)window.loadLeague().then(enterLeague).catch(function(){say('Chempionlar ligasi yuklanmadi — qayta urinib ko‘ring')})}
   else if(m.t==='deny'){var msg=m.why==='full'?'Xona to‘lgan':'Dars boshlangan — qo‘shilib bo‘lmaydi';LiveQuiz.err=msg;if(!P.got&&P.done)P.done('closed');else leave(msg)}
   else if(m.t==='kick'){leave('Tashkilotchi sizni xonadan chiqardi')}
   else if(m.t==='end'){if(P.ph==='fin'){P.over=true}else{leave('Tashkilotchi testni tugatdi')}}}
