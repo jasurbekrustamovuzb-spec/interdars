@@ -1980,7 +1980,7 @@ window.confetti=function(x,y,n){if(matchMedia('(prefers-reduced-motion: reduce)'
 <script src="/qrcode.js"></script>
 <script src="/live.js"></script>
 <script src="/league-loader.js"></script>
-<script>try{if(localStorage.getItem('idPendingLive'))window.loadLeague()}catch(e){}</script>
+<script>try{if(localStorage.getItem('idPendingLive')||localStorage.getItem('idLgHost')||localStorage.getItem('idLgPlayer'))window.loadLeague()}catch(e){}</script>
 </body>
 </html>
 
