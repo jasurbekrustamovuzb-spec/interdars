@@ -399,7 +399,7 @@ function onClick(e){var m=$('#lgmod');if(e.target===m){modalClose();return}
 
 /* ===== ochiq API ===== */
 window.League={host:host,join:function(s){setTimeout(function(){join(s)},0)},active:function(){return !!(H||P)},open:function(){if(H||P)openOv()},_t:{mkBracket:mkBracket,penDone:penDone,mkShot:mkShot,rname:rname}};
-function boot(){if(LQ().active&&LQ().active())return;var h=ls(LSH),p=ls(LSP);
+function boot(){if(H||P||LQ().active&&LQ().active())return;var h=ls(LSH),p=ls(LSP);
   if(h&&h.pin&&Date.now()-h.ts<STALE){H=h;hBoot();return}else if(h)lsDel(LSH);
   if(p&&p.pin&&Date.now()-p.ts<STALE){pResume(p);return}else if(p)lsDel(LSP)}
 if(typeof document!=='undefined'&&document.body)setTimeout(boot,500);
