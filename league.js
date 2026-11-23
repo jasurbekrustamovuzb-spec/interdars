@@ -59,7 +59,7 @@ var NET={ch:null,ok:false};
 function netOpen(pin,onMsg,onSt){netClose();var sb=window.sb;if(!sb||!sb.channel)return false;
   var ch=sb.channel('idlive-'+pin,{config:{broadcast:{self:false,ack:false}}});
   ch.on('broadcast',{event:'m'},function(e){try{if(NET.ch===ch)onMsg(e.payload||{})}catch(err){console.warn('league',err)}});
-  ch.subscribe(function(s){if(NET.ch!==ch)return;NET.ok=s==='SUBSCRIBED';onSt(s)});NET.ch=ch;return true}
+  ch.subscribe(function(s,err){if(NET.ch!==ch)return;NET.ok=s==='SUBSCRIBED';if(s==='CHANNEL_ERROR'||s==='TIMED_OUT'||s==='CLOSED')console.warn('league realtime status:',s,err||'');onSt(s,err)});NET.ch=ch;return true}
 function netClose(d){var ch=NET.ch;NET.ch=null;NET.ok=false;if(!ch)return;setTimeout(function(){try{window.sb.removeChannel(ch)}catch(e){}},d||0)}
 function send(p){var ch=NET.ch;if(!ch)return;if(ch.state?ch.state!=='joined':!NET.ok)return;try{var r=ch.send({type:'broadcast',event:'m',payload:p});if(r&&r.catch)r.catch(function(){})}catch(e){}}
 
@@ -227,7 +227,7 @@ function join(s){if(H||P)return;
   openOv();view(topbar()+'<div class="lgcd"><div class="lgspin"></div><p>Turnirga ulanmoqda…</p></div>','pl');pNet()}
 function pNet(){var me=P;netOpen(me.pin,pMsg,function(s){var bad=s==='CHANNEL_ERROR'||s==='TIMED_OUT'||s==='CLOSED';conn(bad&&P&&P.got);if(s==='SUBSCRIBED'&&P)pLoop()})}
 function pHello(){if(P)send({t:'hi',p:P.pid,n:P.n,a:P.a,lg:1})}
-function pLoop(){var me=P;clearInterval(me.hl);var k=0;pHello();me.hl=setInterval(function(){if(P!==me||me.got){clearInterval(me.hl);return}if(++k>=9){clearInterval(me.hl);pFail();return}pHello()},800)}
+function pLoop(){var me=P;clearInterval(me.hl);var k=0;pHello();me.hl=setInterval(function(){if(P!==me||me.got){clearInterval(me.hl);return}if(++k>=18){clearInterval(me.hl);pFail();return}pHello()},800)}
 function pFail(){if(!P)return;view(topbar()+'<div class="lgcd"><div class="em big">📡</div><h2>Tashkilotchi bilan aloqa yo‘q</h2><p>Internetni tekshiring yoki qayta urinib ko‘ring.</p><div class="lgbtns"><button class="lgb go" data-act="retry">↻ Qayta urinish</button><button class="lgb ghost" data-act="exitok">Chiqish</button></div></div>','pl')}
 function pResume(s){P={pin:s.pin,pid:s.pid,n:s.n,a:s.a,got:false,S:null,my:-1,i:0};openOv();view(topbar()+'<div class="lgcd"><div class="lgspin"></div><p>Turnirga qayta ulanmoqda…</p></div>','pl');pNet()}
 function pMsg(m){if(!P)return;if(m.to&&m.to!==P.pid)return;
