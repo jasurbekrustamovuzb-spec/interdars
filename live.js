@@ -102,7 +102,7 @@ var NET={ch:null,ok:false};
 function netOpen(pin,onMsg,onSt){netClose();var sb=window.sb;if(!sb||!sb.channel)return false;
   var ch=sb.channel('idlive-'+pin,{config:{broadcast:{self:false,ack:false}}});
   ch.on('broadcast',{event:'m'},function(e){try{if(NET.ch===ch)onMsg(e.payload||{})}catch(err){console.warn('live',err)}});
-  ch.subscribe(function(s){if(NET.ch!==ch)return;NET.ok=s==='SUBSCRIBED';onSt(s)});NET.ch=ch;return true}
+  ch.subscribe(function(s,err){if(NET.ch!==ch)return;NET.ok=s==='SUBSCRIBED';if(s==='CHANNEL_ERROR'||s==='TIMED_OUT'||s==='CLOSED')console.warn('live realtime status:',s,err||'');onSt(s,err)});NET.ch=ch;return true}
 function netClose(delay){var ch=NET.ch;NET.ch=null;NET.ok=false;if(!ch)return;setTimeout(function(){try{window.sb.removeChannel(ch)}catch(e){}},delay||0)}
 function send(p){var ch=NET.ch;if(!ch)return;if(ch.state?ch.state!=='joined':!NET.ok)return;try{var r=ch.send({type:'broadcast',event:'m',payload:p});if(r&&r.catch)r.catch(function(){})}catch(e){}}
 
@@ -395,13 +395,13 @@ function join(pin,forceProfile){
   return new Promise(function(resolve){
     if(H||P||(window.League&&window.League.active())){resolve('none');return}
     var prof=ls(LSF)||{},u=uinfo();LiveQuiz.err='';
-    P={pin:pin,pid:rid(),n:prof.n||u.name||'',a:prof.a!=null?normalizeAv(prof.a):-1,ph:'conn',max:4,probe:true,tot:0,my:-1};
+    P={pin:pin,pid:rid(),n:prof.n||u.name||'',a:prof.a!=null?normalizeAv(prof.a):-1,ph:'conn',max:12,probe:true,tot:0,my:-1};
     if(prof.a!=null&&prof.a!==P.a){prof.a=P.a;lsSet(LSF,prof)}
     SND=prof.snd!==false;var me=P;
     me.done=function(r){if(me.fin)return;me.fin=true;if(r!=='ok'){clearInterval(me.hl);if(P===me){P=null;netClose()}if(me.profileGate){modalClose();closeOv()}}resolve(r)};
     me.fail=function(){LiveQuiz.err='Faol jonli test topilmadi yoki tashkilotchi bilan aloqa uzildi. ID/QR va internetni tekshiring.';me.done('none')};
     if(forceProfile||!prof.n){me.joining=true;me.profileGate=true;openOv();view(topbar('')+'<div class="jq-cd"><div class="jq-spin"></div><p>Jonli testga ulanmoqda…</p></div>','pl');E={n:me.n,a:me.a,g:AV[me.a]?AV[me.a][3]:'a'};pEditModal();return}
-    pNet();setTimeout(function(){if(!me.got&&!me.fin)me.fail()},7000)})}
+    pNet();setTimeout(function(){if(!me.got&&!me.fin)me.fail()},15000)})}
 function pNet(){netOpen(P.pin,pMsg,function(s){var bad=s==='CHANNEL_ERROR'||s==='TIMED_OUT'||s==='CLOSED';conn(bad&&P&&P.got);if(s==='SUBSCRIBED'&&P)pLoop()})}
 function pHello(){if(P)send({t:'hi',p:P.pid,n:P.n,a:P.a})}
 function pLoop(){var me=P;clearInterval(me.hl);var k=0;pHello();me.hl=setInterval(function(){if(P!==me||me.got){clearInterval(me.hl);return}if(++k>=me.max){clearInterval(me.hl);me.fail&&me.fail();return}pHello()},800)}
