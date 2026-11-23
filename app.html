@@ -1235,7 +1235,7 @@ MT.mystery.txt=1;MT.class.txt=1;
 var MORD=['quiz','team','memory','mill','live','league','class','mystery','cross'];
 function hostM(m){return m==='live'||m==='class'||m==='league'}
 function hostLbl(m){return m==='live'?'Jonli o’tkazish':m==='class'?'Dars o’tkazish':m==='league'?'Turnir o’tkazish':'Boshlash'}
-function hostGo(l,k){if(k==='league'){if(window.League)window.League.host(l);else say('Chempionlar ligasi yuklanmadi — sahifani yangilang')}else if(window.LiveQuiz)window.LiveQuiz.host(l,k==='class'?{mode:'class'}:undefined)}
+function hostGo(l,k){if(k==='league'){if(window.League){window.League.host(l);return}if(window.loadLeague){window.loadLeague().then(function(){if(window.League)window.League.host(l)}).catch(function(){say('Chempionlar ligasi yuklanmadi — internetni tekshiring')});return}say('Chempionlar ligasi yuklanmadi — sahifani yangilang')}else if(window.LiveQuiz)window.LiveQuiz.host(l,k==='class'?{mode:'class'}:undefined)}
 var PR=[100,200,300,500,1000,2000,4000,8000,16000,32000,64000,125000,250000,500000,1000000];
 var TEAMS=[{e:'🦊',n:'Qizil jamoa'},{e:'🐬',n:'Ko’k jamoa'},{e:'🐸',n:'Yashil jamoa'}];
 function Q(q,a,c){return{q:q,a:a,c:c}}
@@ -1979,7 +1979,8 @@ window.confetti=function(x,y,n){if(matchMedia('(prefers-reduced-motion: reduce)'
 <script src="/ai-test.js"></script>
 <script src="/qrcode.js"></script>
 <script src="/live.js"></script>
-<script src="/league.js"></script>
+<script src="/league-loader.js"></script>
+<script>try{if(localStorage.getItem('idPendingLive'))window.loadLeague()}catch(e){}</script>
 </body>
 </html>
 
