@@ -57,7 +57,7 @@ function mkShot(tr){var n=tr.length;if(n<4)return null;var a=tr[0],b=tr[n-1],dx=
 /* ===== penalti sahnasi: faqat penalti kerak bo'lganda yuklanadi (bosh sahifaga ta'sir qilmaydi) ===== */
 var STG={p:null,ok:false,err:false},PK_RES=5600,PK_WIN=1200,PK_AIM=14000;
 function loadStage(){if(window.PenaltyStage){STG.ok=true;return Promise.resolve(true)}if(STG.p)return STG.p;
-  STG.p=new Promise(function(res){var sc=document.createElement('script');sc.src='/penalty-stage.js?v=1';sc.async=true;
+  STG.p=new Promise(function(res){var sc=document.createElement('script');sc.src='/penalty-stage.js?v=2';sc.async=true;
     sc.onload=function(){STG.ok=!!window.PenaltyStage;STG.err=!STG.ok;if(!STG.ok)STG.p=null;res(STG.ok)};
     sc.onerror=function(){STG.err=true;STG.p=null;try{sc.remove()}catch(e){}res(false)};document.head.appendChild(sc)});return STG.p}
 /* sahna yuklanmasa: oddiy hisob (zaxira) */
@@ -209,13 +209,15 @@ var HQ={q:[],busy:false,st:null};
 function hQueue(m,pkt){var len=m.pen.seq.length;if(!HQ.st){m.pen.vis=len;hCards();return}
   HQ.q.push({m:m,pkt:pkt,len:len});while(HQ.q.length>2){var o=HQ.q.shift();o.m.pen.vis=Math.max(o.m.pen.vis||0,o.len)}hCards();hPump()}
 function hPump(){if(HQ.busy||!HQ.q.length||!HQ.st||!H)return;var it=HQ.q.shift(),ro=rosMap(snap()),m=it.m,sh=it.pkt.sh?m.b:m.a,kp=it.pkt.sh?m.a:m.b,lb=$('#lghlab');
-  function done(){HQ.busy=false;if(H&&it.m.pen)it.m.pen.vis=Math.max(it.m.pen.vis||0,it.len);hCards();hPump()}
+  function done(){hudFor(it.len);HQ.busy=false;if(H&&it.m.pen)it.m.pen.vis=Math.max(it.m.pen.vis||0,it.len);hCards();hPump()}
+  function hudFor(len){if(!HQ.st||!HQ.st.hud||!H)return;var sq=m.pen.seq.slice(0,Math.max(0,len)),g0=0,g1=0,r0=[],r1=[];sq.forEach(function(x){(x[0]?r1:r0).push(x[1]);if(x[1]===1){if(x[0])g1++;else g0++}});HQ.st.hud({l:{n:(ro[m.a]||[0,'?'])[1],g:g0,r:r0},r:{n:(ro[m.b]||[0,'?'])[1],g:g1,r:r1},N:H.set.pk||3,k:Math.min(r0.length,r1.length),rn:H.rn||'',lab:'Penalti'})}
+  hudFor(it.len-1);
   HQ.busy=true;if(lb)lb.textContent='⚽ '+esc((ro[sh]||[0,'?'])[1])+'  →  🧤 '+esc((ro[kp]||[0,'?'])[1]);
   var ok=false;try{HQ.st.reset('v');ok=HQ.st.play({k:it.pkt.k,d:it.pkt.d,seed:it.pkt.seed,r:it.pkt.r,pt:it.pkt.pt},done)}catch(e){}
   if(!ok)done()}
 function hStageOff(){if(HQ.st){try{HQ.st.destroy()}catch(e){}HQ.st=null}HQ.q=[];HQ.busy=false}
 function hStageOn(){loadStage().then(function(ok){var cv=$('#lghcv');if(!ok||!cv||!H||H.ph!=='pen')return;var l=$('#lghload');if(l)l.hidden=true;cv.hidden=false;
-  if(HQ.st)try{HQ.st.destroy()}catch(e){}HQ.st=window.PenaltyStage.create(cv,{snd:function(){return SND}});HQ.st.reset('v');hPump()})}
+  if(HQ.st)try{HQ.st.destroy()}catch(e){}HQ.st=window.PenaltyStage.create(cv,{snd:function(){return SND},pad:300,maxW:720});HQ.st.reset('v');hPump()})}
 
 /* ----- tashkilotchi ekranlari ----- */
 function hRender(){if(!H)return;modalClose();hStageOff();({lobby:hLobby,draw:hDrawV,pre:hPre,q:hQ,rev:hQ,pen:hPen,res:hRes,fin:hFin})[H.ph]()}
@@ -320,11 +322,13 @@ function pPen(prev){var S=P.S,mm=mine(S,S.ri);
   setHint(shooter?HINT_S:HINT_K);pPenHead(S,mm,pn,ros);
   loadStage().then(function(ok){if(!P||P.ps!==ps2||!$('#lgcv'))return;
     if(!ok){fallbackUI(ps2);return}
-    $('#lgload').hidden=true;$('#lgcv').hidden=false;ps2.st=window.PenaltyStage.create($('#lgcv'),{snd:function(){return SND}});ps2.st.reset(ps2.role);bindStage();
+    $('#lgload').hidden=true;$('#lgcv').hidden=false;ps2.st=window.PenaltyStage.create($('#lgcv'),{snd:function(){return SND}});ps2.st.reset(ps2.role);if(ps2.hudD&&ps2.st.hud)ps2.st.hud(ps2.hudD);bindStage();
     if(ps2.pend){var pm=ps2.pend;ps2.pend=null;playResult(ps2,pm)}})}
 function newKick(ps,role,key){P.penKey=key;ps.role=role;ps.sent=false;ps.done=false;ps.anim=null;ps.dv=null;ps.trail=[];ps.shot=null;ps.hold=false;ps.kicked=false;ps.drawing=false;
   if(ps.st){ps.st.reset(role)}var fb=$('#lgfb');if(fb&&ps.fb)fbRender(ps);setHint(role==='s'?HINT_S:HINT_K)}
 function pPenHead(S,mm,pn,ros){var h=$('#lgpkh');if(!h||(P.ps&&P.ps.hold))return;var B=mm.opp,my=mm.side?pn[3]:pn[2],op=mm.side?pn[2]:pn[3];
+  var rs=function(sd){return (pn[6]||[]).filter(function(x){return x[0]===sd}).map(function(x){return x[1]})},hd={l:{n:(ros[P.i]||[0,'?'])[1],g:my,r:rs(mm.side)},r:{n:(ros[B]||[0,'?'])[1],g:op,r:rs(1-mm.side)},N:pn[7]||3,k:mm.side?pn[5]:pn[4],rn:S.rn||'',lab:'Penalti'};
+  if(P.ps){P.ps.hudD=hd;if(P.ps.st&&P.ps.st.hud)P.ps.st.hud(hd)}
   function dots(side){return (pn[6]||[]).filter(function(x){return x[0]===side}).map(function(x){return x[1]===1?'⚽':x[1]===2?'🧤':'❌'}).join('')}
   h.innerHTML='<div class="lgvs sm"><div class="s"><b>'+esc((ros[P.i]||[0,'?'])[1])+'</b><span class="dots">'+dots(mm.side)+'</span></div><div class="sc"><em>'+my+'</em><span>:</span><em>'+op+'</em></div><div class="s"><b>'+esc((ros[B]||[0,'?'])[1])+'</b><span class="dots">'+dots(1-mm.side)+'</span></div></div>'}
 function setHint(t){var h=$('#lghint');if(h)h.textContent=t}
@@ -406,7 +410,7 @@ var CSS='.lgx{position:fixed;inset:0;z-index:95;color:#fff;font-family:Nunito,sy
 '.lgverdict{font-family:"Baloo 2",sans-serif;font-size:26px;padding:6px 18px;border-radius:14px}.lgverdict.y{background:rgba(39,201,154,.25)}.lgverdict.n{background:rgba(255,59,92,.25)}'+
 '.lgduels{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:10px;width:100%}.lgdc{display:grid;grid-template-columns:1fr auto 1fr;align-items:start;gap:6px;background:rgba(255,255,255,.08);border-radius:16px;padding:10px}.lgdc.pen{box-shadow:0 0 0 2px #FFC53D}.lgdc.done{opacity:.8}.lgdc .s{display:flex;flex-direction:column;align-items:center;gap:3px;font-size:12px;min-width:0;position:relative}.lgdc .s b{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.lgdc .s.win b{color:#27C99A}.lgdc .s i{position:absolute;top:0;right:8px;font-style:normal;color:#27C99A}.lgdc .sc{flex-wrap:wrap;justify-content:center;font-size:22px}.lgdc .sc small{width:100%;font-family:Nunito;font-size:10px;opacity:.8}.seqr{font-size:12px;min-height:16px}.lgbyes{grid-column:1/-1;opacity:.8;font-size:13px}'+
 '.lgpod{display:flex;align-items:flex-end;justify-content:center;gap:10px;margin:10px 0;width:100%}.lgpod .c{display:flex;flex-direction:column;align-items:center;gap:6px;flex:1;max-width:170px}.lgpod .pp{display:flex;flex-direction:column;align-items:center;gap:4px;font-size:13px;min-height:84px;justify-content:flex-end}.lgpod .bar{width:100%;border-radius:14px 14px 0 0;display:flex;justify-content:center;padding-top:8px;font-family:"Baloo 2",sans-serif;font-size:30px;color:#33250A}.s1 .bar{height:150px;background:linear-gradient(#FFD95E,#F2A516)}.s2 .bar{height:104px;background:linear-gradient(#E4E8F4,#9BA6C2)}.s3 .bar{height:76px;background:linear-gradient(#F3B27A,#C77A3E)}.cup{font-size:40px;animation:lgpop .8s infinite alternate}.lg4{opacity:.85}'+
-'.lgpk{gap:8px}.lgpk{width:100%}.lgstage{position:relative;width:100%;max-width:980px;margin:0 auto}.lgstage canvas{display:block;margin:0 auto;border-radius:20px;touch-action:none;box-shadow:0 10px 30px rgba(0,0,0,.4)}.lghint{font-size:13px;opacity:.9;max-width:420px}.lgban{position:absolute;left:50%;top:44%;transform:translate(-50%,-50%);font-family:"Baloo 2",sans-serif;font-size:34px;padding:10px 20px;border-radius:18px;background:rgba(0,0,0,.65);white-space:nowrap;animation:lgpop .4s both}.lgban.goal{color:#27C99A}.lgban.save{color:#FFC53D}.lgban.miss{color:#FF3B5C}.lgban[hidden]{display:none}'+
+'.lgpk{gap:8px}#lgpkh{display:none}.lgpk{width:100%}.lgstage{position:relative;width:100%;max-width:980px;margin:0 auto}.lgstage canvas{display:block;margin:0 auto;border-radius:20px;touch-action:none;box-shadow:0 10px 30px rgba(0,0,0,.4)}.lghint{font-size:13px;opacity:.9;max-width:420px}.lgban{position:absolute;left:50%;top:44%;transform:translate(-50%,-50%);font-family:"Baloo 2",sans-serif;font-size:34px;padding:10px 20px;border-radius:18px;background:rgba(0,0,0,.65);white-space:nowrap;animation:lgpop .4s both}.lgban.goal{color:#27C99A}.lgban.save{color:#FFC53D}.lgban.miss{color:#FF3B5C}.lgban[hidden]{display:none}'+
 '.lgmod{position:absolute;inset:0;z-index:5;background:rgba(5,6,30,.7);display:grid;place-items:center;padding:20px}.lgmod[hidden]{display:none}.lgmb{background:#1B1F5E;border-radius:22px;padding:22px;max-width:360px;width:100%;display:flex;flex-direction:column;gap:12px;text-align:center}.lgmb h3{font-family:"Baloo 2",sans-serif;font-size:22px}.lgmb p{opacity:.8;font-size:14px}.lgconn{position:absolute;left:50%;bottom:14px;transform:translateX(-50%);z-index:6;background:#FF3B5C;padding:8px 14px;border-radius:999px;font-size:13px}.lgconn[hidden]{display:none}'+
 '.lgload{min-height:220px;display:grid;place-items:center;border-radius:18px;background:rgba(255,255,255,.07);font-size:15px;width:100%}.lgload[hidden],.lgstage canvas[hidden]{display:none}.lghlab{font-family:"Baloo 2",sans-serif;font-size:18px;color:#FFC53D;min-height:24px}.lgzg{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;width:100%;max-width:420px;margin:0 auto}.lgzg button{padding:18px 6px;border-radius:14px;background:rgba(255,255,255,.14);font-size:14px}.lgzg button:disabled{opacity:.4}'+
 '@media(max-width:560px){.lgops{grid-template-columns:1fr}.lgcol{min-width:138px}}';
