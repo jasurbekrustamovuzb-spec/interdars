@@ -51,7 +51,7 @@ function create(cv,o){let T,renderer,scene,camera,root,gk,pk,ball,ring,ready=fal
   }
   renderer.render(scene,camera)
  }
- function play(s,done){if(!ready){queued=[s,done];return true}cb=done;const shot=s.k||s,x=clamp(+shot.tx||0,-3.45,3.45),y=clamp(+shot.ty||1.2,.2,2.22),d=s.d||{};flight={t:0,duration:1.05,x,y:y/2.44,spin:(+shot.cu||0)*.7,save:!!d&&Math.abs(((+d.x||.5)-.5)*7.32-x)<.82&&y<2.05};return true}
+ function play(s,done){if(!ready){queued=[s,done];return true}cb=done;const shot=s.k||s,x=clamp(+shot.tx||0,-3.45,3.45),y=clamp(+shot.ty||1.2,.2,2.22),d=s.d||{};flight={t:0,duration:1.05,x,y,spin:(+shot.cu||0)*.7,save:!!d&&Math.abs(((+d.x||.5)-.5)*7.32-x)<.82&&y<2.05};return true}
  function reset(r){role=r||'v';flight=null;cb=null;if(gk){gk.position.set(0,0,10.48);gk.rotation.set(0,Math.PI,0)}if(pk){pk.position.set(-1.15,0,-1.5);pk.rotation.set(0,Math.PI,0)}if(ball)ball.position.set(0,.115,0)}
  function destroy(){dead=true;cancelAnimationFrame(raf);window.removeEventListener('resize',resize);if(renderer){renderer.dispose();scene.traverse(x=>{if(x.geometry)x.geometry.dispose();if(x.material){if(Array.isArray(x.material))x.material.forEach(m=>m.dispose());else x.material.dispose()}})}}
  import('https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js').then(mod=>{if(dead)return;T=mod;make();ready=true;resize();reset(role);if(queued){let q=queued;queued=null;play(q[0],q[1])}raf=requestAnimationFrame(render)}).catch(e=>console.error('Three.js penalty scene failed to load',e));
