@@ -1437,7 +1437,7 @@ pills('#mf',function(b){mfv=b.dataset.f;$('#mg').innerHTML=mcards()});
 var code=$('#code'),jb=$('#join'),je=$('#jerr');
 code.addEventListener('input',function(){this.value=this.value.replace(/\D/g,'').slice(0,6);jb.disabled=this.value.length<6;je.textContent='Bunday jonli quiz topilmadi — ID ni tekshirib, qayta kiriting.';je.classList.remove('on');code.classList.remove('bad')});
 function joinCode(){if(jb.disabled)return;var c=code.value;jb.disabled=true;
-  var lv=window.LiveQuiz?window.LiveQuiz.join(c,true):Promise.resolve('none');
+  var lv=window.LiveQuiz?window.LiveQuiz.join(c,false):Promise.resolve('none');
   lv.then(function(r){jb.disabled=code.value.length<6;
     if(r==='ok'){code.value='';jb.disabled=true;return}
     je.textContent=(window.LiveQuiz&&window.LiveQuiz.err)||'Bunday jonli quiz topilmadi — ID ni tekshirib, qayta kiriting.';je.classList.add('on');code.classList.add('bad')})}
@@ -1978,8 +1978,8 @@ window.confetti=function(x,y,n){if(matchMedia('(prefers-reduced-motion: reduce)'
 </script>
 <script src="/ai-test.js"></script>
 <script src="/qrcode.js"></script>
-<script src="/live.js"></script>
-<script src="/league.js"></script>
+<script src="/live.js?v=2"></script>
+<script src="/league.js?v=2"></script>
 </body>
 </html>
 
