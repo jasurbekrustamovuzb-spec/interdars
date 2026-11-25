@@ -596,5 +596,6 @@ var CSS='.jq{position:fixed;inset:0;z-index:90;color:#fff;font-family:Nunito,sys
 +'.jq-conn{position:absolute;left:50%;top:calc(10px + env(safe-area-inset-top,0px));transform:translateX(-50%);z-index:6;background:#FF3B5C;border-radius:99px;padding:6px 16px;font-size:14px;box-shadow:0 6px 18px rgba(0,0,0,.3)}.jq-conn[hidden]{display:none}.jq-toast{position:fixed;left:50%;bottom:calc(100px + env(safe-area-inset-bottom,0px));transform:translate(-50%,20px);background:#1B2150;color:#fff;padding:10px 18px;border-radius:14px;font:700 14px Nunito,sans-serif;opacity:0;pointer-events:none;transition:.25s;z-index:120;max-width:90vw;text-align:center}.jq-toast.on{opacity:1;transform:translate(-50%,0)}'
 +'@media(max-width:820px){.jq-lob{grid-template-columns:1fr;overflow-y:auto;grid-auto-rows:min-content}.jq-jn{overflow:visible}.jq-pls{min-height:300px}.jq-qbox{flex-wrap:wrap;justify-content:center}.jq-opts{grid-template-columns:1fr}.jq-opts.n3 .jq-o:last-child{grid-column:auto}.jq-ttl{display:none}}@media(prefers-reduced-motion:reduce){.jq *{animation-duration:.01s!important}}'+CSS2;
 
-if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot);else boot();
+function bootAfterAuth(){if(window.idAuthReady===false){window.onUserReady=function(){window.onUserReady=null;boot()};return}if(window.idAuthReady===true&&!window.idAuthenticated)return;if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot);else boot()}
+bootAfterAuth();
 })();
