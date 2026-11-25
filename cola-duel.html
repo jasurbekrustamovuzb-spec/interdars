@@ -465,7 +465,7 @@
     function colaSnapshot() {
       return {
         currentPlayer: state.currentPlayer, glassFill: state.glassFill, bottleFill: state.bottleFill,
-        progress: state.controlProgress, turnStartFill: state.turnStartFill,
+        progress: state.controlProgress, turnStartFill: state.turnStartFill, paused: document.hidden,
         hasPouredThisTurn: state.hasPouredThisTurn, isPouring: state.isPouring,
         pourRate: state.pourRate, wavePhase: state.wavePhase, waveAmplitude: state.waveAmplitude,
         bottleSloshPhase: state.bottleSloshPhase, bottleSloshAmp: state.bottleSloshAmp,
@@ -475,6 +475,7 @@
     function colaNotify(type, extra) {
       if (window.parent !== window) window.parent.postMessage(Object.assign({ type: type, state: colaSnapshot() }, extra || {}), location.origin);
     }
+    document.addEventListener('visibilitychange', function () { if (window.__colaMode === 'play') colaNotify('cola-state'); });
     window.addEventListener('message', function (event) {
       if (event.origin !== location.origin || event.source !== window.parent || !event.data || event.data.type !== 'cola-sync') return;
       window.__colaMode = event.data.mode === 'play' ? 'play' : 'watch';
@@ -486,7 +487,7 @@
         state.controlProgress = +r.progress || 0; state.targetControl = state.controlProgress; state.turnStartFill = +r.turnStartFill || 0;
         state.hasPouredThisTurn = !!r.hasPouredThisTurn; state.isPouring = !!r.isPouring; state.pourRate = +r.pourRate || 0;
         state.wavePhase = +r.wavePhase || 0; state.waveAmplitude = +r.waveAmplitude || 0; state.bottleSloshPhase = +r.bottleSloshPhase || 0;
-        state.bottleSloshAmp = +r.bottleSloshAmp || 0; state.lastTiltRad = +r.lastTiltRad || 0; state.gameOver = !!r.gameOver;
+        state.bottleSloshAmp = +r.bottleSloshAmp || 0; state.lastTiltRad = +r.lastTiltRad || 0; state.gameOver = !!r.gameOver; state.remotePaused = !!r.paused;
         state.handoffActive = false;
       }
       document.documentElement.dataset.colaMode = window.__colaMode;
@@ -811,6 +812,11 @@
         p1StatusText.textContent = 'Kutilmoqda';
         p1StatusText.className = 'text-[11px] text-slate-500 font-semibold';
       }
+      if (window.__colaMode === 'watch' && window.__colaRemote && window.__colaRemote.paused) {
+        const activeStatus = state.currentPlayer === 1 ? p1StatusText : p2StatusText;
+        activeStatus.textContent = 'Raqib pauzada';
+        activeStatus.className = 'text-[11px] text-amber-700 font-bold';
+      }
     }
 
     function completePlayerTurn() {
@@ -945,7 +951,7 @@
     function updatePhysics(dt) {
       if (window.__colaMode === 'watch' && window.__colaRemote) {
         const remote = window.__colaRemote;
-        state.currentPlayer = remote.currentPlayer || 1; state.glassFill = +remote.glassFill || 0; state.bottleFill = remote.bottleFill == null ? 85 : +remote.bottleFill;
+        state.currentPlayer = remote.currentPlayer || 1; state.glassFill = +remote.glassFill || 0; state.bottleFill = remote.bottleFill == null ? 85 : +remote.bottleFill; state.remotePaused = !!remote.paused;
         state.controlProgress = Math.max(0, Math.min(1, +remote.progress || 0)); state.targetControl = state.controlProgress;
         state.turnStartFill = +remote.turnStartFill || 0; state.hasPouredThisTurn = !!remote.hasPouredThisTurn;
         state.isPouring = !!remote.isPouring; state.pourRate = +remote.pourRate || 0;
