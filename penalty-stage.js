@@ -38,16 +38,16 @@ function ik2(ax,ay,tx,ty,l1,l2,side){var dx=tx-ax,dy=ty-ay,d=h2(dx,dy)||.001,dd=
   return{j:[ax+ux*a-uy*h*side,ay+uy*a+ux*h*side],e:[ax+ux*dd,ay+uy*dd]}}
 function keeperPose(pl,t){var th=0,Px,Py,u,pp,s,e,f,k,hd=[[0,0],[0,0]],ft=[[0,0],[0,0]],bob=Math.sin(t*5.2)*.02,sway=Math.sin(t*2.3)*.05;
   if(!pl.dive){Px=sway;Py=.9+bob;th=sway*.25;u=[Math.sin(th),Math.cos(th)];pp=[Math.cos(th),-Math.sin(th)];
-    hd=[[Px-.5+sway,1.52+Math.sin(t*4)*.04],[Px+.5+sway,1.52+Math.sin(t*4+1)*.04]];ft=[[Px-.34,0],[Px+.34,0]]}
+    hd=[[Px-.46+sway,1.2+Math.sin(t*4)*.03],[Px+.46+sway,1.2+Math.sin(t*4+1)*.03]];ft=[[Px-.3,0],[Px+.3,0]]}
   else{s=clamp((t-pl.t0)/pl.Td,0,1);e=1-Math.pow(1-s,2.2);f=clamp((t-pl.t0-pl.Td)/.42,0,1);k=clamp(t/pl.t0,0,1);
     th=pl.th*e;if(pl.lay)th=pl.th*(1+.25*f);th=clamp(th,-1.5,1.5);
     u=[Math.sin(th),Math.cos(th)];pp=[Math.cos(th),-Math.sin(th)];
     Px=lerp(0,pl.PT[0],e);Py=lerp(.9-.1*k,pl.PT[1],e)+pl.jump*Math.sin(PI*s)*(pl.lay?.7:1);
     if(f>0){if(pl.lay)Py=lerp(Py,.27,f);else Py=lerp(Py,.9,f*f)}
-    var Sx=Px+u[0]*TOR,Sy=Py+u[1]*TOR,rdy=[[Px-.5,1.52],[Px+.5,1.52]];
+    var Sx=Px+u[0]*TOR,Sy=Py+u[1]*TOR,rdy=[[Px-.46,1.2],[Px+.46,1.2]];
     for(var i=0;i<2;i++){var sg=i?1:-1,fin=[Sx+u[0]*ARM+pp[0]*.12*sg,Sy+u[1]*ARM+pp[1]*.12*sg];hd[i]=[lerp(rdy[i][0],fin[0],e),lerp(rdy[i][1],fin[1],e)];
       var fs=[Px+pp[0]*.12*sg*2-u[0]*.92+(pl.lay?0:0),Py+pp[1]*.12*sg*2-u[1]*.92];if(!pl.lay)fs[1]=Math.max(fs[1],0);if(pl.lay&&f>0)fs[1]=Math.max(.05,fs[1]);
-      ft[i]=[lerp(Px+(i?.34:-.34),fs[0],e),lerp(0,fs[1],e)]}}
+      ft[i]=[lerp(Px+(i?.3:-.3),fs[0],e),lerp(0,fs[1],e)]}}
   var S=[Px+u[0]*TOR,Py+u[1]*TOR],Hd=[Px+u[0]*(TOR+.27),Py+u[1]*(TOR+.27)],o={P:[Px,Py],S:S,Hd:Hd,th:th,sh:[],el:[],hn:[],hp:[],kn:[],ft:[]};
   for(var j=0;j<2;j++){var sd=j?1:-1,shd=[S[0]+pp[0]*.17*sd,S[1]+pp[1]*.17*sd],hip=[Px+pp[0]*.1*sd,Py+pp[1]*.1*sd],a1=ik2(shd[0],shd[1],hd[j][0],hd[j][1],.36,.38,sd),l1=ik2(hip[0],hip[1],ft[j][0],ft[j][1],.46,.46,sd);
     o.sh.push(shd);o.el.push(a1.j);o.hn.push(a1.e);o.hp.push(hip);o.kn.push(l1.j);o.ft.push(l1.e)}
@@ -284,8 +284,8 @@ function skinTex(c){return tx('sk'+c,128,128,function(g,w,h){g.fillStyle=c;g.fil
 function hairTex(c){return tx('hr'+c,128,128,function(g,w,h){g.fillStyle=c;g.fillRect(0,0,w,h);var r=rng(5),i;
   for(i=0;i<240;i++){var x=r()*w,l=h*(.4+r()*.6);g.strokeStyle=r()<.5?'rgba(255,235,210,'+(.05+r()*.09)+')':'rgba(0,0,0,'+(.12+r()*.16)+')';g.lineWidth=1+r()*1.5;g.beginPath();g.moveTo(x,0);g.lineTo(x+(r()-.5)*6,l);g.stroke()}},true)}
 function hairBump(){return tx('hb',128,128,function(g,w,h){g.fillStyle='#808080';g.fillRect(0,0,w,h);var r=rng(9),i;for(i=0;i<260;i++){var x=r()*w;g.strokeStyle=r()<.5?'rgba(255,255,255,.35)':'rgba(0,0,0,.35)';g.lineWidth=1+r()*1.2;g.beginPath();g.moveTo(x,0);g.lineTo(x+(r()-.5)*5,h*(.4+r()*.6));g.stroke()}},true,false)}
-function skinMat(k){return new TH.MeshStandardMaterial({map:skinTex(k.skinC),bumpMap:poreBump(),bumpScale:.5,roughness:.52,metalness:0,emissive:new TH.Color(k.skin).convertSRGBToLinear().multiplyScalar(.11)})}
-function hairMat(k){return new TH.MeshStandardMaterial({map:hairTex(k.hairC),bumpMap:hairBump(),bumpScale:1.2,roughness:.38,metalness:.05})}
+function skinMat(k){return new TH.MeshStandardMaterial({color:new TH.Color(k.skin).convertSRGBToLinear(),roughness:.6,metalness:0,emissive:new TH.Color(k.skin).convertSRGBToLinear().multiplyScalar(.14)})}
+function hairMat(k){return new TH.MeshStandardMaterial({color:new TH.Color(k.hairHex||0x1a120c).convertSRGBToLinear().multiplyScalar(1.5),roughness:.5,metalness:0})}
 var HCAP=new TH.SphereGeometry(1,22,12,0,6.2832,0,1.72);
 function Hand(gl,sg,big,skm){var g=new TH.Group(),s=big?1.4:1,m=gl?mat(0xf4f6ff,.5):(skm||mat(sg,.55)),acc=gl?mat(0x20c25c,.5):m,ad=function(geo,mm,x,y,z,sx,sy,sz,rz){var q=new TH.Mesh(geo,mm);q.position.set(x,y,z);q.scale.set(sx,sy,sz);q.rotation.z=rz||0;q.castShadow=true;g.add(q);return q};
   ad(SPH,m,0,.05*s,0,.04*s,.055*s,.018*s);ad(SPH,acc,0,.05*s,.014*s*(gl?1:0),.03*s,.04*s,.006*s*(gl?1:0));
@@ -299,7 +299,7 @@ function Boot(bc,dir,hero){var g=new TH.Group(),m=hero?new TH.MeshPhysicalMateri
   scene.add(g);return g}
 function Rig(k,dir){var R={},hero=!!k.hero,fz=dir,m=function(c,r,mt){return mat(c,r==null?.6:r,mt||0)},jm=new TH.MeshStandardMaterial({map:jerseyTex(k),roughness:.74,metalness:0}),sl=m(k.sleeve||k.jersey,.74),mh=m(k.shorts,.7),mk=m(k.socks,.78),tm=m(k.trim||0x22283a,.65),
     msk=hero?skinMat(k):m(k.skin,.55),mhr=hero?hairMat(k):m(k.hairHex||0x1a120c,.55),i;
-  if(hero){jm.bumpMap=fabricBump();jm.bumpScale=1.4;mh.bumpMap=fabricBump();mh.bumpScale=1}
+  
   var hm=new TH.MeshStandardMaterial({map:headTex(k),roughness:.55});
   R.torso=mesh(TORSO,jm);R.pelv=mesh(SPH,mh);R.neck=mesh(CYL,msk);R.collar=mesh(new TH.TorusGeometry(1,.16,8,18),tm);R.collar.rotation.x=PI/2;
   R.tr=[mesh(CYL,sl),mesh(CYL,sl)];R.band=hero?mesh(CYL,tm):null;
@@ -311,10 +311,9 @@ function Rig(k,dir){var R={},hero=!!k.hero,fz=dir,m=function(c,r,mt){return mat(
   [-1,1].forEach(function(sd){hp_(SPH,msk,sd*.1,-.025,-fz*.004,.014,.032,.02,0,sd*.12);if(hero)hp_(SPH,msk,sd*.052,-.045,fz*.05,.034,.038,.04)});
   if(hero)hp_(SPH,msk,0,.027,fz*.094,.074,.013,.022);
   /* soch: qatlamli \u2014 qalpoq + hajm + chakka + ensa (kallaga yopishgan shlem emas) */
-  var hc=new TH.Mesh(HCAP,mhr);hc.position.set(0,.016,-fz*.008);hc.scale.set(.106,.122,.114);hc.rotation.x=-fz*(hero?.42:.1);hc.castShadow=true;hg.add(hc);
-  hp_(SPH,mhr,0,.088,-fz*.012,.092,.05,.1);
-  [-1,1].forEach(function(sd){hp_(SPH,mhr,sd*.086,.045,-fz*.014,.03,.055,.07)});
-  if(hero)hp_(SPH,mhr,0,-.052,-fz*.078,.074,.055,.038);
+  var hc=new TH.Mesh(HCAP,mhr);hc.position.set(0,.016,-fz*.008);hc.scale.set(.106,.122,.114);hc.rotation.x=-fz*(hero?.2:.1);hc.castShadow=true;hg.add(hc);
+  hp_(SPH,mhr,0,.078,-fz*.012,.09,.045,.098);
+  if(hero)hp_(SPH,mhr,0,-.04,-fz*.08,.07,.05,.034);
   if(k.face){hp_(SPH,mhr,0,.088,fz*.05,.075,.03,.05,fz*.32);if(hero)[-1,1].forEach(function(sd){hp_(SPH,mhr,sd*.093,-.01,fz*.02,.011,.04,.02)})}
   R.ua=[];R.fa=[];R.sj=[];R.ej=[];R.hd=[];R.th=[];R.th2=[];R.kj=[];R.sn=[];R.bt=[];R.cf=[];R.us=[];R.cu=[];R.hem=[];R.sr=[];R.ak=[];
   for(i=0;i<2;i++){R.sj.push(mesh(SPH,sl));R.ua.push(mesh(TP(.06,.05,.12),sl));R.us.push(k.longSleeve?null:mesh(TP(.048,.041,.1),msk));R.fa.push(mesh(TP(.049,.037,.18),k.longSleeve?sl:msk));R.ej.push(mesh(SPH,k.longSleeve?sl:msk));R.hd.push(Hand(!!k.glove,k.skin,!!k.glove,hero?msk:null));R.cf.push(k.glove?mesh(TP(.046,.05,0),m(k.cuff||0x20c25c,.5)):null);
