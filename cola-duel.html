@@ -1,0 +1,1649 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Kola Quyish Bellashuvi — Durrangni Yechish</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+      user-select: none;
+      -webkit-user-select: none;
+      touch-action: none;
+    }
+
+    body {
+      font-family: 'Outfit', sans-serif;
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      /* Bright, warm sunlit cafe & studio daylight atmosphere */
+      background: linear-gradient(165deg, #fffbeb 0%, #fef3c7 38%, #fde68a 72%, #fed7aa 100%);
+      color: #1e293b;
+      height: 100dvh;
+      width: 100vw;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Soft sunlit window rays & warm bokeh overlay */
+    .sunlit-backdrop {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background:
+        radial-gradient(circle at 18% 15%, rgba(255, 255, 255, 0.92) 0%, rgba(255, 255, 255, 0) 48%),
+        radial-gradient(circle at 82% 20%, rgba(186, 230, 253, 0.55) 0%, rgba(186, 230, 253, 0) 50%),
+        radial-gradient(circle at 50% 45%, rgba(254, 215, 170, 0.45) 0%, transparent 65%);
+      z-index: 0;
+    }
+
+    canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+      cursor: grab;
+    }
+
+    canvas:active {
+      cursor: grabbing;
+    }
+
+    /* Bright Frosted Glass UI Cards */
+    .glass-panel {
+      background: rgba(255, 255, 255, 0.82);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border: 1px solid rgba(255, 255, 255, 0.95);
+      box-shadow: 0 10px 28px rgba(146, 64, 14, 0.12), 0 2px 6px rgba(0, 0, 0, 0.04);
+    }
+
+    .active-player-card {
+      background: rgba(255, 255, 255, 0.96);
+      border: 2px solid #ef4444;
+      box-shadow: 0 12px 26px rgba(239, 68, 68, 0.22), 0 0 0 3px rgba(254, 202, 202, 0.55);
+      transform: translateY(-2px);
+    }
+
+    /* Tactile Red Soda Button */
+    .btn-primary {
+      background: linear-gradient(135deg, #ef4444 0%, #dc2626 55%, #b91c1c 100%);
+      box-shadow: 0 8px 20px rgba(220, 38, 38, 0.35), inset 0 1px 1px rgba(255, 255, 255, 0.45);
+      transition: all 0.18s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    .btn-primary:hover {
+      transform: translateY(-2px) scale(1.02);
+      box-shadow: 0 12px 26px rgba(220, 38, 38, 0.45), inset 0 1px 1px rgba(255, 255, 255, 0.55);
+    }
+    .btn-primary:active {
+      transform: translateY(1px) scale(0.98);
+    }
+
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.85);
+      border: 1px solid rgba(203, 213, 225, 0.9);
+      box-shadow: 0 2px 8px rgba(15, 23, 42, 0.06);
+      transition: all 0.18s ease;
+    }
+    .btn-secondary:hover {
+      background: #ffffff;
+      border-color: #94a3b8;
+    }
+
+    @keyframes pulseGuide {
+      0%, 100% { transform: translateX(0); opacity: 1; }
+      50% { transform: translateX(9px); opacity: 0.5; }
+    }
+    .animate-slide-hint {
+      animation: pulseGuide 1.5s infinite ease-in-out;
+    }
+
+    @keyframes popIn {
+      0% { opacity: 0; transform: scale(0.92) translateY(12px); }
+      100% { opacity: 1; transform: scale(1) translateY(0); }
+    }
+    .animate-pop-in {
+      animation: popIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+    html.embedded-duel #handoffOverlay,
+    html.embedded-duel #resultOverlay,
+    html.embedded-duel #restartBtn { display: none !important; }
+    html.embedded-duel[data-cola-mode="watch"] #gameCanvas,
+    html.embedded-duel[data-cola-mode="watch"] #bottomControlBar { pointer-events: none; }
+  </style>
+</head>
+<body>
+  <div class="sunlit-backdrop"></div>
+
+  <!-- TOP HEADER & SCOREBOARD -->
+  <header class="relative z-10 w-full max-w-4xl mx-auto px-3 pt-3 sm:px-6 sm:pt-4 flex flex-col gap-2">
+    <div class="flex items-center justify-between gap-2">
+      <!-- Title Badge -->
+      <div class="flex items-center gap-2.5">
+        <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-br from-red-500 to-red-700 flex items-center justify-center shadow-md border border-red-300">
+          <svg class="w-5 h-5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+            <path d="M10 2h4v3l2 3v12a2 2 0 0 1-2 2h-4a2 2 0 0 1-2-2V8l2-3V2z" />
+            <path d="M8 12h8" />
+          </svg>
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <h1 class="text-base sm:text-xl font-black tracking-tight text-slate-900 leading-none">
+              KOLA QUYISH BELLASHUVI
+            </h1>
+            <span id="stageBadge" class="text-[10px] sm:text-xs font-extrabold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-900 border border-amber-500/40">
+              1-Bosqich
+            </span>
+          </div>
+          <p class="text-[11px] sm:text-xs text-slate-600 font-medium mt-0.5">
+            Durrangni hal qilish • Stakandan toshirib yubormang!
+          </p>
+        </div>
+      </div>
+
+      <!-- Sound & Reset Controls -->
+      <div class="flex items-center gap-2">
+        <button id="soundToggleBtn" title="Ovozni yoqish/o'chirish" class="btn-secondary p-2.5 rounded-xl text-slate-700 flex items-center justify-center">
+          <svg id="soundOnIcon" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+            <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+            <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
+          </svg>
+          <svg id="soundOffIcon" class="w-5 h-5 hidden text-red-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+            <line x1="23" y1="9" x2="17" y2="15"></line>
+            <line x1="17" y1="9" x2="23" y2="15"></line>
+          </svg>
+        </button>
+        <button id="restartBtn" class="btn-secondary px-3 py-2 rounded-xl text-xs sm:text-sm font-bold text-slate-700 flex items-center gap-1.5">
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+            <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path>
+            <path d="M3 3v5h5"></path>
+          </svg>
+          <span class="hidden sm:inline">Qayta boshlash</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- PLAYERS & TURN STATUS BAR -->
+    <div class="grid grid-cols-2 gap-2.5 sm:gap-4 mt-1">
+      <!-- Player 1 Card -->
+      <div id="player1Card" class="glass-panel active-player-card rounded-2xl p-2.5 sm:p-3 transition-all duration-300 flex items-center justify-between">
+        <div class="flex items-center gap-2.5">
+          <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-br from-red-500 to-red-700 flex items-center justify-center font-black text-white text-sm sm:text-base shadow-sm">
+            1
+          </div>
+          <div>
+            <div class="flex items-center gap-1.5">
+              <span class="font-extrabold text-xs sm:text-sm text-slate-900">1-Ishtirokchi</span>
+              <span id="p1TurnDot" class="w-2 h-2 rounded-full bg-red-500 animate-ping"></span>
+            </div>
+            <p id="p1StatusText" class="text-[11px] text-red-600 font-bold">Navbat sizda</p>
+          </div>
+        </div>
+        <div class="text-right">
+          <span class="text-[10px] uppercase tracking-wider text-slate-500 font-bold block">G'alabalar</span>
+          <span id="p1Wins" class="text-base sm:text-lg font-black text-slate-900">0</span>
+        </div>
+      </div>
+
+      <!-- Player 2 Card -->
+      <div id="player2Card" class="glass-panel rounded-2xl p-2.5 sm:p-3 transition-all duration-300 flex items-center justify-between opacity-80">
+        <div class="flex items-center gap-2.5">
+          <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-br from-sky-500 to-blue-700 flex items-center justify-center font-black text-white text-sm sm:text-base shadow-sm">
+            2
+          </div>
+          <div>
+            <div class="flex items-center gap-1.5">
+              <span class="font-extrabold text-xs sm:text-sm text-slate-900">2-Ishtirokchi</span>
+              <span id="p2TurnDot" class="w-2 h-2 rounded-full bg-sky-500 hidden animate-ping"></span>
+            </div>
+            <p id="p2StatusText" class="text-[11px] text-slate-500 font-semibold">Kutilmoqda</p>
+          </div>
+        </div>
+        <div class="text-right">
+          <span class="text-[10px] uppercase tracking-wider text-slate-500 font-bold block">G'alabalar</span>
+          <span id="p2Wins" class="text-base sm:text-lg font-black text-slate-900">0</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- LIVE METERS: GLASS FILL & MINIMUM TURN REQUIREMENT -->
+    <div class="glass-panel rounded-2xl px-3.5 py-2 flex flex-wrap items-center justify-between gap-2 text-xs">
+      <div class="flex items-center gap-2">
+        <span class="text-slate-600 font-semibold">Stakan to'lishi:</span>
+        <span id="glassPercentText" class="font-black text-emerald-700 text-sm">0%</span>
+        <span class="text-slate-400 font-semibold">/ 100%</span>
+      </div>
+
+      <!-- Turn Pour Progress Pill -->
+      <div class="flex items-center gap-2 flex-1 max-w-xs">
+        <span class="text-slate-600 font-semibold whitespace-nowrap text-[11px]">Urinish me'yori:</span>
+        <div class="w-full h-2.5 bg-slate-200 rounded-full overflow-hidden border border-slate-300/80 p-0.5">
+          <div id="turnMinBar" class="h-full rounded-full bg-gradient-to-r from-amber-500 to-emerald-500 transition-all duration-100" style="width: 0%"></div>
+        </div>
+        <span id="turnMinCheck" class="text-[11px] font-extrabold text-amber-700 whitespace-nowrap">Kamida 8%</span>
+      </div>
+
+      <div class="hidden md:flex items-center gap-1.5 text-slate-700 font-semibold">
+        <span class="inline-block w-2.5 h-2.5 rounded-full bg-red-500"></span>
+        <span>Qizil chiziqdan oshsa — to'kiladi!</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN INTERACTIVE GAME CANVAS -->
+  <main class="relative z-10 flex-1 w-full flex flex-col items-center justify-center overflow-hidden">
+    <canvas id="gameCanvas"></canvas>
+
+    <!-- Bottom Interactive Drag Slider / Gesture Helper -->
+    <div id="bottomControlBar" class="absolute bottom-3 sm:bottom-5 left-1/2 -translate-x-1/2 w-[92%] max-w-md glass-panel rounded-2xl p-3 flex flex-col gap-2 pointer-events-auto">
+      <div class="flex items-center justify-between text-xs px-1">
+        <span id="controlInstruction" class="font-bold text-slate-800 flex items-center gap-1.5">
+          <span class="text-red-600 animate-slide-hint">➔</span>
+          Baklajkani o'ngga suring — og'ziga yetganda quyiladi
+        </span>
+        <span id="tiltAngleLabel" class="font-mono font-extrabold text-red-600">0°</span>
+      </div>
+
+      <!-- Precision Slide Track -->
+      <div id="sliderTrack" class="relative h-10 rounded-xl bg-amber-100/90 border border-amber-300/80 flex items-center px-2 cursor-pointer overflow-hidden shadow-inner">
+        <div id="sliderFill" class="absolute left-0 top-0 bottom-0 bg-gradient-to-r from-red-500/25 to-amber-500/35 pointer-events-none" style="width: 0%"></div>
+        <!-- Lift Zone vs Pour Zone markers -->
+        <div class="absolute left-[34%] top-1 bottom-1 w-px bg-amber-900/20 pointer-events-none"></div>
+        <span class="absolute left-[17%] -translate-x-1/2 text-[10px] uppercase tracking-wider text-slate-600 font-bold pointer-events-none">
+          Ko'tarish
+        </span>
+        <span class="absolute left-[67%] -translate-x-1/2 text-[10px] uppercase tracking-wider text-red-700 font-extrabold pointer-events-none">
+          Egilish va Quyish
+        </span>
+
+        <!-- Draggable Thumb -->
+        <div id="sliderThumb" class="relative z-10 w-11 h-8 rounded-lg bg-gradient-to-b from-red-500 to-red-700 border border-red-300 shadow-md flex items-center justify-center text-white font-bold text-xs pointer-events-none" style="transform: translateX(0px);">
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <polyline points="9 18 15 12 9 6"></polyline>
+          </svg>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- TURN HANDOFF OVERLAY -->
+  <div id="handoffOverlay" class="fixed inset-0 z-30 bg-slate-900/45 backdrop-blur-md hidden items-center justify-center p-4">
+    <div class="glass-panel animate-pop-in max-w-sm w-full rounded-3xl p-6 text-center bg-white/95">
+      <div id="handoffBadge" class="w-16 h-16 mx-auto rounded-2xl bg-gradient-to-br from-sky-500 to-blue-700 flex items-center justify-center text-2xl font-black text-white shadow-lg mb-4">
+        2
+      </div>
+      <p class="text-xs uppercase tracking-widest text-amber-700 font-extrabold mb-1">Navbat almashdi</p>
+      <h2 id="handoffTitle" class="text-2xl font-black text-slate-900 mb-2">2-Ishtirokchi navbati</h2>
+      <p id="handoffDesc" class="text-sm text-slate-600 mb-5 leading-relaxed font-medium">
+        Ekranni keyingi ishtirokchiga uzating. Stakanda hozir <span id="handoffFillSpan" class="font-extrabold text-amber-700">24%</span> kola bor. Kamida <span class="font-extrabold text-emerald-700">8%</span> quying, lekin toshirib yubormang!
+      </p>
+      <button id="startTurnBtn" class="btn-primary w-full py-3.5 rounded-2xl font-extrabold text-white text-base tracking-wide">
+        Tayyorman, quyishni boshlash
+      </button>
+    </div>
+  </div>
+
+  <!-- ROUND RESULT / WINNER MODAL -->
+  <div id="resultOverlay" class="fixed inset-0 z-40 bg-slate-900/50 backdrop-blur-md hidden items-center justify-center p-4">
+    <div class="glass-panel animate-pop-in max-w-md w-full rounded-3xl p-6 sm:p-7 text-center bg-white/95">
+      <div class="w-16 h-16 mx-auto rounded-2xl bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center shadow-lg mb-4">
+        <svg class="w-9 h-9 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+          <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"></path>
+          <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"></path>
+          <path d="M4 22h16"></path>
+          <path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"></path>
+          <path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"></path>
+          <path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"></path>
+        </svg>
+      </div>
+
+      <span id="resultReasonBadge" class="inline-block px-3 py-1 rounded-full text-xs font-extrabold uppercase tracking-wider bg-red-100 text-red-700 border border-red-200 mb-2">
+        Stakandan kola to'kildi!
+      </span>
+      <h2 id="winnerTitle" class="text-2xl sm:text-3xl font-black text-slate-900 mb-2">
+        1-Ishtirokchi G'olib!
+      </h2>
+      <p id="winnerSubtitle" class="text-sm text-slate-600 mb-6 leading-relaxed font-medium">
+        2-Ishtirokchi stakanni toshirib yubordi. 1-Ishtirokchi durrangni yechdi va <span class="text-amber-700 font-extrabold">keyingi bosqichga</span> yo'l oldi!
+      </p>
+
+      <div class="flex flex-col sm:flex-row gap-3">
+        <button id="nextStageBtn" class="btn-primary flex-1 py-3.5 px-4 rounded-2xl font-extrabold text-white text-sm sm:text-base">
+          Keyingi bosqichga o'tish ➔
+        </button>
+        <button id="newMatchBtn" class="btn-secondary py-3.5 px-4 rounded-2xl font-bold text-slate-700 text-sm">
+          Yangi bellashuv
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOAST MESSAGE BOX -->
+  <div id="toastBox" class="fixed top-24 left-1/2 -translate-x-1/2 z-50 pointer-events-none opacity-0 transition-all duration-300 transform -translate-y-2">
+    <div class="glass-panel px-4 py-2.5 rounded-full border border-amber-400 bg-white/95 text-amber-900 text-xs sm:text-sm font-extrabold shadow-xl flex items-center gap-2">
+      <span class="w-2.5 h-2.5 rounded-full bg-amber-500"></span>
+      <span id="toastText">Kamida 8% kola quyishingiz shart!</span>
+    </div>
+  </div>
+
+  <script>
+    /**
+     * KOLA QUYISH BELLASHUVI (2-Player Tie-Breaker Game)
+     * - Bright, warm sunlit cafe/studio atmosphere & natural oak tabletop.
+     * - Gravity-aligned horizontal liquid plane inside the transparent CHILL COLA bottle:
+     *   The cola level visibly tilts into the bottle shoulder & neck as the bottle inclines,
+     *   and ONLY starts flowing out of the spout once the horizontal liquid surface reaches the bottle mouth!
+     * - Fixed height & identical lift trajectory for every attempt.
+     */
+
+    // ==========================================
+    // 1. AUDIO SYNTHESIZER (Web Audio API)
+    // ==========================================
+    class SoundEngine {
+      constructor() {
+        this.ctx = null;
+        this.muted = false;
+        this.pourNode = null;
+        this.pourGain = null;
+      }
+
+      init() {
+        if (!this.ctx) {
+          const AudioCtx = window.AudioContext || window.webkitAudioContext;
+          if (AudioCtx) {
+            this.ctx = new AudioCtx();
+          }
+        }
+        if (this.ctx && this.ctx.state === 'suspended') {
+          this.ctx.resume();
+        }
+      }
+
+      toggleMute() {
+        this.muted = !this.muted;
+        if (this.muted && this.pourGain) {
+          this.pourGain.gain.setTargetAtTime(0, this.ctx.currentTime, 0.05);
+        }
+        return this.muted;
+      }
+
+      updatePourSound(intensity) {
+        if (this.muted || !this.ctx) return;
+        if (intensity > 0.02) {
+          if (!this.pourNode) {
+            const bufferSize = this.ctx.sampleRate * 2;
+            const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
+            const data = buffer.getChannelData(0);
+            let lastOut = 0.0;
+            for (let i = 0; i < bufferSize; i++) {
+              const white = Math.random() * 2 - 1;
+              data[i] = (lastOut + (0.04 * white)) / 1.04;
+              lastOut = data[i];
+              data[i] *= 2.5;
+            }
+            this.pourNode = this.ctx.createBufferSource();
+            this.pourNode.buffer = buffer;
+            this.pourNode.loop = true;
+
+            const filter = this.ctx.createBiquadFilter();
+            filter.type = 'bandpass';
+            filter.frequency.value = 920;
+            filter.Q.value = 1.4;
+
+            this.pourGain = this.ctx.createGain();
+            this.pourGain.gain.value = 0.001;
+
+            this.pourNode.connect(filter);
+            filter.connect(this.pourGain);
+            this.pourGain.connect(this.ctx.destination);
+            this.pourNode.start();
+          }
+          const targetVol = Math.min(0.32, intensity * 0.36);
+          this.pourGain.gain.setTargetAtTime(targetVol, this.ctx.currentTime, 0.05);
+        } else if (this.pourGain) {
+          this.pourGain.gain.setTargetAtTime(0.0001, this.ctx.currentTime, 0.06);
+        }
+      }
+
+      playTone(freq, type = 'sine', duration = 0.2, vol = 0.15, delay = 0) {
+        if (this.muted) return;
+        this.init();
+        if (!this.ctx) return;
+
+        const now = this.ctx.currentTime + delay;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, now);
+
+        gain.gain.setValueAtTime(0.001, now);
+        gain.gain.exponentialRampToValueAtTime(vol, now + 0.02);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + duration);
+
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start(now);
+        osc.stop(now + duration + 0.02);
+      }
+
+      playTurnSwitch() {
+        this.playTone(523.25, 'triangle', 0.16, 0.14, 0);
+        this.playTone(659.25, 'triangle', 0.22, 0.16, 0.1);
+      }
+
+      playSpill() {
+        this.updatePourSound(0);
+        this.playTone(180, 'sawtooth', 0.35, 0.22, 0);
+        this.playTone(110, 'sawtooth', 0.45, 0.24, 0.12);
+      }
+
+      playWin() {
+        this.updatePourSound(0);
+        this.playTone(523.25, 'triangle', 0.18, 0.18, 0);
+        this.playTone(659.25, 'triangle', 0.18, 0.18, 0.12);
+        this.playTone(783.99, 'triangle', 0.22, 0.2, 0.24);
+        this.playTone(1046.5, 'triangle', 0.45, 0.24, 0.36);
+      }
+    }
+
+    const sound = new SoundEngine();
+
+    // ==========================================
+    // 2. GAME STATE & CONFIGURATION
+    // ==========================================
+    const LIFT_END_PROGRESS = 0.34; // 0..0.34 = lift to fixed spot; 0.34..1.0 = tilt up to 118 deg
+    const MAX_TILT_DEG = 118;
+    if (window.parent !== window) document.documentElement.classList.add('embedded-duel');
+    window.__colaMode = new URLSearchParams(location.search).get('mode') || (window.parent !== window ? 'watch' : 'standalone');
+    window.__colaRemote = null;
+    window.__colaLastSend = 0;
+
+    function colaSnapshot() {
+      return {
+        currentPlayer: state.currentPlayer, glassFill: state.glassFill, bottleFill: state.bottleFill,
+        progress: state.controlProgress, turnStartFill: state.turnStartFill,
+        hasPouredThisTurn: state.hasPouredThisTurn, isPouring: state.isPouring,
+        pourRate: state.pourRate, wavePhase: state.wavePhase, waveAmplitude: state.waveAmplitude,
+        bottleSloshPhase: state.bottleSloshPhase, bottleSloshAmp: state.bottleSloshAmp,
+        lastTiltRad: state.lastTiltRad, gameOver: state.gameOver
+      };
+    }
+    function colaNotify(type, extra) {
+      if (window.parent !== window) window.parent.postMessage(Object.assign({ type: type, state: colaSnapshot() }, extra || {}), location.origin);
+    }
+    window.addEventListener('message', function (event) {
+      if (event.origin !== location.origin || event.source !== window.parent || !event.data || event.data.type !== 'cola-sync') return;
+      window.__colaMode = event.data.mode === 'play' ? 'play' : 'watch';
+      window.__colaRemote = event.data.state || null;
+      state.remoteSpilled = false;
+      if (window.__colaMode === 'play' && window.__colaRemote) {
+        var r = window.__colaRemote;
+        state.currentPlayer = r.currentPlayer || 1; state.glassFill = +r.glassFill || 0; state.bottleFill = r.bottleFill == null ? 85 : +r.bottleFill;
+        state.controlProgress = +r.progress || 0; state.targetControl = state.controlProgress; state.turnStartFill = +r.turnStartFill || 0;
+        state.hasPouredThisTurn = !!r.hasPouredThisTurn; state.isPouring = !!r.isPouring; state.pourRate = +r.pourRate || 0;
+        state.wavePhase = +r.wavePhase || 0; state.waveAmplitude = +r.waveAmplitude || 0; state.bottleSloshPhase = +r.bottleSloshPhase || 0;
+        state.bottleSloshAmp = +r.bottleSloshAmp || 0; state.lastTiltRad = +r.lastTiltRad || 0; state.gameOver = !!r.gameOver;
+        state.handoffActive = false;
+      }
+      document.documentElement.dataset.colaMode = window.__colaMode;
+      updateHUD(); updateSliderVisuals();
+    });
+
+    const state = {
+      stage: 1,
+      currentPlayer: 1,
+      wins: { 1: 0, 2: 0 },
+      glassFill: 0,         // 0 to 100 (%)
+      turnStartFill: 0,
+      minPourRequired: 8,
+      bottleFill: 85,       // Remaining cola volume inside bottle (starts at 85%; 1 full glass drains ~68% of bottle)
+      controlProgress: 0,   // 0..1
+      targetControl: 0,
+      isDragging: false,
+      dragStartX: 0,
+      dragStartProgress: 0,
+      hasPouredThisTurn: false,
+      isPouring: false,
+      pourRate: 0,
+      wavePhase: 0,
+      waveAmplitude: 0,
+      bottleSloshPhase: 0,
+      bottleSloshAmp: 0,
+      lastTiltRad: 0,
+      gameOver: false,
+      handoffActive: false,
+      bubbles: [],
+      bottleBubbles: [],
+      splashes: []
+    };
+
+    // DOM Elements
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+    const stageBadge = document.getElementById('stageBadge');
+    const player1Card = document.getElementById('player1Card');
+    const player2Card = document.getElementById('player2Card');
+    const p1TurnDot = document.getElementById('p1TurnDot');
+    const p2TurnDot = document.getElementById('p2TurnDot');
+    const p1StatusText = document.getElementById('p1StatusText');
+    const p2StatusText = document.getElementById('p2StatusText');
+    const p1WinsEl = document.getElementById('p1Wins');
+    const p2WinsEl = document.getElementById('p2Wins');
+    const glassPercentText = document.getElementById('glassPercentText');
+    const turnMinBar = document.getElementById('turnMinBar');
+    const turnMinCheck = document.getElementById('turnMinCheck');
+    const tiltAngleLabel = document.getElementById('tiltAngleLabel');
+    const sliderTrack = document.getElementById('sliderTrack');
+    const sliderFill = document.getElementById('sliderFill');
+    const sliderThumb = document.getElementById('sliderThumb');
+    const handoffOverlay = document.getElementById('handoffOverlay');
+    const handoffBadge = document.getElementById('handoffBadge');
+    const handoffTitle = document.getElementById('handoffTitle');
+    const handoffFillSpan = document.getElementById('handoffFillSpan');
+    const startTurnBtn = document.getElementById('startTurnBtn');
+    const resultOverlay = document.getElementById('resultOverlay');
+    const resultReasonBadge = document.getElementById('resultReasonBadge');
+    const winnerTitle = document.getElementById('winnerTitle');
+    const winnerSubtitle = document.getElementById('winnerSubtitle');
+    const nextStageBtn = document.getElementById('nextStageBtn');
+    const newMatchBtn = document.getElementById('newMatchBtn');
+    const restartBtn = document.getElementById('restartBtn');
+    const soundToggleBtn = document.getElementById('soundToggleBtn');
+    const soundOnIcon = document.getElementById('soundOnIcon');
+    const soundOffIcon = document.getElementById('soundOffIcon');
+    const toastBox = document.getElementById('toastBox');
+    const toastText = document.getElementById('toastText');
+
+    let toastTimeout = null;
+    function showToast(msg) {
+      toastText.textContent = msg;
+      toastBox.classList.remove('opacity-0', '-translate-y-2');
+      toastBox.classList.add('opacity-100', 'translate-y-0');
+      clearTimeout(toastTimeout);
+      toastTimeout = setTimeout(() => {
+        toastBox.classList.remove('opacity-100', 'translate-y-0');
+        toastBox.classList.add('opacity-0', '-translate-y-2');
+      }, 2300);
+    }
+
+    // ==========================================
+    // 3. RESPONSIVE CANVAS & FIXED GEOMETRY
+    // ==========================================
+    let width = 0;
+    let height = 0;
+    let dpr = 1;
+
+    function resizeCanvas() {
+      const rect = canvas.parentElement.getBoundingClientRect();
+      dpr = Math.min(window.devicePixelRatio || 1, 2);
+      width = rect.width;
+      height = rect.height;
+      canvas.width = width * dpr;
+      canvas.height = height * dpr;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
+
+    window.addEventListener('resize', resizeCanvas);
+
+    function getSceneMetrics() {
+      const isMobile = width < 640;
+      const tableY = height * (isMobile ? 0.74 : 0.77);
+
+      // Clear Transparent Glass dimensions
+      const glassW = Math.min(isMobile ? 96 : 124, width * 0.25);
+      const glassH = Math.min(isMobile ? 168 : 212, height * 0.34);
+      const glassCenterX = width * (isMobile ? 0.67 : 0.62);
+      const glassBottomY = tableY;
+      const glassTopY = glassBottomY - glassH;
+
+      // Bottle dimensions
+      const bottleW = Math.min(isMobile ? 66 : 82, width * 0.18);
+      const bottleH = Math.min(isMobile ? 190 : 232, height * 0.37);
+
+      // Resting position on table (left side)
+      const restX = width * (isMobile ? 0.23 : 0.29);
+      const restY = tableY - bottleH / 2;
+
+      // FIXED POURING POSITION (Identical height & X offset on every attempt!)
+      const pourAnchorX = glassCenterX - glassW * 0.80;
+      const pourAnchorY = glassTopY - (isMobile ? 48 : 64);
+
+      return {
+        isMobile,
+        tableY,
+        glassW,
+        glassH,
+        glassCenterX,
+        glassBottomY,
+        glassTopY,
+        bottleW,
+        bottleH,
+        restX,
+        restY,
+        pourAnchorX,
+        pourAnchorY
+      };
+    }
+
+    // ==========================================
+    // 4. REALISTIC GRAVITY-HORIZONTAL BOTTLE LIQUID GEOMETRY
+    // ==========================================
+    /**
+     * Computes exact geometric intersection of the horizontal gravity plane
+     * inside the tilted bottle silhouette so that:
+     * 1) The cola surface inside the bottle ALWAYS stays horizontal relative to the ground.
+     * 2) As the bottle tilts, the cola visually rises along the upper wall into the shoulder and neck.
+     * 3) Cola ONLY pours out when the horizontal liquid surface reaches the spout opening!
+     */
+    function computeBottleLiquidState(bottleFillPct, tiltRad, bw, bh) {
+      const halfW = bw * 0.45; // interior half-width
+      const halfH = bh * 0.47; // interior bottom y
+      const spoutY = -bh * 0.5 - 11; // interior spout y
+
+      const sinA = Math.sin(tiltRad);
+      const cosA = Math.cos(tiltRad);
+
+      // Compute exact gravity-projected vertical bounds of the bottle interior silhouette
+      // so the horizontal liquid plane drops smoothly and accurately across the full bottle height
+      const bottomRightD = halfW * sinA + halfH * cosA;
+      const bottomLeftD  = -halfW * sinA + halfH * cosA;
+      const shoulderRightD = halfW * sinA + (-halfH * 0.35) * cosA;
+      const shoulderLeftD  = -halfW * sinA + (-halfH * 0.35) * cosA;
+      const spoutRightD = (bw * 0.13) * sinA + spoutY * cosA;
+      const spoutLeftD  = -(bw * 0.13) * sinA + spoutY * cosA;
+
+      const maxD = Math.max(bottomRightD, bottomLeftD);
+      const minD = Math.min(spoutRightD, spoutLeftD, shoulderLeftD, shoulderRightD);
+
+      const totalSpan = Math.max(24, maxD - minD);
+
+      // Direct linear-calibrated fill mapping (0..100%) so every % poured visibly drops the surface
+      const normalizedVol = Math.max(0, Math.min(1, bottleFillPct / 100));
+      const dSurface = maxD - normalizedVol * totalSpan;
+
+      // Overflow beyond the spout lip happens ONLY while the horizontal liquid plane stays above the spout opening.
+      // As bottleFillPct drops during pouring, dSurface increases (moves downward), requiring a steeper tilt to keep pouring!
+      const spoutSubmersion = spoutRightD - dSurface;
+
+      return {
+        sinA,
+        cosA,
+        dSurface,
+        spoutSubmersion,
+        isAtSpout: spoutSubmersion > 0 && bottleFillPct > 0.3
+      };
+    }
+
+    // ==========================================
+    // 5. INPUT & GUIDED DRAG CONTROLS
+    // ==========================================
+    function updateSliderVisuals() {
+      const pct = Math.max(0, Math.min(100, state.controlProgress * 100));
+      sliderFill.style.width = `${pct}%`;
+      const trackWidth = sliderTrack.clientWidth - 16;
+      const thumbWidth = sliderThumb.clientWidth;
+      const maxTravel = Math.max(0, trackWidth - thumbWidth);
+      sliderThumb.style.transform = `translateX(${state.controlProgress * maxTravel}px)`;
+
+      const tiltNorm = Math.max(0, (state.controlProgress - LIFT_END_PROGRESS) / (1 - LIFT_END_PROGRESS));
+      const degrees = Math.round(tiltNorm * MAX_TILT_DEG);
+      tiltAngleLabel.textContent = `${degrees}°`;
+    }
+
+    function handleDragStart(clientX) {
+      if (window.__colaMode !== 'play' || state.gameOver || state.handoffActive) return;
+      sound.init();
+      state.isDragging = true;
+      state.dragStartX = clientX;
+      state.dragStartProgress = state.targetControl;
+    }
+
+    function handleDragMove(clientX) {
+      if (window.__colaMode !== 'play' || !state.isDragging || state.gameOver || state.handoffActive) return;
+      const sensitivity = Math.max(195, Math.min(315, width * 0.45));
+      const deltaX = clientX - state.dragStartX;
+      const nextVal = Math.max(0, Math.min(1, state.dragStartProgress + deltaX / sensitivity));
+      state.targetControl = nextVal;
+    }
+
+    function handleDragEnd() {
+      if (!state.isDragging) return;
+      state.isDragging = false;
+      state.targetControl = 0;
+
+      const pouredThisTurn = state.glassFill - state.turnStartFill;
+      if (!state.gameOver && state.hasPouredThisTurn && window.__colaMode === 'play') {
+        if (pouredThisTurn >= state.minPourRequired - 0.15) {
+          completePlayerTurn();
+        } else {
+          showToast(`Kamida ${state.minPourRequired}% kola quyishingiz shart! (Hozir: ${Math.floor(pouredThisTurn)}%)`);
+        }
+      }
+    }
+
+    canvas.addEventListener('mousedown', (e) => handleDragStart(e.clientX));
+    window.addEventListener('mousemove', (e) => handleDragMove(e.clientX));
+    window.addEventListener('mouseup', handleDragEnd);
+
+    canvas.addEventListener('touchstart', (e) => {
+      if (e.touches.length > 0) handleDragStart(e.touches[0].clientX);
+    }, { passive: true });
+    window.addEventListener('touchmove', (e) => {
+      if (e.touches.length > 0) handleDragMove(e.touches[0].clientX);
+    }, { passive: true });
+    window.addEventListener('touchend', handleDragEnd);
+
+    sliderTrack.addEventListener('mousedown', (e) => {
+      if (window.__colaMode !== 'play' || state.gameOver || state.handoffActive) return;
+      sound.init();
+      state.isDragging = true;
+      const rect = sliderTrack.getBoundingClientRect();
+      state.targetControl = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+      state.dragStartX = e.clientX;
+      state.dragStartProgress = state.targetControl;
+    });
+
+    sliderTrack.addEventListener('touchstart', (e) => {
+      if (window.__colaMode !== 'play' || state.gameOver || state.handoffActive || e.touches.length === 0) return;
+      sound.init();
+      state.isDragging = true;
+      const rect = sliderTrack.getBoundingClientRect();
+      state.targetControl = Math.max(0, Math.min(1, (e.touches[0].clientX - rect.left) / rect.width));
+      state.dragStartX = e.touches[0].clientX;
+      state.dragStartProgress = state.targetControl;
+    }, { passive: true });
+
+    // ==========================================
+    // 6. TURN MANAGEMENT & GAME RULES
+    // ==========================================
+    function updateHUD() {
+      stageBadge.textContent = `${state.stage}-Bosqich`;
+      p1WinsEl.textContent = state.wins[1];
+      p2WinsEl.textContent = state.wins[2];
+
+      const displayFill = Math.min(100, Math.round(state.glassFill));
+      glassPercentText.textContent = `${displayFill}%`;
+
+      if (displayFill >= 85) {
+        glassPercentText.className = 'font-black text-red-600 text-sm animate-pulse';
+      } else if (displayFill >= 65) {
+        glassPercentText.className = 'font-black text-amber-700 text-sm';
+      } else {
+        glassPercentText.className = 'font-black text-emerald-700 text-sm';
+      }
+
+      const pouredThisTurn = Math.max(0, state.glassFill - state.turnStartFill);
+      const minRatio = Math.min(100, (pouredThisTurn / state.minPourRequired) * 100);
+      turnMinBar.style.width = `${minRatio}%`;
+
+      if (pouredThisTurn >= state.minPourRequired - 0.15) {
+        turnMinCheck.textContent = `Tayyor (+${Math.round(pouredThisTurn)}%) ✓`;
+        turnMinCheck.className = 'text-[11px] font-extrabold text-emerald-700 whitespace-nowrap';
+      } else {
+        turnMinCheck.textContent = `${Math.floor(pouredThisTurn)}% / ${state.minPourRequired}%`;
+        turnMinCheck.className = 'text-[11px] font-extrabold text-amber-700 whitespace-nowrap';
+      }
+
+      if (state.currentPlayer === 1) {
+        player1Card.classList.add('active-player-card');
+        player1Card.classList.remove('opacity-80');
+        player2Card.classList.remove('active-player-card');
+        player2Card.classList.add('opacity-80');
+        p1TurnDot.classList.remove('hidden');
+        p2TurnDot.classList.add('hidden');
+        p1StatusText.textContent = 'Navbat sizda — quying!';
+        p1StatusText.className = 'text-[11px] text-red-600 font-bold';
+        p2StatusText.textContent = 'Kutilmoqda';
+        p2StatusText.className = 'text-[11px] text-slate-500 font-semibold';
+      } else {
+        player2Card.classList.add('active-player-card');
+        player2Card.classList.remove('opacity-80');
+        player1Card.classList.remove('active-player-card');
+        player1Card.classList.add('opacity-80');
+        p2TurnDot.classList.remove('hidden');
+        p1TurnDot.classList.add('hidden');
+        p2StatusText.textContent = 'Navbat sizda — quying!';
+        p2StatusText.className = 'text-[11px] text-blue-700 font-bold';
+        p1StatusText.textContent = 'Kutilmoqda';
+        p1StatusText.className = 'text-[11px] text-slate-500 font-semibold';
+      }
+    }
+
+    function completePlayerTurn() {
+      sound.updatePourSound(0);
+      sound.playTurnSwitch();
+
+      state.currentPlayer = state.currentPlayer === 1 ? 2 : 1;
+      state.turnStartFill = state.glassFill;
+      state.hasPouredThisTurn = false;
+      state.targetControl = 0;
+      state.isDragging = false;
+
+      // Fresh bottle only if current bottle runs too low (< 14%) so players watch one bottle drain across turns
+      if (state.bottleFill < 14) {
+        state.bottleFill = 85;
+      }
+
+      updateHUD();
+
+      if (window.__colaMode === 'play') {
+        state.handoffActive = false;
+        colaNotify('cola-turn');
+        return;
+      }
+
+      state.handoffActive = true;
+      handoffBadge.textContent = state.currentPlayer;
+      handoffBadge.className = state.currentPlayer === 1
+        ? 'w-16 h-16 mx-auto rounded-2xl bg-gradient-to-br from-red-500 to-red-700 flex items-center justify-center text-2xl font-black text-white shadow-lg mb-4'
+        : 'w-16 h-16 mx-auto rounded-2xl bg-gradient-to-br from-sky-500 to-blue-700 flex items-center justify-center text-2xl font-black text-white shadow-lg mb-4';
+      handoffTitle.textContent = `${state.currentPlayer}-Ishtirokchi navbati`;
+      handoffFillSpan.textContent = `${Math.round(state.glassFill)}%`;
+
+      handoffOverlay.classList.remove('hidden');
+      handoffOverlay.classList.add('flex');
+    }
+
+    startTurnBtn.addEventListener('click', () => {
+      sound.init();
+      handoffOverlay.classList.add('hidden');
+      handoffOverlay.classList.remove('flex');
+      state.handoffActive = false;
+    });
+
+    function triggerOverflowLoss() {
+      if (state.gameOver) return;
+      state.gameOver = true;
+      state.isDragging = false;
+      state.targetControl = 0;
+      sound.playSpill();
+
+      const loser = state.currentPlayer;
+      const winner = loser === 1 ? 2 : 1;
+      state.wins[winner] += 1;
+      updateHUD();
+
+      const m = getSceneMetrics();
+      for (let i = 0; i < 48; i++) {
+        const side = i % 2 === 0 ? -1 : 1;
+        state.splashes.push({
+          x: m.glassCenterX + side * (m.glassW * 0.48),
+          y: m.glassTopY + 4,
+          vx: side * (1.6 + Math.random() * 4.5),
+          vy: -2.2 - Math.random() * 4.5,
+          radius: 2.5 + Math.random() * 4,
+          alpha: 1
+        });
+      }
+
+      if (window.__colaMode === 'play') {
+        colaNotify('cola-spill', { overflow: Math.max(0, state.glassFill - 100) });
+        return;
+      }
+
+      setTimeout(() => {
+        sound.playWin();
+        resultReasonBadge.textContent = `${loser}-Ishtirokchi stakanni toshirib yubordi!`;
+        winnerTitle.textContent = `${winner}-Ishtirokchi G'olib!`;
+        winnerSubtitle.innerHTML = `<span class="text-slate-900 font-extrabold">${loser}-Ishtirokchi</span> me'yordan oshirib yubordi va kola to'kildi. <span class="text-amber-700 font-extrabold">${winner}-Ishtirokchi</span> durrangda g'olib bo'lib <span class="text-emerald-700 font-extrabold">keyingi bosqichga</span> yo'l oldi!`;
+        resultOverlay.classList.remove('hidden');
+        resultOverlay.classList.add('flex');
+      }, 650);
+    }
+
+    function resetRound(advanceStage = false) {
+      if (advanceStage) {
+        state.stage += 1;
+      } else {
+        state.stage = 1;
+        state.wins = { 1: 0, 2: 0 };
+      }
+      state.currentPlayer = 1;
+      state.glassFill = 0;
+      state.turnStartFill = 0;
+      state.bottleFill = 85;
+      state.controlProgress = 0;
+      state.targetControl = 0;
+      state.isDragging = false;
+      state.hasPouredThisTurn = false;
+      state.isPouring = false;
+      state.pourRate = 0;
+      state.waveAmplitude = 0;
+      state.bottleSloshAmp = 0;
+      state.gameOver = false;
+      state.handoffActive = false;
+      state.bubbles = [];
+      state.bottleBubbles = [];
+      state.splashes = [];
+
+      resultOverlay.classList.add('hidden');
+      resultOverlay.classList.remove('flex');
+      handoffOverlay.classList.add('hidden');
+      handoffOverlay.classList.remove('flex');
+
+      updateHUD();
+      updateSliderVisuals();
+    }
+
+    nextStageBtn.addEventListener('click', () => resetRound(true));
+    newMatchBtn.addEventListener('click', () => resetRound(false));
+    restartBtn.addEventListener('click', () => resetRound(false));
+
+    soundToggleBtn.addEventListener('click', () => {
+      const muted = sound.toggleMute();
+      soundOnIcon.classList.toggle('hidden', muted);
+      soundOffIcon.classList.toggle('hidden', !muted);
+    });
+
+    // ==========================================
+    // 7. PHYSICS SIMULATION & LIQUID FLOW
+    // ==========================================
+    function updatePhysics(dt) {
+      if (window.__colaMode === 'watch' && window.__colaRemote) {
+        const remote = window.__colaRemote;
+        state.currentPlayer = remote.currentPlayer || 1; state.glassFill = +remote.glassFill || 0; state.bottleFill = remote.bottleFill == null ? 85 : +remote.bottleFill;
+        state.controlProgress = Math.max(0, Math.min(1, +remote.progress || 0)); state.targetControl = state.controlProgress;
+        state.turnStartFill = +remote.turnStartFill || 0; state.hasPouredThisTurn = !!remote.hasPouredThisTurn;
+        state.isPouring = !!remote.isPouring; state.pourRate = +remote.pourRate || 0;
+        state.wavePhase = +remote.wavePhase || 0; state.waveAmplitude = +remote.waveAmplitude || 0;
+        state.bottleSloshPhase = +remote.bottleSloshPhase || 0; state.bottleSloshAmp = +remote.bottleSloshAmp || 0;
+        state.lastTiltRad = +remote.lastTiltRad || 0; state.gameOver = !!remote.gameOver;
+        const tiltAngleRad = Math.max(0, (state.controlProgress - LIFT_END_PROGRESS) / (1 - LIFT_END_PROGRESS)) * (MAX_TILT_DEG * Math.PI / 180);
+        const m = getSceneMetrics();
+        state.bubbles = state.bubbles.filter(b => b.y > m.glassTopY - 5);
+        state.bottleBubbles = state.bottleBubbles.filter(b => b.life > 0);
+        if (remote.spill && !state.remoteSpilled) {
+          state.remoteSpilled = true;
+          for (let i = 0; i < 48; i++) {
+            const side = i % 2 === 0 ? -1 : 1;
+            state.splashes.push({ x: m.glassCenterX + side * (m.glassW * 0.48), y: m.glassTopY + 4, vx: side * (1.6 + Math.random() * 4.5), vy: -2.2 - Math.random() * 4.5, radius: 2.5 + Math.random() * 4, alpha: 1 });
+          }
+        }
+        state.splashes.forEach(s => { s.x += s.vx; s.y += s.vy; s.vy += 0.18; s.alpha -= 0.025; });
+        state.splashes = state.splashes.filter(s => s.alpha > 0);
+        return { tiltAngleRad, bottleLiquid: computeBottleLiquidState(state.bottleFill, tiltAngleRad, m.bottleW, m.bottleH) };
+      }
+      const lerpSpeed = state.isDragging ? 13 : 8.5;
+      state.controlProgress += (state.targetControl - state.controlProgress) * Math.min(1, lerpSpeed * dt);
+      if (Math.abs(state.targetControl - state.controlProgress) < 0.001) {
+        state.controlProgress = state.targetControl;
+      }
+
+      updateSliderVisuals();
+
+      const tiltNorm = Math.max(0, (state.controlProgress - LIFT_END_PROGRESS) / (1 - LIFT_END_PROGRESS));
+      const tiltAngleRad = tiltNorm * (MAX_TILT_DEG * Math.PI / 180);
+
+      // Slosh internal bottle surface when tilt angle changes quickly
+      const angularVel = Math.abs(tiltAngleRad - state.lastTiltRad) / Math.max(0.008, dt);
+      state.lastTiltRad = tiltAngleRad;
+      state.bottleSloshAmp = Math.min(5.5, state.bottleSloshAmp * Math.pow(0.06, dt) + angularVel * 0.9);
+      state.bottleSloshPhase += dt * 9.5;
+
+      const m = getSceneMetrics();
+      const bottleLiquid = computeBottleLiquidState(state.bottleFill, tiltAngleRad, m.bottleW, m.bottleH);
+
+      // Pouring ONLY occurs when the horizontal gravity liquid surface physically reaches the spout!
+      if (!state.gameOver && !state.handoffActive && bottleLiquid.isAtSpout && state.bottleFill > 0.4) {
+        state.isPouring = true;
+        state.hasPouredThisTurn = true;
+
+        // Flow rate scales smoothly with how deep the spout is submerged beneath the horizontal liquid plane
+        const submersionNorm = Math.min(1, bottleLiquid.spoutSubmersion / (m.bottleH * 0.22));
+        state.pourRate = 5.0 + Math.pow(submersionNorm, 1.2) * 34;
+
+        const pouredAmount = state.pourRate * dt;
+        state.glassFill += pouredAmount;
+        // 1 full glass (100%) drains ~68% of the bottle's cola so the bottle visibly empties as you pour!
+        state.bottleFill = Math.max(0, state.bottleFill - pouredAmount * 0.68);
+
+        state.waveAmplitude = Math.min(6.5, state.waveAmplitude + dt * 14);
+        sound.updatePourSound(submersionNorm);
+
+        // Rising fizz bubbles in glass
+        if (Math.random() < 0.7) {
+          state.bubbles.push({
+            x: m.glassCenterX + (Math.random() - 0.5) * (m.glassW * 0.72),
+            y: m.glassBottomY - 8,
+            vy: 28 + Math.random() * 45,
+            r: 1.2 + Math.random() * 2.2,
+            alpha: 0.85
+          });
+        }
+
+        // Glug bubbles rising inside the bottle neck as air enters!
+        if (Math.random() < 0.55) {
+          state.bottleBubbles.push({
+            lx: (Math.random() - 0.5) * (m.bottleW * 0.45),
+            ly: -m.bottleH * 0.35 + Math.random() * (m.bottleH * 0.55),
+            r: 1.4 + Math.random() * 2.2,
+            life: 1.0
+          });
+        }
+
+        if (state.glassFill > 100) {
+          state.glassFill = 100.5;
+          triggerOverflowLoss();
+        }
+      } else {
+        state.isPouring = false;
+        state.pourRate = 0;
+        state.waveAmplitude *= Math.pow(0.08, dt);
+        sound.updatePourSound(0);
+      }
+
+      // Passive gentle carbonation bubbles inside glass
+      if (state.glassFill > 3 && Math.random() < 0.25) {
+        state.bubbles.push({
+          x: m.glassCenterX + (Math.random() - 0.5) * (m.glassW * 0.75),
+          y: m.glassBottomY - 6,
+          vy: 18 + Math.random() * 30,
+          r: 1 + Math.random() * 1.6,
+          alpha: 0.65
+        });
+      }
+
+      state.wavePhase += dt * (4.5 + state.pourRate * 0.18);
+
+      const liquidTopY = m.glassBottomY - (Math.min(100, state.glassFill) / 100) * (m.glassH * 0.88);
+      for (let i = state.bubbles.length - 1; i >= 0; i--) {
+        const b = state.bubbles[i];
+        b.y -= b.vy * dt;
+        b.x += Math.sin(state.wavePhase + i) * 0.3;
+        if (b.y <= liquidTopY + 3) {
+          state.bubbles.splice(i, 1);
+        }
+      }
+
+      for (let i = state.bottleBubbles.length - 1; i >= 0; i--) {
+        const bb = state.bottleBubbles[i];
+        bb.life -= dt * 1.4;
+        // Move opposite to gravity
+        bb.lx -= Math.sin(tiltAngleRad) * 38 * dt;
+        bb.ly -= Math.cos(tiltAngleRad) * 38 * dt;
+        if (bb.life <= 0) {
+          state.bottleBubbles.splice(i, 1);
+        }
+      }
+
+      for (let i = state.splashes.length - 1; i >= 0; i--) {
+        const s = state.splashes[i];
+        s.x += s.vx;
+        s.y += s.vy;
+        s.vy += 12 * dt;
+        if (s.y >= m.tableY) {
+          s.y = m.tableY;
+          s.vy *= -0.35;
+          s.vx *= 0.7;
+          s.alpha -= dt * 0.8;
+        }
+        if (s.alpha <= 0) {
+          state.splashes.splice(i, 1);
+        }
+      }
+
+      updateHUD();
+      return { tiltNorm, tiltAngleRad, bottleLiquid };
+    }
+
+    // ==========================================
+    // 8. BRIGHT SUNLIT STUDIO & VECTOR RENDERING
+    // ==========================================
+    function drawBackgroundAndTable(m) {
+      // Soft sunlit cafe wall arches / window light shafts
+      ctx.save();
+      const sunGrad = ctx.createRadialGradient(width * 0.2, height * 0.12, 10, width * 0.2, height * 0.12, width * 0.65);
+      sunGrad.addColorStop(0, 'rgba(255, 255, 255, 0.72)');
+      sunGrad.addColorStop(0.5, 'rgba(255, 251, 235, 0.25)');
+      sunGrad.addColorStop(1, 'rgba(255, 255, 255, 0)');
+      ctx.fillStyle = sunGrad;
+      ctx.fillRect(0, 0, width, m.tableY);
+
+      // Subtle decorative architectural window pane lines in background
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.45)';
+      ctx.lineWidth = 2;
+      const winX = width * 0.14;
+      const winW = Math.min(220, width * 0.28);
+      const winH = m.tableY * 0.68;
+      ctx.strokeRect(winX, height * 0.08, winW, winH);
+      ctx.beginPath();
+      ctx.moveTo(winX + winW / 2, height * 0.08);
+      ctx.lineTo(winX + winW / 2, height * 0.08 + winH);
+      ctx.moveTo(winX, height * 0.08 + winH * 0.5);
+      ctx.lineTo(winX + winW, height * 0.08 + winH * 0.5);
+      ctx.stroke();
+      ctx.restore();
+
+      // Warm Honey-Oak Wooden Tabletop
+      const tableGrad = ctx.createLinearGradient(0, m.tableY, 0, height);
+      tableGrad.addColorStop(0, '#d97706');    // Sunlit top bevel
+      tableGrad.addColorStop(0.03, '#b45309'); // Warm oak surface
+      tableGrad.addColorStop(0.35, '#92400e'); // Rich mid wood
+      tableGrad.addColorStop(1, '#451a03');    // Deep warm wood shadow
+      ctx.fillStyle = tableGrad;
+      ctx.fillRect(0, m.tableY, width, height - m.tableY);
+
+      // Subtle horizontal wood grain streaks
+      ctx.save();
+      ctx.strokeStyle = 'rgba(69, 26, 3, 0.18)';
+      ctx.lineWidth = 1.5;
+      for (let i = 1; i <= 5; i++) {
+        const gy = m.tableY + i * ((height - m.tableY) / 6);
+        ctx.beginPath();
+        ctx.moveTo(0, gy);
+        ctx.bezierCurveTo(width * 0.33, gy - 3, width * 0.66, gy + 3, width, gy);
+        ctx.stroke();
+      }
+      ctx.restore();
+
+      // Crisp sunlit tabletop top-edge highlight
+      ctx.strokeStyle = 'rgba(254, 243, 199, 0.85)';
+      ctx.lineWidth = 2.5;
+      ctx.beginPath();
+      ctx.moveTo(0, m.tableY);
+      ctx.lineTo(width, m.tableY);
+      ctx.stroke();
+
+      // Subtle fixed pouring height guide line (shows locked pouring elevation)
+      ctx.save();
+      ctx.setLineDash([5, 6]);
+      ctx.strokeStyle = 'rgba(180, 83, 9, 0.24)';
+      ctx.lineWidth = 1.4;
+      ctx.beginPath();
+      ctx.moveTo(m.restX - 24, m.pourAnchorY);
+      ctx.lineTo(m.glassCenterX + m.glassW * 0.55, m.pourAnchorY);
+      ctx.stroke();
+
+      // Target drop marker above glass
+      ctx.fillStyle = 'rgba(220, 38, 38, 0.45)';
+      ctx.beginPath();
+      ctx.arc(m.glassCenterX, m.glassTopY - 14, 3.5, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+    }
+
+    function drawGlassAndCola(m) {
+      const topW = m.glassW;
+      const botW = m.glassW * 0.78;
+      const h = m.glassH;
+      const cx = m.glassCenterX;
+      const topY = m.glassTopY;
+      const botY = m.glassBottomY;
+
+      // Soft warm shadow on wooden table
+      const shadowGrad = ctx.createRadialGradient(cx, botY + 4, 4, cx, botY + 4, botW * 0.9);
+      shadowGrad.addColorStop(0, 'rgba(69, 26, 3, 0.52)');
+      shadowGrad.addColorStop(1, 'rgba(69, 26, 3, 0)');
+      ctx.fillStyle = shadowGrad;
+      ctx.beginPath();
+      ctx.ellipse(cx, botY + 4, botW * 0.9, 10, 0, 0, Math.PI * 2);
+      ctx.fill();
+
+      const wallThick = 5;
+      const baseThick = 11;
+
+      function traceInteriorPath() {
+        ctx.beginPath();
+        ctx.moveTo(cx - topW / 2 + wallThick, topY + 4);
+        ctx.lineTo(cx - botW / 2 + wallThick, botY - baseThick);
+        ctx.quadraticCurveTo(cx, botY - baseThick + 5, cx + botW / 2 - wallThick, botY - baseThick);
+        ctx.lineTo(cx + topW / 2 - wallThick, topY + 4);
+        ctx.closePath();
+      }
+
+      // 1. Clear transparent glass interior tint (bright daylight refraction)
+      ctx.save();
+      traceInteriorPath();
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.36)';
+      ctx.fill();
+      ctx.restore();
+
+      // 2. Dark Fizzy Cola Liquid inside clear glass
+      const fillPct = Math.min(100, Math.max(0, state.glassFill));
+      const maxLiquidH = h * 0.88;
+      const liquidH = (fillPct / 100) * maxLiquidH;
+      const surfaceY = (botY - baseThick) - liquidH;
+
+      if (fillPct > 0.2) {
+        ctx.save();
+        traceInteriorPath();
+        ctx.clip();
+
+        const colaGrad = ctx.createLinearGradient(cx, surfaceY, cx, botY);
+        colaGrad.addColorStop(0, '#5c1d0c');   // Translucent sunlit amber-cola top
+        colaGrad.addColorStop(0.25, '#2b0b04'); // Deep rich dark cola
+        colaGrad.addColorStop(1, '#120402');    // Dark base
+
+        ctx.fillStyle = colaGrad;
+        ctx.beginPath();
+        ctx.moveTo(cx - topW, botY + 10);
+        ctx.lineTo(cx - topW, surfaceY);
+
+        const steps = 24;
+        for (let i = 0; i <= steps; i++) {
+          const t = i / steps;
+          const wx = (cx - topW * 0.6) + t * (topW * 1.2);
+          const wy = surfaceY + Math.sin(state.wavePhase + t * Math.PI * 3) * state.waveAmplitude;
+          ctx.lineTo(wx, wy);
+        }
+
+        ctx.lineTo(cx + topW, botY + 10);
+        ctx.closePath();
+        ctx.fill();
+
+        // Creamy fizzy cola foam head
+        const foamThickness = state.isPouring ? 9 : 4.5;
+        const foamGrad = ctx.createLinearGradient(0, surfaceY - foamThickness, 0, surfaceY + 4);
+        foamGrad.addColorStop(0, 'rgba(255, 244, 228, 0.95)');
+        foamGrad.addColorStop(1, 'rgba(180, 110, 62, 0.45)');
+        ctx.fillStyle = foamGrad;
+        ctx.beginPath();
+        for (let i = 0; i <= steps; i++) {
+          const t = i / steps;
+          const wx = (cx - topW * 0.6) + t * (topW * 1.2);
+          const wy = surfaceY + Math.sin(state.wavePhase + t * Math.PI * 3) * state.waveAmplitude;
+          if (i === 0) ctx.moveTo(wx, wy - foamThickness);
+          else ctx.lineTo(wx, wy - foamThickness);
+        }
+        for (let i = steps; i >= 0; i--) {
+          const t = i / steps;
+          const wx = (cx - topW * 0.6) + t * (topW * 1.2);
+          const wy = surfaceY + Math.sin(state.wavePhase + t * Math.PI * 3) * state.waveAmplitude;
+          ctx.lineTo(wx, wy + 2);
+        }
+        ctx.closePath();
+        ctx.fill();
+
+        // Rising carbonation bubbles
+        for (const b of state.bubbles) {
+          ctx.fillStyle = `rgba(255, 245, 230, ${b.alpha})`;
+          ctx.beginPath();
+          ctx.arc(b.x, b.y, b.r, 0, Math.PI * 2);
+          ctx.fill();
+        }
+
+        ctx.restore();
+      }
+
+      // 3. Red Overflow Limit Line (100% mark)
+      const limitY = (botY - baseThick) - maxLiquidH;
+      const limitHalfW = (botW / 2) + ((topW - botW) / 2) * (maxLiquidH / h) - 3;
+
+      ctx.save();
+      ctx.setLineDash([4, 3]);
+      ctx.strokeStyle = '#dc2626';
+      ctx.lineWidth = 2.2;
+      ctx.beginPath();
+      ctx.moveTo(cx - limitHalfW, limitY);
+      ctx.lineTo(cx + limitHalfW, limitY);
+      ctx.stroke();
+
+      ctx.fillStyle = '#dc2626';
+      ctx.font = '900 10px Outfit, sans-serif';
+      ctx.textAlign = 'left';
+      ctx.fillText('MAX', cx + topW / 2 + 6, limitY + 3);
+      ctx.restore();
+
+      // 4. Outer Clear Glass Walls, Thick Glass Base & Crisp Daylight Reflections
+      ctx.save();
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.92)';
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.moveTo(cx - topW / 2, topY);
+      ctx.lineTo(cx - botW / 2, botY);
+      ctx.lineTo(cx + botW / 2, botY);
+      ctx.lineTo(cx + topW / 2, topY);
+      ctx.stroke();
+
+      // Subtle dark glass edge definition for bright background contrast
+      ctx.strokeStyle = 'rgba(100, 116, 139, 0.35)';
+      ctx.lineWidth = 1.2;
+      ctx.stroke();
+
+      // Thick glass bottom block
+      const baseGrad = ctx.createLinearGradient(cx - botW / 2, botY - baseThick, cx + botW / 2, botY);
+      baseGrad.addColorStop(0, 'rgba(255, 255, 255, 0.75)');
+      baseGrad.addColorStop(0.5, 'rgba(226, 232, 240, 0.45)');
+      baseGrad.addColorStop(1, 'rgba(255, 255, 255, 0.72)');
+      ctx.fillStyle = baseGrad;
+      ctx.beginPath();
+      ctx.moveTo(cx - botW / 2 + 2, botY - baseThick);
+      ctx.lineTo(cx + botW / 2 - 2, botY - baseThick);
+      ctx.lineTo(cx + botW / 2, botY);
+      ctx.lineTo(cx - botW / 2, botY);
+      ctx.closePath();
+      ctx.fill();
+
+      // Top rim ellipse
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.95)';
+      ctx.lineWidth = 2.4;
+      ctx.beginPath();
+      ctx.ellipse(cx, topY, topW / 2, 4.5, 0, 0, Math.PI * 2);
+      ctx.stroke();
+
+      // Vertical glass highlight reflection
+      const shineGrad = ctx.createLinearGradient(cx - topW * 0.36, topY, cx - topW * 0.22, botY);
+      shineGrad.addColorStop(0, 'rgba(255, 255, 255, 0.68)');
+      shineGrad.addColorStop(1, 'rgba(255, 255, 255, 0.14)');
+      ctx.fillStyle = shineGrad;
+      ctx.beginPath();
+      ctx.moveTo(cx - topW * 0.38, topY + 8);
+      ctx.lineTo(cx - topW * 0.26, topY + 8);
+      ctx.lineTo(cx - botW * 0.24, botY - baseThick - 4);
+      ctx.lineTo(cx - botW * 0.35, botY - baseThick - 4);
+      ctx.closePath();
+      ctx.fill();
+      ctx.restore();
+
+      return { surfaceY };
+    }
+
+    /**
+     * Draws the transparent plastic CHILL COLA bottle with:
+     * - Exact horizontal gravity-aligned dark cola surface inside the bottle silhouette!
+     * - Compact mid-section red label ("CHILL COLA", NOT Coca-Cola) so the clear upper shoulder,
+     *   neck, and lower section clearly reveal the cola sloshing toward the spout and draining!
+     */
+    function drawColaBottleAndStream(m, tiltAngleRad, glassSurfaceY, bottleLiquid) {
+      const liftRaw = Math.min(1, state.controlProgress / LIFT_END_PROGRESS);
+      const liftEase = 1 - Math.pow(1 - liftRaw, 3);
+
+      const bottleX = m.restX + (m.pourAnchorX - m.restX) * liftEase;
+      const arcLift = Math.sin(liftEase * Math.PI) * 18;
+      const bottleY = m.restY + (m.pourAnchorY - m.restY) * liftEase - arcLift;
+
+      const bw = m.bottleW;
+      const bh = m.bottleH;
+
+      // Soft warm shadow under bottle when on table
+      if (liftEase < 0.92) {
+        const shadowAlpha = (1 - liftEase) * 0.48;
+        ctx.fillStyle = `rgba(69, 26, 3, ${shadowAlpha})`;
+        ctx.beginPath();
+        ctx.ellipse(m.restX, m.tableY + 4, bw * 0.65 * (1 - liftEase * 0.3), 8, 0, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      // Compute bottle lower spout lip in world coordinates
+      const spoutLocalX = bw * 0.12;
+      const spoutLocalY = -bh / 2 - 12;
+      const spoutWorldX = bottleX + spoutLocalX * Math.cos(tiltAngleRad) - spoutLocalY * Math.sin(tiltAngleRad);
+      const spoutWorldY = bottleY + spoutLocalX * Math.sin(tiltAngleRad) + spoutLocalY * Math.cos(tiltAngleRad);
+
+      // 1. Continuous Dark Cola Stream from spout into clear glass
+      if (state.isPouring) {
+        const streamWidth = Math.max(2.6, Math.min(9, state.pourRate * 0.24));
+        const targetX = m.glassCenterX - 3;
+        const targetY = Math.max(m.glassTopY + 6, glassSurfaceY);
+
+        ctx.save();
+        const streamGrad = ctx.createLinearGradient(spoutWorldX, spoutWorldY, targetX, targetY);
+        streamGrad.addColorStop(0, '#4a1709');
+        streamGrad.addColorStop(0.5, '#220803');
+        streamGrad.addColorStop(1, '#330f06');
+
+        ctx.strokeStyle = streamGrad;
+        ctx.lineWidth = streamWidth;
+        ctx.lineCap = 'round';
+        ctx.beginPath();
+        ctx.moveTo(spoutWorldX, spoutWorldY);
+        const ctrlX = spoutWorldX + (targetX - spoutWorldX) * 0.62;
+        const ctrlY = spoutWorldY + (targetY - spoutWorldY) * 0.16;
+        ctx.quadraticCurveTo(ctrlX, ctrlY, targetX, targetY);
+        ctx.stroke();
+
+        // Sunlit highlight along stream
+        ctx.strokeStyle = 'rgba(255, 228, 196, 0.48)';
+        ctx.lineWidth = Math.max(1, streamWidth * 0.28);
+        ctx.beginPath();
+        ctx.moveTo(spoutWorldX + 1, spoutWorldY);
+        ctx.quadraticCurveTo(ctrlX + 1, ctrlY, targetX + 1, targetY);
+        ctx.stroke();
+        ctx.restore();
+      }
+
+      // 2. Rotated Transparent Plastic Bottle
+      ctx.save();
+      ctx.translate(bottleX, bottleY);
+      ctx.rotate(tiltAngleRad);
+
+      const halfW = bw / 2;
+      const halfH = bh / 2;
+      const neckW = bw * 0.30;
+
+      // Outer silhouette path
+      function traceBottlePath(inset = 0) {
+        const w = halfW - inset;
+        const h = halfH - inset;
+        const nw = Math.max(4, neckW / 2 - inset * 0.6);
+        ctx.beginPath();
+        ctx.moveTo(-nw, -h - 12);
+        ctx.lineTo(nw, -h - 12);
+        ctx.lineTo(nw, -h + 15);
+        ctx.bezierCurveTo(nw, -h + 30, w, -h + 40, w, -h + 64);
+        ctx.lineTo(w, -h + 90);
+        ctx.quadraticCurveTo(w * 0.86, 0, w, h - 50);
+        ctx.lineTo(w, h - 12);
+        ctx.quadraticCurveTo(w, h, w * 0.72, h);
+        ctx.lineTo(-w * 0.72, h);
+        ctx.quadraticCurveTo(-w, h, -w, h - 12);
+        ctx.lineTo(-w, h - 50);
+        ctx.quadraticCurveTo(-w * 0.86, 0, -w, -h + 90);
+        ctx.lineTo(-w, -h + 64);
+        ctx.bezierCurveTo(-w, -h + 40, -nw, -h + 30, -nw, -h + 15);
+        ctx.closePath();
+      }
+
+      // Semi-transparent clear PET plastic base tint
+      traceBottlePath(0);
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.42)';
+      ctx.fill();
+
+      // ============================================================
+      // GRAVITY-ALIGNED DARK COLA LIQUID INSIDE BOTTLE
+      // ============================================================
+      if (state.bottleFill > 0.3) {
+        ctx.save();
+        traceBottlePath(2);
+        ctx.clip();
+
+        // Transform to world gravity orientation inside the clipped bottle silhouette
+        ctx.rotate(-tiltAngleRad);
+
+        const diag = Math.hypot(bw, bh) + 24;
+        const surfY = bottleLiquid.dSurface;
+
+        const bColaGrad = ctx.createLinearGradient(0, surfY, 0, diag);
+        bColaGrad.addColorStop(0, '#5c1d0c');
+        bColaGrad.addColorStop(0.28, '#2b0b04');
+        bColaGrad.addColorStop(1, '#120402');
+
+        ctx.fillStyle = bColaGrad;
+        ctx.beginPath();
+        ctx.moveTo(-diag, diag);
+        ctx.lineTo(-diag, surfY);
+
+        const waveSteps = 22;
+        for (let i = 0; i <= waveSteps; i++) {
+          const t = i / waveSteps;
+          const wx = -diag + t * (diag * 2);
+          const wy = surfY + Math.sin(state.bottleSloshPhase + t * Math.PI * 3) * state.bottleSloshAmp;
+          ctx.lineTo(wx, wy);
+        }
+
+        ctx.lineTo(diag, diag);
+        ctx.closePath();
+        ctx.fill();
+
+        // Thin fizzy meniscus & foam line along the horizontal cola surface
+        ctx.strokeStyle = 'rgba(255, 240, 215, 0.82)';
+        ctx.lineWidth = 2.4;
+        ctx.beginPath();
+        for (let i = 0; i <= waveSteps; i++) {
+          const t = i / waveSteps;
+          const wx = -diag + t * (diag * 2);
+          const wy = surfY + Math.sin(state.bottleSloshPhase + t * Math.PI * 3) * state.bottleSloshAmp;
+          if (i === 0) ctx.moveTo(wx, wy);
+          else ctx.lineTo(wx, wy);
+        }
+        ctx.stroke();
+
+        ctx.restore();
+
+        // Rising air glug bubbles inside bottle liquid
+        ctx.save();
+        traceBottlePath(2.5);
+        ctx.clip();
+        for (const bb of state.bottleBubbles) {
+          ctx.fillStyle = `rgba(255, 244, 224, ${bb.life * 0.75})`;
+          ctx.beginPath();
+          ctx.arc(bb.lx, bb.ly, bb.r, 0, Math.PI * 2);
+          ctx.fill();
+        }
+        ctx.restore();
+      }
+
+      // ============================================================
+      // TRANSLUCENT RED "CHILL COLA" LABEL WITH CLEAR LEVEL WINDOW
+      // ============================================================
+      ctx.save();
+      traceBottlePath(0.5);
+      ctx.clip();
+
+      const labelTop = -halfH + bh * 0.40;
+      const labelHeight = bh * 0.16; // Sleek compact label band with semi-transparent glass refraction so cola level is always visible behind it!
+      const labelGrad = ctx.createLinearGradient(-halfW, labelTop, halfW, labelTop);
+      labelGrad.addColorStop(0, 'rgba(153, 27, 27, 0.72)');
+      labelGrad.addColorStop(0.22, 'rgba(239, 68, 68, 0.86)');
+      labelGrad.addColorStop(0.5, 'rgba(220, 38, 38, 0.88)');
+      labelGrad.addColorStop(0.78, 'rgba(239, 68, 68, 0.86)');
+      labelGrad.addColorStop(1, 'rgba(127, 29, 29, 0.72)');
+
+      ctx.fillStyle = labelGrad;
+      ctx.fillRect(-halfW - 4, labelTop, bw + 8, labelHeight);
+
+      // Clear vertical measurement side-windows on left & right of label so you see exact cola line passing through
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.22)';
+      ctx.fillRect(-halfW + 3, labelTop + 2, 5, labelHeight - 4);
+      ctx.fillRect(halfW - 8, labelTop + 2, 5, labelHeight - 4);
+
+      // White dynamic wave stripe across red wrapper
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.94)';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(-halfW, labelTop + labelHeight * 0.78);
+      ctx.bezierCurveTo(
+        -halfW * 0.3, labelTop + labelHeight * 0.50,
+        halfW * 0.3, labelTop + labelHeight * 0.94,
+        halfW, labelTop + labelHeight * 0.66
+      );
+      ctx.stroke();
+
+      // Fictional Brand Name ("CHILL COLA" - NOT Coca-Cola)
+      ctx.fillStyle = '#ffffff';
+      ctx.font = `900 ${Math.round(bw * 0.155)}px Outfit, sans-serif`;
+      ctx.textAlign = 'center';
+      ctx.fillText('CHILL', 0, labelTop + labelHeight * 0.45);
+      ctx.font = `800 ${Math.round(bw * 0.11)}px Outfit, sans-serif`;
+      ctx.fillStyle = '#fef08a';
+      ctx.fillText('COLA', 0, labelTop + labelHeight * 0.70);
+
+      ctx.restore();
+
+      // Bottle Crisp Plastic Outline & Sunlit Gloss Reflections
+      ctx.strokeStyle = 'rgba(71, 85, 105, 0.48)';
+      ctx.lineWidth = 2.2;
+      traceBottlePath(0);
+      ctx.stroke();
+
+      // Inner white rim highlight
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.85)';
+      ctx.lineWidth = 1.4;
+      traceBottlePath(1.5);
+      ctx.stroke();
+
+      // Red plastic neck collar ring
+      ctx.fillStyle = '#dc2626';
+      ctx.fillRect(-neckW / 2 - 2, -halfH - 5, neckW + 4, 4);
+
+      // Specular vertical plastic shine
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.72)';
+      ctx.lineWidth = 3;
+      ctx.lineCap = 'round';
+      ctx.beginPath();
+      ctx.moveTo(-halfW * 0.62, -halfH + 55);
+      ctx.lineTo(-halfW * 0.62, halfH - 22);
+      ctx.stroke();
+
+      ctx.restore();
+
+      // Subtle floating percentage pill near bottle base so player can track remaining cola easily
+      ctx.save();
+      const pillX = bottleX - bw * 0.75;
+      const pillY = bottleY + bh * 0.15;
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.88)';
+      ctx.strokeStyle = 'rgba(220, 38, 38, 0.35)';
+      ctx.lineWidth = 1.2;
+      ctx.beginPath();
+      ctx.roundRect(pillX - 20, pillY - 11, 40, 22, 8);
+      ctx.fill();
+      ctx.stroke();
+
+      ctx.fillStyle = '#991b1b';
+      ctx.font = '800 11px Outfit, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText(`${Math.round(state.bottleFill)}%`, pillX, pillY + 4);
+      ctx.restore();
+    }
+
+    function drawSplashes() {
+      for (const s of state.splashes) {
+        ctx.fillStyle = `rgba(43, 11, 4, ${s.alpha})`;
+        ctx.beginPath();
+        ctx.arc(s.x, s.y, s.radius, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
+
+    // ==========================================
+    // 9. MAIN ANIMATION LOOP
+    // ==========================================
+    let lastTime = performance.now();
+
+    function gameLoop(now) {
+      const dt = Math.min(0.05, (now - lastTime) / 1000);
+      lastTime = now;
+
+      const { tiltAngleRad, bottleLiquid } = updatePhysics(dt);
+      const m = getSceneMetrics();
+
+      ctx.clearRect(0, 0, width, height);
+
+      drawBackgroundAndTable(m);
+      const { surfaceY } = drawGlassAndCola(m);
+      drawColaBottleAndStream(m, tiltAngleRad, surfaceY, bottleLiquid);
+      drawSplashes();
+
+      if (window.__colaMode === 'play' && now - window.__colaLastSend >= 90 && !state.gameOver) {
+        window.__colaLastSend = now;
+        colaNotify('cola-state');
+      }
+
+      requestAnimationFrame(gameLoop);
+    }
+
+    window.onload = function () {
+      resizeCanvas();
+      updateHUD();
+      updateSliderVisuals();
+      document.documentElement.dataset.colaMode = window.__colaMode;
+      if (window.parent !== window) window.parent.postMessage({ type: 'cola-ready' }, location.origin);
+      requestAnimationFrame(gameLoop);
+    };
+  </script>
+</body>
+</html>
