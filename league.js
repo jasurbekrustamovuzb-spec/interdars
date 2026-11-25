@@ -23,7 +23,8 @@ function pinFmt(p){return p.slice(0,3)+' '+p.slice(3)}
 function rname(size){return size===2?'Final':size===4?'Yarim final':size===8?'Chorak final':'1/'+(size/2)+' final'}
 var TM=[];function after(ms,fn){var t=setTimeout(fn,ms);TM.push(t);return t}
 var AC=null,SND=true;
-function beep(f,d,ty,v,at){if(!SND)return;try{if(!AC)AC=new(window.AudioContext||window.webkitAudioContext)();if(AC.state==='suspended')AC.resume();var t=AC.currentTime+(at||0),o=AC.createOscillator(),g=AC.createGain();o.type=ty||'sine';o.frequency.value=f;g.gain.setValueAtTime(v||.07,t);g.gain.exponentialRampToValueAtTime(.0001,t+d);o.connect(g);g.connect(AC.destination);o.start(t);o.stop(t+d+.02)}catch(e){}}
+document.addEventListener('visibilitychange',function(){if(document.hidden){if(AC&&AC.state==='running')try{AC.suspend()}catch(e){}if(P&&P.ps&&P.ps.st&&P.ps.st.pause)P.ps.st.pause()}else{if(AC&&AC.state==='suspended')try{AC.resume()}catch(e){}if(P&&P.ps&&P.ps.st&&P.ps.st.resume)P.ps.st.resume()}});
+function beep(f,d,ty,v,at){if(!SND||document.hidden)return;try{if(!AC)AC=new(window.AudioContext||window.webkitAudioContext)();if(AC.state==='suspended')AC.resume();var t=AC.currentTime+(at||0),o=AC.createOscillator(),g=AC.createGain();o.type=ty||'sine';o.frequency.value=f;g.gain.setValueAtTime(v||.07,t);g.gain.exponentialRampToValueAtTime(.0001,t+d);o.connect(g);g.connect(AC.destination);o.start(t);o.stop(t+d+.02)}catch(e){}}
 var SX={ok:function(){beep(660,.12,'triangle');beep(990,.18,'triangle',.07,.1)},bad:function(){beep(200,.3,'sawtooth',.05)},goal:function(){[523,659,784,1046].forEach(function(f,i){beep(f,.2,'triangle',.08,i*.09)})},save:function(){beep(300,.15,'square',.05);beep(220,.25,'square',.05,.12)},draw:function(){beep(500,.08,'square',.04)}};
 
 /* ===== sof mantiq: bracket, BYE, penalti ===== */
@@ -57,7 +58,7 @@ function mkShot(tr){var n=tr.length;if(n<4)return null;var a=tr[0],b=tr[n-1],dx=
 /* ===== penalti sahnasi: faqat penalti kerak bo'lganda yuklanadi (bosh sahifaga ta'sir qilmaydi) ===== */
 var STG={p:null,ok:false,err:false},PK_RES=5600,PK_WIN=1000,PK_AIM=28000;
 function loadStage(){if(window.PenaltyStage){STG.ok=true;return Promise.resolve(true)}if(STG.p)return STG.p;
-  STG.p=new Promise(function(res){var sc=document.createElement('script');sc.src='/penalty-stage.js?v=6';sc.async=true;
+  STG.p=new Promise(function(res){var sc=document.createElement('script');sc.src='/penalty-stage.js?v=7';sc.async=true;
     sc.onload=function(){if(!window.PenaltyStage){STG.ok=false;STG.err=true;STG.p=null;res(false);return}window.PenaltyStage.load().then(function(ok){STG.ok=!!ok;STG.err=!ok;if(!ok)STG.p=null;res(!!ok)})};
     sc.onerror=function(){STG.err=true;STG.p=null;try{sc.remove()}catch(e){}res(false)};document.head.appendChild(sc)});return STG.p}
 /* sahna yuklanmasa: oddiy hisob (zaxira) */
@@ -79,8 +80,8 @@ function mount(){if(R)return;var st=document.createElement('style');st.textConte
   R=document.createElement('div');R.className='lgx';R.hidden=true;R.setAttribute('role','dialog');R.setAttribute('aria-label','Chempionlar ligasi');
   R.innerHTML='<div class="lgm" id="lgm"></div><div class="lgmod" id="lgmod" hidden></div><div class="lgconn" id="lgconn" hidden>\u26a0\ufe0f Aloqa uzildi \u2014 qayta ulanmoqda\u2026</div>';
   document.body.appendChild(R);M=$('#lgm');R.addEventListener('click',onClick)}
-function openOv(){mount();R.hidden=false;document.body.style.overflow='hidden';guardOn();try{if(navigator.wakeLock&&!WL)navigator.wakeLock.request('screen').then(function(l){WL=l;l.addEventListener('release',function(){WL=null})}).catch(function(){})}catch(e){}}
-function closeOv(){if(R)R.hidden=true;document.body.style.overflow='';guardOff();TM.forEach(clearTimeout);TM=[]}
+function openOv(){mount();R.hidden=false;document.body.style.overflow='hidden';guardOn()}
+function closeOv(){if(R)R.hidden=true;document.body.style.overflow='';guardOff();if(WL){try{WL.release()}catch(e){}WL=null}TM.forEach(clearTimeout);TM=[]}
 function view(h,cls){M.className='lgm '+(cls||'');M.innerHTML=h;obs(M)}
 function modal(h,k){var m=$('#lgmod');m.dataset.k=k||'';m.innerHTML='<div class="lgmb">'+h+'</div>';m.hidden=false}
 function modalClose(){var m=$('#lgmod');if(m){m.hidden=true;m.innerHTML='';m.dataset.k=''}}
