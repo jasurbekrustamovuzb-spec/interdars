@@ -279,7 +279,7 @@ footer{padding:26px 0 40px;color:var(--muted);font-size:14px;text-align:center}
 (function(){
 var d=document,$=function(s){return d.querySelector(s)},$$=function(s){return [].slice.call(d.querySelectorAll(s))};
 d.documentElement.classList.add('js');
-var APP="/home",pendingLink=!!localStorage.getItem('idPending');
+var APP="/home",pendingLink=!!(localStorage.getItem('idPending')||localStorage.getItem('idPendingLive'));
 var sb=window.supabase.createClient('https://kikehcuwjcucyspxdopd.supabase.co','sb_publishable_aBqimXgAK3ia1K_keuaICg_wIRBHx14');
 var mq=$('#mq');mq.innerHTML+=mq.innerHTML;
 var M=[
