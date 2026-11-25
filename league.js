@@ -55,9 +55,9 @@ function mkShot(tr){var n=tr.length;if(n<4)return null;var a=tr[0],b=tr[n-1],dx=
   return{pts:pts.map(function(p){return[Math.round(p[0]*10)/10,Math.round(p[1]*10)/10]}),fl:Math.round(1250-sp*850),tx:(E[0]-GX)/GW,ty:(E[1]-GY0)/GH,sp:sp}}
 
 /* ===== penalti sahnasi: faqat penalti kerak bo'lganda yuklanadi (bosh sahifaga ta'sir qilmaydi) ===== */
-var STG={p:null,ok:false,err:false},PK_RES=5600,PK_WIN=1200,PK_AIM=14000;
+var STG={p:null,ok:false,err:false},PK_RES=5600,PK_WIN=700,PK_AIM=14000;
 function loadStage(){if(window.PenaltyStage){STG.ok=true;return Promise.resolve(true)}if(STG.p)return STG.p;
-  STG.p=new Promise(function(res){var sc=document.createElement('script');sc.src='/penalty-stage.js?v=3';sc.async=true;
+  STG.p=new Promise(function(res){var sc=document.createElement('script');sc.src='/penalty-stage.js?v=4';sc.async=true;
     sc.onload=function(){if(!window.PenaltyStage){STG.ok=false;STG.err=true;STG.p=null;res(false);return}window.PenaltyStage.load().then(function(ok){STG.ok=!!ok;STG.err=!ok;if(!ok)STG.p=null;res(!!ok)})};
     sc.onerror=function(){STG.err=true;STG.p=null;try{sc.remove()}catch(e){}res(false)};document.head.appendChild(sc)});return STG.p}
 /* sahna yuklanmasa: oddiy hisob (zaxira) */
@@ -186,7 +186,7 @@ function hKick(m){if(H.ph!=='pen')return;var mt=penMatch(m.mi),p=H.pl[m.p];if(!m
   var kid=pidOf(mt.pen.turn?mt.a:mt.b);if(kid)send({t:'kk',to:kid,mi:m.mi})}
 /* darvozabon tanlovini zarbadan keyin ham (PK_WIN ichida) o'zgartira oladi; zarba esa o'zgarmaydi */
 function hDive(m){if(H.ph!=='pen')return;var mt=penMatch(m.mi),p=H.pl[m.p];if(!mt||!p||mt.st!=='pen'||mt.pen.st!=='aim')return;var kp=mt.pen.turn?mt.a:mt.b;if(kp!==p.i)return;
-  var x=+m.x,y=+m.y;if(!isFinite(x)||!isFinite(y))return;mt.pen.dv=[clamp(x,0,1),clamp(y,0,1)]}
+  var x=+m.x,y=+m.y,sq=+m.s||0;if(!isFinite(x)||!isFinite(y))return;if(sq&&sq<=(mt.pen.ds||0))return;if(sq)mt.pen.ds=sq;mt.pen.dv=[clamp(x,0,1),clamp(y,0,1)]}
 function penTick(n){var r=H.rounds[H.ri];r.forEach(function(m){if(m.st!=='pen')return;var p=m.pen;
   if(p.st==='aim'&&((p.k&&n>=p.kt+PK_WIN)||n>p.t0+PK_AIM))penResolve(m,n);else if(p.st==='res'&&n>p.t0+PK_RES)penNext(m,n)})}
 function penResolve(m,n){var p=m.pen,k=p.k,d=p.dv,res='miss',pt='',seed=1+Math.floor(Math.random()*2147483000);
@@ -201,7 +201,7 @@ function penResolve(m,n){var p=m.pen,k=p.k,d=p.dv,res='miss',pt='',seed=1+Math.f
 function penNext(m,n){var p=m.pen,N=H.set.pk||3,d=penDone(p,N),cap=p.ka===p.kb&&p.ka>=N+12;
   if(!d&&(p.idle>=2||cap))d=Math.random()<.5?1:2;
   if(d){m.w=d===1?m.a:m.b;m.l=d===1?m.b:m.a;m.st='done';m.coin=p.idle>=2||cap;p.vis=p.seq.length}
-  else{p.turn=1-p.turn;p.st='aim';p.t0=n;p.k=p.dv=null;p.kt=0}
+  else{p.turn=1-p.turn;p.st='aim';p.t0=n;p.k=p.dv=null;p.kt=0;p.ds=0}
   bcast();persist(1);
   if(H.rounds[H.ri].every(function(x){return x.st==='done'||x.st==='bye'}))hRoundDone();else hCards()}
 /* ----- tashkilotchi: tomosha sahnasi va natijalar navbati ----- */
@@ -248,7 +248,7 @@ function cardsHTML(){var S=snap(),ros=rosMap(S),r=H.rounds[H.ri],byes=r.filter(f
   return r.filter(function(m){return m.st!=='bye'}).map(function(m){return cardHTML(m,ros)}).join('')+(byes.length?'<div class="lgbyes">\ud83c\udf9f\ufe0f BYE: '+byes.map(function(m){return esc((ros[m.a]||[0,'?'])[1])}).join(', ')+'</div>':'')}
 function hCards(){var c=$('#lgduels');if(c&&H&&(H.ph==='q'||H.ph==='rev'||H.ph==='pen')){c.innerHTML=cardsHTML();obs(c)}}
 function hQ(){var q=H.cq,rev=H.ph==='rev';view(topbar('<b class="lgchip">'+esc(H.rn)+'</b><b class="lgchip">'+(H.qi+1)+' / '+H.nq+'</b>')+'<div class="lgc"><div class="lgbar"><i id="lgbari" style="width:'+(rev?0:100)+'%"></i></div><div class="lgsec" id="lgsec">'+(rev?'':H.set.time)+'</div><h1 class="lgq">'+esc(q.q)+'</h1><div class="lgops host">'+optsHTML({a:q.a,c:q.c},-1,rev)+'</div><div class="lgduels" id="lgduels">'+cardsHTML()+'</div></div>');obs($('#lgduels'))}
-function hPen(){var N=H.set.pk||3;view(topbar('<b class="lgchip">'+esc(H.rn)+'</b><b class="lgchip">\u26bd Penaltilar seriyasi</b>')+'<div class="lgc"><h2 class="lgh">Durang! Penaltilar seriyasi</h2><p class="lgmut">Ikkala o\u2018yinchi navbat bilan zarba beradi va darvozani himoya qiladi. '+N+' tadan zarba; teng bo\u2018lsa \u2014 kimdir yutguncha davom etadi.</p><div class="lgstage"><div class="lgload" id="lghload">\ud83c\udfdf\ufe0f Stadion yuklanmoqda\u2026</div><canvas id="lghcv" hidden></canvas></div><div class="lghlab" id="lghlab"></div><div class="lgduels" id="lgduels">'+cardsHTML()+'</div></div>');obs($('#lgduels'));hStageOn()}
+function hPen(){var N=H.set.pk||3;view(topbar('<b class="lgchip">'+esc(H.rn)+'</b><b class="lgchip">\u26bd Penaltilar seriyasi</b>')+'<div class="lgc"><h2 class="lgh">Durang! Penaltilar seriyasi</h2><p class="lgmut">Ikkala o\u2018yinchi navbat bilan zarba beradi va darvozani himoya qiladi. '+N+' tadan zarba; teng bo\u2018lsa \u2014 kimdir yutguncha davom etadi.</p><div class="lgstage"><div class="lgload" id="lghload">\ud83c\udfdf\ufe0f Stadion yuklanmoqda\u2026</div><canvas id="lghcv" hidden></canvas></div><div class="lgcr">Darvozabon modeli: <a href="https://sketchfab.com/3d-models/goalkeeper-stylized-rig-and-animation-7de86f9c36f84152a777f27a73646ada" target="_blank" rel="noopener">Goalkeeper Stylized</a> \u2014 P-Vi.Art (Sketchfab), <a href="http://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a>; o\u2018yin uchun moslashtirilgan</div><div class="lghlab" id="lghlab"></div><div class="lgduels" id="lgduels">'+cardsHTML()+'</div></div>');obs($('#lgduels'));hStageOn()}
 function hRes(){var S=snap(),nr=H.rounds[H.ri+1],nx=H.ri+1===H.R-1?(nr.length>1?'Final va 3-o\u2018rin':'Final'):rname(H.M/Math.pow(2,H.ri+1));
   view(topbar('<b class="lgchip">'+esc(H.rn)+' yakunlandi</b>')+'<div class="lgc"><h2 class="lgh">\u2705 Bosqich yakunlandi</h2>'+brHTML(S,0)+'<div class="lgfoot"><button class="lgb go" data-act="go">\u25b6 '+nx+'</button></div></div>')}
 function hFin(){var S=snap();view(topbar('<b class="lgchip">Turnir yakuni</b>')+'<div class="lgc"><h2 class="lgh">\ud83c\udfc6 Chempion aniqlandi!</h2>'+podium(S)+brHTML(S,0)+'<div class="lgfoot"><button class="lgb ghost" data-act="exitok">Yopish</button></div></div>')}
@@ -266,7 +266,7 @@ function pMsg(m){if(!P)return;if(m.to&&m.to!==P.pid)return;
   if(m.t==='s'){if(m.to||P.got)pSnap(m)}
   else if(m.t==='h'){P.lastH=Date.now();if(P.got&&P.S&&(m.ph!==P.S.ph||m.qi!==P.S.qi||m.ri!==P.S.ri))pHello()}
   else if(m.t==='k')P.ak=true;else if(m.t==='pr')pResult(m);
-  else if(m.t==='kk'){var kps=P.ps;if(kps&&kps.role==='k'&&!kps.done){kps.kicked=true;setHint('\u26bd Zarba berildi! Oxirgi tanlov \u2014 1 soniya ichida o\u2018zgartirishingiz mumkin.')}}
+  else if(m.t==='kk'){var kps=P.ps;if(kps&&kps.role==='k'&&!kps.done){kps.kicked=true;kps.lock=true;kps.drawing=false;kps.pid=null;sendDive(kps);setHint('\u26bd Zarba berildi! Darvozabon otilmoqda\u2026')}}
   else if(m.t==='deny')leave(m.why==='full'?'Xona to\u2018lgan':'Turnir boshlangan \u2014 qo\u2018shilib bo\u2018lmaydi');
   else if(m.t==='end'){if(P.S&&P.S.ph==='fin')P.over=true;else leave('Tashkilotchi turnirni tugatdi')}}
 function mine(S,ri){if(!S.br)return null;var r=S.br[ri];if(!r)return null;for(var s=0;s<r.length;s++){var m=r[s];if(m[0]===P.i||m[1]===P.i)return{r:ri,s:s,m:m,side:m[0]===P.i?0:1,opp:m[0]===P.i?m[1]:m[0]}}return null}
@@ -309,7 +309,7 @@ function pFin(){var S=P.S,f=S.fin||[],k=f.indexOf(P.i);view(topbar('<b class="lg
 /* ----- penalti: ishtirokchi ekrani (sahna alohida faylda, faqat kerak bo'lganda yuklanadi) ----- */
 function disposeStage(){var ps=P&&P.ps;if(ps&&ps.st){try{ps.st.destroy()}catch(e){}}if(P){P.ps=null;P.penKey=''}}
 var HINT_S='\u26bd To\u2018pdan boshlab darvozaga qarab barmog\u2018ingiz bilan chizing. Tez chizsangiz \u2014 zarba kuchli, lekin aniqlik kamayadi. Egri chizsangiz \u2014 to\u2018p burama uchadi!',
-    HINT_K='\ud83e\udde4 Darvozabon: to\u2018p qayerga uchishini taxmin qilib darvoza ustiga bosing. Zarbadan keyin ham 1 soniya ichida tanlovni o\u2018zgartirish mumkin.';
+    HINT_K='\ud83e\udde4 Darvozabon: to\u2018p qayerga uchishini taxmin qilib darvoza ustiga bosing. Zarba berilguncha tanlovni o\u2018zgartirish mumkin \u2014 zarba berilgan zahoti darvozabon tanlangan joyga otiladi.';
 function pPen(prev){var S=P.S,mm=mine(S,S.ri);
   if(!mm||mm.m[5]!==3){disposeStage();var st=status(S,mm)||{e:'\u26bd',t:'Penaltilar seriyasi',p:'Boshqa duellar tugashini kuting.'};
     view(topbar('<b class="lgchip">\u26bd Penalti</b>')+'<div class="lgc"><div class="lgcd inl"><div class="em big">'+st.e+'</div><h2>'+st.t+'</h2><p>'+st.p+'</p></div>'+brHTML(S,P.i)+'</div>','pl');return}
@@ -317,14 +317,14 @@ function pPen(prev){var S=P.S,mm=mine(S,S.ri);
   if(ps&&ps.mm.r===mm.r&&ps.mm.s===mm.s&&$('#lgstg')){ps.mm=mm;pPenHead(S,mm,pn,ros);
     if(pn[1]==='aim'&&P.penKey!==key){if(ps.anim||(ps.st&&ps.st.busy()))return;newKick(ps,shooter?'s':'k',key)}return}
   disposeStage();P.penKey=key;
-  view(topbar('<b class="lgchip">\u26bd Penalti \u00b7 '+(pn[7]||3)+' ta zarba</b>')+'<div class="lgc lgpk"><div id="lgpkh"></div><div class="lgstage" id="lgstg"><div class="lgload" id="lgload">\ud83c\udfdf\ufe0f Stadion yuklanmoqda\u2026</div><canvas id="lgcv" hidden></canvas></div><div class="lghint" id="lghint"></div><div id="lgfb"></div></div>','pl');
+  view(topbar('<b class="lgchip">\u26bd Penalti \u00b7 '+(pn[7]||3)+' ta zarba</b>')+'<div class="lgc lgpk"><div id="lgpkh"></div><div class="lgstage" id="lgstg"><div class="lgload" id="lgload">\ud83c\udfdf\ufe0f Stadion yuklanmoqda\u2026</div><canvas id="lgcv" hidden></canvas></div><div class="lghint" id="lghint"></div><div id="lgfb"></div><div class="lgcr">Darvozabon modeli: <a href="https://sketchfab.com/3d-models/goalkeeper-stylized-rig-and-animation-7de86f9c36f84152a777f27a73646ada" target="_blank" rel="noopener">Goalkeeper Stylized</a> \u2014 P-Vi.Art (Sketchfab), <a href="http://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a>; o\u2018yin uchun moslashtirilgan</div></div>','pl');
   var ps2=P.ps={mm:mm,role:shooter?'s':'k',trail:[],drawing:false,sent:false,done:false,anim:null,dv:null,hold:false,st:null,pend:null,fb:false,ld:0};
   setHint(shooter?HINT_S:HINT_K);pPenHead(S,mm,pn,ros);
   loadStage().then(function(ok){if(!P||P.ps!==ps2||!$('#lgcv'))return;
     if(!ok){fallbackUI(ps2);return}
     $('#lgload').hidden=true;$('#lgcv').hidden=false;try{ps2.st=window.PenaltyStage.create($('#lgcv'),{snd:function(){return SND}})}catch(e){ps2.st=null;$('#lgcv').hidden=true;STG.err=true;fallbackUI(ps2);return}ps2.st.reset(ps2.role);if(ps2.hudD&&ps2.st.hud)ps2.st.hud(ps2.hudD);bindStage();
     if(ps2.pend){var pm=ps2.pend;ps2.pend=null;playResult(ps2,pm)}})}
-function newKick(ps,role,key){P.penKey=key;ps.role=role;ps.sent=false;ps.done=false;ps.anim=null;ps.dv=null;ps.trail=[];ps.shot=null;ps.hold=false;ps.kicked=false;ps.drawing=false;
+function newKick(ps,role,key){P.penKey=key;ps.role=role;ps.sent=false;ps.done=false;ps.anim=null;ps.dv=null;ps.trail=[];ps.shot=null;ps.hold=false;ps.kicked=false;ps.drawing=false;ps.lock=false;ps.pid=null;ps.sq=0;clearTimeout(ps.lt);clearInterval(ps.hb);ps.hb=0;
   if(ps.st){ps.st.reset(role)}var fb=$('#lgfb');if(fb&&ps.fb)fbRender(ps);setHint(role==='s'?HINT_S:HINT_K)}
 function pPenHead(S,mm,pn,ros){var h=$('#lgpkh');if(!h||(P.ps&&P.ps.hold))return;var B=mm.opp,my=mm.side?pn[3]:pn[2],op=mm.side?pn[2]:pn[3];
   var rs=function(sd){return (pn[6]||[]).filter(function(x){return x[0]===sd}).map(function(x){return x[1]})},hd={l:{n:(ros[P.i]||[0,'?'])[1],g:my,r:rs(mm.side)},r:{n:(ros[B]||[0,'?'])[1],g:op,r:rs(1-mm.side)},N:pn[7]||3,k:mm.side?pn[5]:pn[4],rn:S.rn||'',lab:'Penalti'};
@@ -332,8 +332,11 @@ function pPenHead(S,mm,pn,ros){var h=$('#lgpkh');if(!h||(P.ps&&P.ps.hold))return
   function dots(side){return (pn[6]||[]).filter(function(x){return x[0]===side}).map(function(x){return x[1]===1?'\u26bd':x[1]===2?'\ud83e\udde4':'\u274c'}).join('')}
   h.innerHTML='<div class="lgvs sm"><div class="s"><b>'+esc((ros[P.i]||[0,'?'])[1])+'</b><span class="dots">'+dots(mm.side)+'</span></div><div class="sc"><em>'+my+'</em><span>:</span><em>'+op+'</em></div><div class="s"><b>'+esc((ros[B]||[0,'?'])[1])+'</b><span class="dots">'+dots(1-mm.side)+'</span></div></div>'}
 function setHint(t){var h=$('#lghint');if(h)h.textContent=t}
-function setDive(ps,p){var g=ps.st.toGoal(p.x,p.y),u=clamp((g.x/3.66+1)/2,0,1),v=clamp(g.y/2.6,0,1);ps.dv=[u,v];ps.st.setDive(u,v);var n=Date.now();if(!ps.ld||n-ps.ld>130){ps.ld=n;sendDive(ps)}}
-function sendDive(ps){if(!P||P.ps!==ps||!ps.dv||ps.anim||ps.done)return;send({t:'dive',p:P.pid,mi:[ps.mm.r,ps.mm.s],x:ps.dv[0],y:ps.dv[1]})}
+function setDive(ps,p){if(ps.lock)return;var g=ps.st.toGoal(p.x,p.y),u=clamp((g.x/3.66+1)/2,0,1),v=clamp(g.y/2.6,0,1);ps.dv=[u,v];ps.st.setDive(u,v);var n=Date.now();clearTimeout(ps.lt);
+  if(!ps.ld||n-ps.ld>130){ps.ld=n;sendDive(ps)}else ps.lt=setTimeout(function(){ps.ld=Date.now();sendDive(ps)},140);diveBeat(ps)}
+/* tanlov har 250ms takrorlanadi: yo'qolgan xabar tanlovni yo'qotmasin */
+function diveBeat(ps){if(ps.hb)return;ps.hb=setInterval(function(){if(!P||P.ps!==ps||ps.done||ps.anim){clearInterval(ps.hb);ps.hb=0;return}sendDive(ps)},250)}
+function sendDive(ps){if(!P||P.ps!==ps||!ps.dv||ps.anim||ps.done)return;send({t:'dive',p:P.pid,mi:[ps.mm.r,ps.mm.s],x:ps.dv[0],y:ps.dv[1],s:(ps.sq=(ps.sq||0)+1)})}
 /* chizilgan yo'l \u2192 zarba: tezlik = kuch, egrilik = burama (spin); kuchli zarba aniqligi pasayadi */
 function mkShot2(ps,tr){var n=tr.length;if(n<4)return null;var a=tr[0],b=tr[n-1],dx=b.x-a.x,dy=b.y-a.y,L=Math.hypot(dx,dy);if(L<90||dy>-40)return null;
   var v=L/Math.max(60,b.t-a.t),sp=clamp(17+(v-.5)*9,17,31),pw=(sp-17)/14,ux=dx/L,uy=dy/L,nx=-uy,ny=ux,bow=0,i;
@@ -341,14 +344,15 @@ function mkShot2(ps,tr){var n=tr.length;if(n<4)return null;var a=tr[0],b=tr[n-1]
   var g=ps.st.toGoal(b.x,b.y),sg=.07+pw*.5;
   return{tx:Math.round(clamp(g.x+gauss()*sg,-8,8)*100)/100,ty:Math.round(clamp(g.y+gauss()*sg*.7,0,5)*100)/100,sp:Math.round(sp*10)/10,cu:Math.round(-clamp(bow*2.4,-1,1)*100)/100}}
 function bindStage(){var cv=$('#lgcv');if(!cv)return;
-  cv.addEventListener('pointerdown',function(e){var ps=P&&P.ps;if(!ps||!ps.st||ps.anim||ps.hold||ps.done)return;ps.st.unlock();e.preventDefault();var p=ps.st.pos(e);
-    if(ps.role==='s'){if(ps.sent)return;if(ps.st.onSpot(p.x,p.y)){ps.drawing=true;ps.trail=[p];ps.st.setTrail(ps.trail);try{cv.setPointerCapture(e.pointerId)}catch(x){}}else say('Avval to\u2018pni bosib turing')}
-    else{ps.drawing=true;setDive(ps,p);try{cv.setPointerCapture(e.pointerId)}catch(x){}}});
-  cv.addEventListener('pointermove',function(e){var ps=P&&P.ps;if(!ps||!ps.drawing||!ps.st)return;var p=ps.st.pos(e);if(ps.role==='s'){if(ps.trail.length<300)ps.trail.push(p)}else setDive(ps,p)});
-  function up(){var ps=P&&P.ps;if(!ps||!ps.drawing)return;ps.drawing=false;
-    if(ps.role==='s'){var sh=mkShot2(ps,ps.trail);ps.st.setTrail(null);if(!sh){ps.trail=[];say('To\u2018pdan darvoza tomon uzunroq chizing');return}ps.sent=true;ps.shot=sh;fireKick(ps,sh)}
-    else if(ps.dv){sendDive(ps);setTimeout(function(){sendDive(ps)},600);setHint(ps.kicked?'\ud83e\udde4 Tanlov yangilandi!':'\ud83e\udde4 Tanlandi! Zarbani kuting\u2026 (o\u2018zgartirish mumkin)')}}
-  cv.addEventListener('pointerup',up);cv.addEventListener('pointercancel',up)}
+  cv.addEventListener('pointerdown',function(e){var ps=P&&P.ps;if(!ps||!ps.st||ps.anim||ps.hold||ps.done)return;e.preventDefault();if(ps.drawing||ps.lock||ps.sent&&ps.role==='s')return;ps.st.unlock();var p=ps.st.pos(e);
+    if(ps.role==='s'){if(ps.st.onSpot(p.x,p.y)){ps.drawing=true;ps.pid=e.pointerId;ps.trail=[p];ps.st.setTrail(ps.trail);try{cv.setPointerCapture(e.pointerId)}catch(x){}}else say('Avval to\u2018pni bosib turing')}
+    else{ps.drawing=true;ps.pid=e.pointerId;setDive(ps,p);try{cv.setPointerCapture(e.pointerId)}catch(x){}}});
+  cv.addEventListener('pointermove',function(e){var ps=P&&P.ps;if(!ps||!ps.drawing||!ps.st||e.pointerId!==ps.pid)return;var p=ps.st.pos(e);if(ps.role==='s'){if(ps.trail.length<300)ps.trail.push(p)}else setDive(ps,p)});
+  function up(e,cancel){var ps=P&&P.ps;if(!ps||!ps.drawing||e.pointerId!==ps.pid)return;ps.drawing=false;ps.pid=null;
+    if(ps.role==='s'){if(ps.sent)return;ps.st.setTrail(null);if(cancel){ps.trail=[];return}
+      if(ps.trail.length<300)ps.trail.push(ps.st.pos(e));var sh=mkShot2(ps,ps.trail);if(!sh){ps.trail=[];say('To\u2018pdan darvoza tomon uzunroq chizing');return}ps.sent=true;ps.shot=sh;fireKick(ps,sh)}
+    else if(ps.dv&&!ps.lock){sendDive(ps);setHint('\ud83e\udde4 Tanlandi! Zarbani kuting\u2026 (zarba berilguncha o\u2018zgartirish mumkin)')}}
+  cv.addEventListener('pointerup',function(e){up(e,false)});cv.addEventListener('pointercancel',function(e){up(e,true)})}
 function fireKick(ps,sh){var tries=0,key=P.penKey;setHint('\u26bd Zarba berildi! Darvozabon so\u2018nggi tanlovini qilmoqda\u2026');
   (function go(){if(!P||P.ps!==ps||P.penKey!==key||ps.anim||tries>4)return;tries++;P.ak=false;send({t:'kick',p:P.pid,mi:[ps.mm.r,ps.mm.s],k:sh});setTimeout(function(){if(!P.ak)go()},900)})()}
 function resText(m,ps){var me=m.sh===ps.mm.side;return m.r==='goal'?(me?'GOL! \u26bd\ud83d\udd25':'Gol kiritdingiz\u2026 \ud83d\ude2c'):m.r==='save'?(me?'Darvozabon qaytardi \ud83e\udde4':'SEYV! \ud83e\udde4\ud83d\udd25'):!m.k?'Vaqt tugadi \u2014 zarba berilmadi \u23f1':(m.pt?'Ustun/to\u2018sin \u2014 gol emas':'Aut \u274c')}
@@ -367,7 +371,7 @@ function fbRender(ps){var fb=$('#lgfb');if(!fb)return;var h='<div class="lgzg">'
   fb.innerHTML=h+'</div>';setHint(ps.role==='s'?'\u26bd Zarba yo\u2018nalishini tanlang':'\ud83e\udde4 Qayerga tashlanishni tanlang')}
 function fbZone(b){var ps=P&&P.ps;if(!ps||!ps.fb||ps.sent||ps.done)return;var u=+b.dataset.u,v=+b.dataset.v;
   if(ps.role==='s'){ps.sent=true;var sh={tx:(u-.5)*2*3.66*.8,ty:v*2.6*.85,sp:24,cu:0};ps.shot=sh;fireKick(ps,sh)}
-  else{ps.dv=[u,v];sendDive(ps);setTimeout(function(){sendDive(ps)},500);setTimeout(function(){sendDive(ps)},1000)}
+  else{if(ps.lock)return;ps.dv=[u,v];sendDive(ps);diveBeat(ps)}
   var fb=$('#lgfb');if(fb&&ps.role==='s')fb.querySelectorAll('button').forEach(function(x){x.disabled=true})}
 
 /* ===== tugmalar ===== */
@@ -410,7 +414,7 @@ var CSS='.lgx{position:fixed;inset:0;z-index:95;color:#fff;font-family:Nunito,sy
 '.lgverdict{font-family:"Baloo 2",sans-serif;font-size:26px;padding:6px 18px;border-radius:14px}.lgverdict.y{background:rgba(39,201,154,.25)}.lgverdict.n{background:rgba(255,59,92,.25)}'+
 '.lgduels{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:10px;width:100%}.lgdc{display:grid;grid-template-columns:1fr auto 1fr;align-items:start;gap:6px;background:rgba(255,255,255,.08);border-radius:16px;padding:10px}.lgdc.pen{box-shadow:0 0 0 2px #FFC53D}.lgdc.done{opacity:.8}.lgdc .s{display:flex;flex-direction:column;align-items:center;gap:3px;font-size:12px;min-width:0;position:relative}.lgdc .s b{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.lgdc .s.win b{color:#27C99A}.lgdc .s i{position:absolute;top:0;right:8px;font-style:normal;color:#27C99A}.lgdc .sc{flex-wrap:wrap;justify-content:center;font-size:22px}.lgdc .sc small{width:100%;font-family:Nunito;font-size:10px;opacity:.8}.seqr{font-size:12px;min-height:16px}.lgbyes{grid-column:1/-1;opacity:.8;font-size:13px}'+
 '.lgpod{display:flex;align-items:flex-end;justify-content:center;gap:10px;margin:10px 0;width:100%}.lgpod .c{display:flex;flex-direction:column;align-items:center;gap:6px;flex:1;max-width:170px}.lgpod .pp{display:flex;flex-direction:column;align-items:center;gap:4px;font-size:13px;min-height:84px;justify-content:flex-end}.lgpod .bar{width:100%;border-radius:14px 14px 0 0;display:flex;justify-content:center;padding-top:8px;font-family:"Baloo 2",sans-serif;font-size:30px;color:#33250A}.s1 .bar{height:150px;background:linear-gradient(#FFD95E,#F2A516)}.s2 .bar{height:104px;background:linear-gradient(#E4E8F4,#9BA6C2)}.s3 .bar{height:76px;background:linear-gradient(#F3B27A,#C77A3E)}.cup{font-size:40px;animation:lgpop .8s infinite alternate}.lg4{opacity:.85}'+
-'.lgpk{gap:8px}#lgpkh{display:none}.lgpk{width:100%}.lgstage{position:relative;width:100%;max-width:980px;margin:0 auto}.lgstage canvas{display:block;margin:0 auto;border-radius:20px;touch-action:none;box-shadow:0 10px 30px rgba(0,0,0,.4)}.lghint{font-size:13px;opacity:.9;max-width:420px}.lgban{position:absolute;left:50%;top:44%;transform:translate(-50%,-50%);font-family:"Baloo 2",sans-serif;font-size:34px;padding:10px 20px;border-radius:18px;background:rgba(0,0,0,.65);white-space:nowrap;animation:lgpop .4s both}.lgban.goal{color:#27C99A}.lgban.save{color:#FFC53D}.lgban.miss{color:#FF3B5C}.lgban[hidden]{display:none}'+
+'.lgpk{gap:8px}#lgpkh{display:none}.lgpk{width:100%}.lgstage{position:relative;width:100%;max-width:980px;margin:0 auto}.lgstage canvas{display:block;margin:0 auto;border-radius:20px;touch-action:none;box-shadow:0 10px 30px rgba(0,0,0,.4)}.lghint{font-size:13px;opacity:.9;max-width:420px}.lgcr{font-size:11px;opacity:.6;text-align:center;max-width:520px;margin:6px auto 0;line-height:1.4}.lgcr a{color:inherit;text-decoration:underline}.lgban{position:absolute;left:50%;top:44%;transform:translate(-50%,-50%);font-family:"Baloo 2",sans-serif;font-size:34px;padding:10px 20px;border-radius:18px;background:rgba(0,0,0,.65);white-space:nowrap;animation:lgpop .4s both}.lgban.goal{color:#27C99A}.lgban.save{color:#FFC53D}.lgban.miss{color:#FF3B5C}.lgban[hidden]{display:none}'+
 '.lgmod{position:absolute;inset:0;z-index:5;background:rgba(5,6,30,.7);display:grid;place-items:center;padding:20px}.lgmod[hidden]{display:none}.lgmb{background:#1B1F5E;border-radius:22px;padding:22px;max-width:360px;width:100%;display:flex;flex-direction:column;gap:12px;text-align:center}.lgmb h3{font-family:"Baloo 2",sans-serif;font-size:22px}.lgmb p{opacity:.8;font-size:14px}.lgconn{position:absolute;left:50%;bottom:14px;transform:translateX(-50%);z-index:6;background:#FF3B5C;padding:8px 14px;border-radius:999px;font-size:13px}.lgconn[hidden]{display:none}'+
 '.lgload{min-height:220px;display:grid;place-items:center;border-radius:18px;background:rgba(255,255,255,.07);font-size:15px;width:100%}.lgload[hidden],.lgstage canvas[hidden]{display:none}.lghlab{font-family:"Baloo 2",sans-serif;font-size:18px;color:#FFC53D;min-height:24px}.lgzg{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;width:100%;max-width:420px;margin:0 auto}.lgzg button{padding:18px 6px;border-radius:14px;background:rgba(255,255,255,.14);font-size:14px}.lgzg button:disabled{opacity:.4}'+
 '@media(max-width:560px){.lgops{grid-template-columns:1fr}.lgcol{min-width:138px}}';

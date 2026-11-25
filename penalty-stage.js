@@ -105,6 +105,64 @@ function simulate(shot,dive,seed){var rnd=rng(seed||1),Lc=launch(shot),v=Lc.v,w=
 function resolve(shot,dive,seed){try{var s=simulate(shot,dive,seed);return{r:s.res,pt:s.pt}}catch(e){return null}}
 
 /* ================= 3D SAHNA (Three.js) ================= */
+/* ================= DARVOZABON SKELETI (GLB, Mixamo): IK yechuvchi — three.js'siz sof matematika ================= */
+var KS=(function(){
+  var NM={hips:'Hips_01',neck:'Neck_05',head:'Head_06',sp:['Spine_02','Spine1_03','Spine2_04'],
+    L:{sh:'LeftShoulder_07',ar:'LeftArm_08',fo:'LeftForeArm_09',hd:'LeftHand_010',ul:'LeftUpLeg_055',ll:'LeftLeg_056',ft:'LeftFoot_057'},
+    R:{sh:'RightShoulder_031',ar:'RightArm_032',fo:'RightForeArm_033',hd:'RightHand_034',ul:'RightUpLeg_060',ll:'RightLeg_061',ft:'RightFoot_062'}};
+  function qm(a,b){return[a[3]*b[0]+a[0]*b[3]+a[1]*b[2]-a[2]*b[1],a[3]*b[1]-a[0]*b[2]+a[1]*b[3]+a[2]*b[0],a[3]*b[2]+a[0]*b[1]-a[1]*b[0]+a[2]*b[3],a[3]*b[3]-a[0]*b[0]-a[1]*b[1]-a[2]*b[2]]}
+  function qc(a){return[-a[0],-a[1],-a[2],a[3]]}
+  function qn(a){var l=Math.sqrt(a[0]*a[0]+a[1]*a[1]+a[2]*a[2]+a[3]*a[3])||1;return[a[0]/l,a[1]/l,a[2]/l,a[3]/l]}
+  function qv(q,v){var x=v[0],y=v[1],z=v[2],qx=q[0],qy=q[1],qz=q[2],qw=q[3],ix=qw*x+qy*z-qz*y,iy=qw*y+qz*x-qx*z,iz=qw*z+qx*y-qy*x,iw=-qx*x-qy*y-qz*z;
+    return[ix*qw+iw*-qx+iy*-qz-iz*-qy,iy*qw+iw*-qy+iz*-qx-ix*-qz,iz*qw+iw*-qz+ix*-qy-iy*-qx]}
+  function qz(a){return[0,0,Math.sin(a/2),Math.cos(a/2)]}
+  function vl(a){return Math.sqrt(a[0]*a[0]+a[1]*a[1]+a[2]*a[2])}
+  function vn(a){var l=vl(a)||1;return[a[0]/l,a[1]/l,a[2]/l]}
+  function dot(a,b){return a[0]*b[0]+a[1]*b[1]+a[2]*b[2]}
+  function cross(a,b){return[a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[2],a[0]*b[1]-a[1]*b[0]]}
+  function qft(a,b){var d=dot(a,b);if(d<-.999999){var ax=cross(a,[1,0,0]);if(vl(ax)<1e-4)ax=cross(a,[0,0,1]);ax=vn(ax);return[ax[0],ax[1],ax[2],0]}var c=cross(a,b);return qn([c[0],c[1],c[2],1+d])}
+  function qsl(a,b,t){var d=a[0]*b[0]+a[1]*b[1]+a[2]*b[2]+a[3]*b[3];if(d<0){b=[-b[0],-b[1],-b[2],-b[3]];d=-d}
+    if(d>.9995)return qn([a[0]+(b[0]-a[0])*t,a[1]+(b[1]-a[1])*t,a[2]+(b[2]-a[2])*t,a[3]+(b[3]-a[3])*t]);
+    var th=Math.acos(d),s=Math.sin(th),k0=Math.sin((1-t)*th)/s,k1=Math.sin(t*th)/s;return[a[0]*k0+b[0]*k1,a[1]*k0+b[1]*k1,a[2]*k0+b[2]*k1,a[3]*k0+b[3]*k1]}
+  function padd(p,q,v){return[p[0]+q*v[0],p[1]+q*v[1],p[2]+q*v[2]]}
+  /* ikki bo'g'imli IK: A (yelka/son) -> T (maqsad); tirsak/tizza qutb (pole) tomonga egiladi */
+  function ik2(A,T,l1,l2,pole){var dx=T[0]-A[0],dy=T[1]-A[1],dz=T[2]-A[2],d=Math.sqrt(dx*dx+dy*dy+dz*dz)||1e-6,u=[dx/d,dy/d,dz/d],dd=Math.min(Math.max(d,.05),l1+l2-.002),
+    a=(l1*l1-l2*l2+dd*dd)/(2*dd),h=Math.sqrt(Math.max(0,l1*l1-a*a)),pd=dot(pole,u),p=[pole[0]-pd*u[0],pole[1]-pd*u[1],pole[2]-pd*u[2]];
+    if(vl(p)<1e-4){p=cross(u,[1,0,0]);if(vl(p)<1e-4)p=cross(u,[0,0,1])}p=vn(p);
+    return{E:[A[0]+u[0]*a+p[0]*h,A[1]+u[1]*a+p[1]*h,A[2]+u[2]*a+p[2]*h],W:[A[0]+u[0]*dd,A[1]+u[1]*dd,A[2]+u[2]*dd]}}
+  /* suyak ichki yo'nalishi (bola suyakning lokal siljishi) bo'yicha "swing" burish: burama saqlanadi */
+  function swing(Wold,cdir,want){return qm(qft(qv(Wold,cdir),vn(want)),Wold)}
+  function fk(L,hp,Wh){var W={},Pp={};W[NM.hips]=Wh;Pp[NM.hips]=hp;
+    function ch(n,par){W[n]=qm(W[par],L.q[n]);Pp[n]=padd(Pp[par],1,qv(W[par],L.t[n]))}
+    ch(NM.sp[0],NM.hips);ch(NM.sp[1],NM.sp[0]);ch(NM.sp[2],NM.sp[1]);ch(NM.neck,NM.sp[2]);ch(NM.head,NM.neck);
+    ['L','R'].forEach(function(s){var B=NM[s];ch(B.sh,NM.sp[2]);ch(B.ar,B.sh);ch(B.fo,B.ar);ch(B.hd,B.fo);ch(B.ul,NM.hips);ch(B.ll,B.ul);ch(B.ft,B.ll)});
+    return{W:W,P:Pp}}
+  var REF=null;
+  /* tayyor holatdagi (tik, tekis oyoqlar) oyoq dunyo burilishlari — oyoqni yerga tekis qo'yish uchun */
+  function calcRef(L){var f=fk(L,L.hp,L.q[NM.hips]);REF={L:f.W[NM.L.ft],R:f.W[NM.R.ft]}}
+  /* L: {hp, q:{nom:[x,y,z,w]}, t:{nom:[x,y,z]}} — animatsiya klipidagi lokal holat.
+     T: {P:[x,y,z], th, hn:[chap(fizika j=0), o'ng(j=1)], ft:[..], k:oyoq yerdan balandligi o'lchovi}  (hammasi model birligida)
+     Qaytaradi: {hp, q} — yechilgan lokal burilishlar. Fizika j=0 (x manfiy) -> model 'R', j=1 -> 'L' */
+  function solve(L,T){var q={},hp=T.P.slice(),Wh=qm(qz(-T.th),L.q[NM.hips]);q[NM.hips]=L.q[NM.hips].slice();
+    var Q={};for(var k in L.q)Q[k]=L.q[k];Q[NM.hips]=L.q[NM.hips];
+    var LL={q:Q,t:L.t},F=fk(LL,hp,Wh),out={hp:hp,q:{}};out.q[NM.hips]=qm(qz(-T.th),L.q[NM.hips]);
+    var sides=[['R',0],['L',1]];
+    sides.forEach(function(sp){var s=sp[0],j=sp[1],B=NM[s],sg=s==='L'?1:-1;
+      /* qo'l */
+      var Ws=F.W[B.sh],A=F.P[B.ar],Wa0=F.W[B.ar],l1=vl(L.t[B.fo]),l2=vl(L.t[B.hd]),hn=T.hn[j],u=vn([hn[0]-A[0],hn[1]-A[1],hn[2]-A[2]]),palm=.9,
+        wr=[hn[0]-u[0]*palm,hn[1]-u[1]*palm,hn[2]-u[2]*palm],r=ik2(A,wr,l1,l2,[sg*.45,-1,-.55]),
+        Wa=swing(Wa0,vn(L.t[B.fo]),[r.E[0]-A[0],r.E[1]-A[1],r.E[2]-A[2]]);out.q[B.ar]=qm(qc(Ws),Wa);
+      var pF=padd(A,1,qv(Wa,L.t[B.fo])),Wf0=qm(Wa,L.q[B.fo]),Wf=swing(Wf0,vn(L.t[B.hd]),[r.W[0]-pF[0],r.W[1]-pF[1],r.W[2]-pF[2]]);out.q[B.fo]=qm(qc(Wa),Wf);
+      /* oyoq */
+      var Wu0=F.W[B.ul],H=F.P[B.ul],m1=vl(L.t[B.ll]),m2=vl(L.t[B.ft]),ft=T.ft[j],an=[ft[0],ft[1]+1.0,ft[2]],r2=ik2(H,an,m1,m2,[sg*.2,0,1]),
+        Wu=swing(Wu0,vn(L.t[B.ll]),[r2.E[0]-H[0],r2.E[1]-H[1],r2.E[2]-H[2]]);out.q[B.ul]=qm(qc(Wh),Wu);
+      var pK=padd(H,1,qv(Wu,L.t[B.ll])),Wl0=qm(Wu,L.q[B.ll]),Wl=swing(Wl0,vn(L.t[B.ft]),[r2.W[0]-pK[0],r2.W[1]-pK[1],r2.W[2]-pK[2]]);out.q[B.ll]=qm(qc(Wu),Wl);
+      var Wfi=qm(Wl,L.q[B.ft]),lv=Math.min(1,Math.max(0,1-T.k*(ft[1]-0)/1)),Wfo=REF?qsl(Wfi,REF[s],lv):Wfi;out.q[B.ft]=qm(qc(Wl),Wfo)});
+    /* bosh: gavdaga qarab biroz tik turadi */
+    var Wn=F.W[NM.neck],Wh0=qm(Wn,L.q[NM.head]),Whn=qm(qz(T.th*.5),Wh0);out.q[NM.head]=qm(qc(Wn),Whn);
+    return out}
+  return{NM:NM,solve:solve,calcRef:calcRef,fk:fk,qsl:qsl,_:{qm:qm,qc:qc,qv:qv}}})();
+
 var SMOOTH=function(a,b,x){x=clamp((x-a)/(b-a),0,1);return x*x*(3-2*x)};
 function create(cv,o){o=o||{};var TH=window.THREE;if(!TH)throw new Error('three');
 var W=720,H=1200,sc=1,dead=false,raf=0,last=0,T=0,role='v',sim=null,anim=null,trail=null,dvp=null,ban=null,shake=0,ex=.15,exT=.15,cbEnd=null,busy=false,hudD=null,hudDirty=true,conf=[],rings=[],nf=0,trig=[],path=[],focus=null,react=null,cap=null,ax=null,gain=null,noiseB=null,hf=32,RU=1.0,BP=[0,BR,0],lastQ=[1,0,0,0],sparkT=0,tscNow=1;
@@ -343,8 +401,8 @@ function Rig(k,dir){var R={},hero=!!k.hero,fz=dir,m=function(c,r,mt){return mat(
   var U0=R.update;R.update=function(p){RS=k.sc||1;try{U0(p)}finally{RS=1}};
   return R}
 var KS={skin:0xe0a982,skinC:'#e0a982',hairC:'#2a1a10',face:true};
-var keeper=Rig({hero:true,sc:1.1,jc:'#1fb857',pat:'gk',trimC:'rgba(10,40,25,.7)',crest:true,hairHex:0x1c130d,jersey:0x20c25c,sleeve:0x20c25c,shorts:0x0f1418,socks:0x20c25c,skin:0xe6bb9c,skinC:'#e6bb9c',hairC:'#241810',boot:0xd4ff2e,glove:0xf4f6ff,cuff:0x20c25c,longSleeve:true,face:true,stubble:true},-1);
-var shooter=Rig({hero:true,jc:'#eef1f8',trimC:'rgba(20,30,80,.8)',hairHex:0x120d0a,jersey:0xf3f5fb,sleeve:0xf3f5fb,shorts:0xf3f5fb,socks:0xf3f5fb,skin:0xc99466,skinC:'#c99466',hairC:'#15100c',boot:0xd8b04a,num:'10',numC:'#16213a',face:false},1);
+var _kn0=scene.children.length;var keeper=Rig({hero:true,sc:1.1,jc:'#1fb857',pat:'gk',trimC:'rgba(10,40,25,.7)',crest:true,hairHex:0x1c130d,jersey:0x20c25c,sleeve:0x20c25c,shorts:0x0f1418,socks:0x20c25c,skin:0xe6bb9c,skinC:'#e6bb9c',hairC:'#241810',boot:0xd4ff2e,glove:0xf4f6ff,cuff:0x20c25c,longSleeve:true,face:true,stubble:true},-1);
+var _kobjs=scene.children.slice(_kn0);var shooter=Rig({hero:true,jc:'#eef1f8',trimC:'rgba(20,30,80,.8)',hairHex:0x120d0a,jersey:0xf3f5fb,sleeve:0xf3f5fb,shorts:0xf3f5fb,socks:0xf3f5fb,skin:0xc99466,skinC:'#c99466',hairC:'#15100c',boot:0xd8b04a,num:'10',numC:'#16213a',face:false},1);
 function P3(a){return[-a[0],a[1],a[2]]}
 function ik3p(a,b,l1,l2,pl){return ik3(a,b,l1,l2,pl)}
 /* darvozabon: 2D skelet -> 3D (x ko'zgusi) */
@@ -439,6 +497,42 @@ function drawOv(dt){c.setTransform(sc,0,0,sc,0,0);c.clearRect(0,0,W,H);
   if(role==='s'&&!anim&&!trail){var pu=.5+.5*Math.sin(T*5),bb=sp(0,BR,0),br=bb[2]*BR;c.strokeStyle='rgba(255,197,61,'+(.55+.4*pu)+')';c.lineWidth=3;c.beginPath();c.arc(bb[0],bb[1],br*1.9+pu*5+6,0,7);c.stroke()}
   drawConf(dt);drawCap();drawBan();drawHud();ovT.needsUpdate=true}
 
+/*GK-BEGIN*/
+/* ================= DARVOZABON MODELI (GLB): tayyor turish = modelning o'z klipi, sho'ng'ish = fizika skeletiga IK ================= */
+var GK={on:false,w:0,t0:0,tr:[],B:{},s:.145,st:0,en:1,bx:0,bz:0},gkQ=null,gkAX=null;
+var gkCr=null;
+function gkCredit(){if(gkCr||dead||!cv||!cv.parentNode)return;try{var d=document.createElement('div');d.textContent='Goalkeeper Stylized \u2014 P-Vi.Art (Sketchfab) \u00b7 CC BY 4.0';d.style.cssText='position:absolute;right:12px;bottom:8px;font:10px/1.2 system-ui,sans-serif;color:rgba(255,255,255,.75);text-shadow:0 1px 2px rgba(0,0,0,.7);pointer-events:none;z-index:2;max-width:70%;text-align:right';cv.parentNode.appendChild(d);gkCr=d}catch(e){}}
+function gkInit(){var url=o.keeperUrl||'/goalkeeper.glb?v=1';
+  loadGLTF().then(function(ok){if(!ok||dead||!TH.GLTFLoader)return;
+    try{new TH.GLTFLoader().load(url,function(g){if(dead)return;try{gkSetup(g);gkCredit()}catch(e){try{console.warn('darvozabon modeli:',e)}catch(x){}}},undefined,function(){})}catch(e){}})}
+function gkSample(t){for(var i=0;i<GK.tr.length;i++){var k=GK.tr[i],r=k.it.evaluate(t);if(k.p==='quaternion')k.n.quaternion.set(r[0],r[1],r[2],r[3]);else if(k.p==='position')k.n.position.set(r[0],r[1],r[2])}}
+function gkLocal(){var B=GK.B,L={hp:null,q:{},t:{}},n,b;for(n in B){b=B[n];L.q[n]=[b.quaternion.x,b.quaternion.y,b.quaternion.z,b.quaternion.w];L.t[n]=[b.position.x,b.position.y,b.position.z]}L.hp=L.t[KS.NM.hips].slice();return L}
+function gkSetup(g){var root=g.scene,clip=g.animations&&g.animations[0],nm=KS.NM,B={},i;if(!clip)throw new Error('klip yo\u2018q');
+  function bn(n){var b=root.getObjectByName(n);if(!b)throw new Error('suyak topilmadi: '+n);B[n]=b}
+  bn(nm.hips);bn(nm.neck);bn(nm.head);nm.sp.forEach(bn);['L','R'].forEach(function(s){for(var q in nm[s])bn(nm[s][q])});
+  gkQ=new TH.Quaternion();gkAX=V3(1,0,0);
+  root.traverse(function(m){if(!m.isMesh)return;m.castShadow=true;m.receiveShadow=true;m.frustumCulled=false;
+    (m.material&&m.material.length?m.material:[m.material]).forEach(function(x){if(!x)return;x.metalness=0;x.metalnessMap=null;if(x.map&&x.emissive){x.emissiveMap=x.map;x.emissive.setRGB(.16,.16,.16)}x.needsUpdate=true})});
+  var grp=new TH.Group();grp.add(root);root.updateMatrixWorld(true);
+  var hb=root.getObjectByName('HeadTop_End_00'),hh=hb?V3().setFromMatrixPosition(hb.matrixWorld).y:13.1;if(!(hh>1))hh=13.1;
+  GK.s=clamp(1.9/hh,.02,.6);GK.B=B;
+  GK.tr=clip.tracks.map(function(tr){var d=tr.name.lastIndexOf('.'),nd=root.getObjectByName(tr.name.slice(0,d));return nd?{n:nd,p:tr.name.slice(d+1),it:tr.createInterpolant()}:null}).filter(Boolean);
+  GK.st=Infinity;clip.tracks.forEach(function(tr){if(tr.times.length)GK.st=Math.min(GK.st,tr.times[0])});if(!isFinite(GK.st))GK.st=0;GK.en=Math.max(GK.st+.1,clip.duration);
+  gkSample(GK.en);GK.bx=B[nm.hips].position.x;GK.bz=B[nm.hips].position.z;
+  var L=gkLocal();L.hp[0]-=GK.bx;L.hp[2]-=GK.bz;KS.calcRef(L);
+  grp.scale.setScalar(GK.s);grp.rotation.y=PI;grp.position.set(0,0,ZK);scene.add(grp);
+  _kobjs.forEach(function(x){x.visible=false});GK.grp=grp;GK.t0=T;GK.w=0;GK.on=true}
+/* tm: zarbadan keyingi vaqt, po: fizika skeleti (darvozabon pozasi) */
+function gkUpdate(po,tm,playing){var B=GK.B,nm=KS.NM,hp=B[nm.hips],ct=Math.min(GK.en,GK.st+Math.max(0,T-GK.t0)),w=0,i;
+  gkSample(ct);hp.position.x-=GK.bx;hp.position.z-=GK.bz;
+  var br=Math.sin(T*2.3)*.014;B[nm.sp[1]].quaternion.multiply(gkQ.setFromAxisAngle(gkAX,br));
+  if(playing&&tm>=0&&sim&&sim.plan&&sim.plan.dive)w=SMOOTH(0,.2,tm);GK.w=w;
+  if(w<.002)return;
+  var s=GK.s,f=function(a){return[a[0]/s,a[1]/s,0]},L=gkLocal(),r=KS.solve(L,{P:[po.P[0]/s,po.P[1]/s,0],th:po.th,hn:[f(po.hn[0]),f(po.hn[1])],ft:[f(po.ft[0]),f(po.ft[1])],k:1/2.4}),n;
+  for(n in r.q){var a=KS.qsl(L.q[n],r.q[n],w);B[n].quaternion.set(a[0],a[1],a[2],a[3])}
+  hp.position.set(lerp(L.hp[0],r.hp[0],w),lerp(L.hp[1],r.hp[1],w),lerp(L.hp[2],r.hp[2],w))}
+/*GK-END*/
+
 /* ================= KAMERA ================= */
 var C={px:0,py:3,pz:-11,lx:0,ly:1.15,lz:ZG,h:24.6},CK=0;
 function camTarget(){var g={px:0,py:3,pz:-11,lx:0,ly:1.15,lz:ZG,h:24.6,k:6};if(!anim||anim.nk)return g;var t=anim.t,i;
@@ -470,7 +564,7 @@ function draw(dt){var tm=anim?anim.t:0,playing=sim&&anim&&!anim.nk,bq=lastQ,fast
   if(playing&&tm>=0){var bl=ballAt(Math.min(tm,sim.dur));BP=bl.p;bq=bl.q;lastQ=bq;fast=bl.v}else if(!playing||tm<0){BP=[0,BR,0];if(!playing)bq=lastQ}
   ballM.position.set(-BP[0],BP[1],BP[2]);ballM.quaternion.set(bq[1],-bq[2],-bq[3],bq[0]);
   if(BP[2]>ZG-.3&&BP[2]<ZB+.3)bpR=[-BP[0],BP[1],BP[2]];netStep(dt,bpR);updTrail(BP,fast,playing&&tm>=0);
-  var po;if(playing&&tm>=0)po=keeperPose(sim.plan,tm);else po=keeperPose({dive:false},T);keeper.update(keeperRender(po));
+  var po;if(playing&&tm>=0)po=keeperPose(sim.plan,tm);else po=keeperPose({dive:false},T);if(GK.on)gkUpdate(po,tm,playing);else keeper.update(keeperRender(po));
   var sp0;if(playing)sp0=shooterPose(tm,react);else if(anim&&anim.nk)sp0=shooterPose(-RU,null,true);else sp0=shooterPose(-RU,react,true);
   if(!playing&&!anim){sp0.sho[2]-=.0;sp0.pel[1]+=Math.sin(T*2)*.004}shooter.update(shooterRender(sp0));
   stepCam(dt);
@@ -481,7 +575,7 @@ function draw(dt){var tm=anim?anim.t:0,playing=sim&&anim&&!anim.nk,bq=lastQ,fast
 function frame(now){if(dead)return;raf=requestAnimationFrame(frame);var dt=Math.min(.05,(now-last)/1000||.016);last=now;update(dt);draw(dt)}
 
 /* ================= OCHIQ METODLAR ================= */
-function reset(r){role=r||'v';sim=null;anim=null;trail=null;dvp=null;ban=null;cap=null;trig=[];cbEnd=null;busy=false;lastQ=[1,0,0,0];exT=.2;path=[];rings=[];focus=null;react=null;tHist.length=0;BP=[0,BR,0];hudDirty=true;snapCam()}
+function reset(r){GK.t0=T;GK.w=0;role=r||'v';sim=null;anim=null;trail=null;dvp=null;ban=null;cap=null;trig=[];cbEnd=null;busy=false;lastQ=[1,0,0,0];exT=.2;path=[];rings=[];focus=null;react=null;tHist.length=0;BP=[0,BR,0];hudDirty=true;snapCam()}
 function play(d,cb){if(dead)return false;unlock();ban=null;cap=null;trig=[];spk.length=0;conf.length=0;sparkT=0;busy=true;path=[];rings=[];focus=null;react=null;tHist.length=0;
   if(!d.k){sim={res:'miss',frames:[0,0,BR,0,1,0,0,0],net:[],ev:[],tg:0,tt:0,plan:keeperPlan(null),dur:0};anim={t:0,end:2.4,nk:1,s0:9,s1:9};trig.push([.1,function(){setBan('Zarba berilmadi \u23f1','#FF3B5C',2);react={k:'sad',t:0}}]);sfx('groan');cbEnd=cb;exT=.4;return true}
   try{sim=simulate(d.k,d.d,d.seed)}catch(e){sim=null;busy=false;return false}
@@ -505,17 +599,22 @@ function play(d,cb){if(dead)return false;unlock();ban=null;cap=null;trig=[];spk.
 function pos(e){var r=cv.getBoundingClientRect();return{x:(e.clientX-r.left)*W/r.width,y:(e.clientY-r.top)*H/r.height,t:performance.now()}}
 function toGoal(x,y){applyCam();var v=V3(x/W*2-1,1-y/H*2,.5).unproject(cam).sub(cam.position).normalize(),k=(ZG-cam.position.z)/v.z;return{x:-(cam.position.x+v.x*k),y:cam.position.y+v.y*k}}
 function onSpot(x,y){var b=sp(0,BR,0),r=b[2]*BR*2.6+44;return h2(x-b[0],y-b[1])<r}
-fit();raf=requestAnimationFrame(frame);
+fit();gkInit();raf=requestAnimationFrame(frame);
 var onR=function(){if(!dead)fit()};window.addEventListener('resize',onR);
 return{W:function(){return W},H:function(){return H},reset:reset,play:play,pos:pos,toGoal:toGoal,onSpot:onSpot,fit:fit,unlock:unlock,busy:function(){return busy},
   setTrail:function(t){trail=t},setDive:function(u,v){dvp=u==null?null:[(u-.5)*2*HW,v*2.6]},hud:function(d){hudD=d;hudDirty=true},
   banner:function(t,col,d){setBan(t,col,d)},_dbg:function(){return{cam:cam,scene:scene,rd:rd,C:C,sim:function(){return sim},anim:function(){return anim}}},
-  destroy:function(){dead=true;cancelAnimationFrame(raf);window.removeEventListener('resize',onR);try{if(ax)ax.close()}catch(e){}ax=null;try{scene.traverse(function(m){if(m.geometry)m.geometry.dispose();if(m.material){(m.material.length?m.material:[m.material]).forEach(function(q){if(q.map)q.map.dispose();q.dispose()})}});rd.dispose()}catch(e){}}}}
+  destroy:function(){dead=true;try{if(gkCr&&gkCr.parentNode)gkCr.parentNode.removeChild(gkCr)}catch(e){}gkCr=null;cancelAnimationFrame(raf);window.removeEventListener('resize',onR);try{if(ax)ax.close()}catch(e){}ax=null;try{scene.traverse(function(m){if(m.geometry)m.geometry.dispose();if(m.material){(m.material.length?m.material:[m.material]).forEach(function(q){if(q.map)q.map.dispose();q.dispose()})}});rd.dispose()}catch(e){}}}}
 
 /* Three.js faqat penalti sahnasi kerak bo'lganda yuklanadi */
+/* GLTFLoader (three r128 examples) — faqat darvozabon modeli uchun; yuklanmasa eski sodda darvozabon qoladi */
+var GLP=null;
+function loadGLTF(){if(window.THREE&&window.THREE.GLTFLoader)return Promise.resolve(true);if(GLP)return GLP;
+  var U=['https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js','https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/examples/js/loaders/GLTFLoader.js'];
+  GLP=new Promise(function(res){var i=0;(function next(){if(window.THREE&&window.THREE.GLTFLoader)return res(true);if(i>=U.length){GLP=null;return res(false)}var s=document.createElement('script');s.src=U[i++];s.async=true;s.onload=function(){if(window.THREE&&window.THREE.GLTFLoader)res(true);else next()};s.onerror=function(){try{s.remove()}catch(e){}next()};document.head.appendChild(s)})()});return GLP}
 var THP=null;
 function load(){if(window.THREE)return Promise.resolve(true);if(THP)return THP;
   var U=['https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js','https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js'];
   THP=new Promise(function(res){var i=0;(function next(){if(window.THREE)return res(true);if(i>=U.length){THP=null;return res(false)}var s=document.createElement('script');s.src=U[i++];s.async=true;s.onload=function(){res(!!window.THREE)};s.onerror=function(){try{s.remove()}catch(e){}next()};document.head.appendChild(s)})()});return THP}
-window.PenaltyStage={v:3,simulate:simulate,resolve:resolve,create:create,load:load,_k:{keeperPlan:keeperPlan,keeperPose:keeperPose,launch:launch}};
+window.PenaltyStage={v:4,simulate:simulate,resolve:resolve,create:create,load:load,_k:{keeperPlan:keeperPlan,keeperPose:keeperPose,launch:launch},_ks:KS};
 })();
