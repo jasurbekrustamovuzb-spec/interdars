@@ -126,7 +126,7 @@ function mount(){
   R.innerHTML='<div class="jq-bg"></div><div class="jq-main" id="jqm"></div><canvas class="jq-fx"></canvas><div class="jq-mod" id="jqmod" hidden></div><div class="jq-conn" id="jqconn" hidden>⚠️ Aloqa uzildi — qayta ulanmoqda…</div>';
   document.body.appendChild(R);M=$('#jqm');FX.c=$('.jq-fx',R);FX.x=FX.c.getContext('2d');fxSize();window.addEventListener('resize',fxSize);
   R.addEventListener('click',onClick);R.addEventListener('keydown',function(e){if(e.key==='Enter'&&e.target.id==='jqtx'){e.preventDefault();pTxSend()}});R.addEventListener('input',function(e){if(e.target.id==='jqname'){E.n=e.target.value;if(E.a===-1){var p=$('.jq-prev',$('#jqmod'));if(p)p.innerHTML=av(-1,64,E.n,false)+'<b>Ism bosh harfi</b>'}}})}
-function openOv(){mount();R.hidden=false;document.body.style.overflow='hidden';guardOn();wake()}
+function openOv(){mount();R.hidden=false;document.body.style.overflow='hidden';guardOn()}
 function closeOv(){if(R)R.hidden=true;document.body.style.overflow='';guardOff();fxStop()}
 function view(html,cls){pauseAvVideos(M);M.className='jq-main '+(cls||'');M.innerHTML=html;observeAvVideos(M)}
 function modal(html,k){var m=$('#jqmod');pauseAvVideos(M);pauseAvVideos(m);m.dataset.k=k||'';m.innerHTML='<div class="jq-mb">'+html+'</div>';m.hidden=false;observeAvVideos(m)}
