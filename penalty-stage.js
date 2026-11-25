@@ -502,7 +502,7 @@ function drawOv(dt){c.setTransform(sc,0,0,sc,0,0);c.clearRect(0,0,W,H);
 var GK={on:false,w:0,t0:0,tr:[],B:{},s:.145,st:0,en:1,bx:0,bz:0},gkQ=null,gkAX=null;
 var gkCr=null;
 function gkCredit(){if(gkCr||dead||!cv||!cv.parentNode)return;try{var d=document.createElement('div');d.textContent='Goalkeeper Stylized \u2014 P-Vi.Art (Sketchfab) \u00b7 CC BY 4.0';d.style.cssText='position:absolute;right:12px;bottom:8px;font:10px/1.2 system-ui,sans-serif;color:rgba(255,255,255,.75);text-shadow:0 1px 2px rgba(0,0,0,.7);pointer-events:none;z-index:2;max-width:70%;text-align:right';cv.parentNode.appendChild(d);gkCr=d}catch(e){}}
-function gkInit(){loadGKAsset().then(function(g){if(!g||dead)return;try{gkSetup(g);gkCredit()}catch(e){try{console.warn('darvozabon modeli:',e)}catch(x){}}})}
+function gkInit(){loadGKAsset(o.keeperUrl).then(function(g){if(!g||dead)return;try{gkSetup(g);gkCredit()}catch(e){try{console.warn('darvozabon modeli:',e)}catch(x){}}})}
 function gkSample(t){for(var i=0;i<GK.tr.length;i++){var k=GK.tr[i],r=k.it.evaluate(t);if(k.p==='quaternion')k.n.quaternion.set(r[0],r[1],r[2],r[3]);else if(k.p==='position')k.n.position.set(r[0],r[1],r[2])}}
 function gkLocal(){var B=GK.B,L={hp:null,q:{},t:{}},n,b;for(n in B){b=B[n];L.q[n]=[b.quaternion.x,b.quaternion.y,b.quaternion.z,b.quaternion.w];L.t[n]=[b.position.x,b.position.y,b.position.z]}L.hp=L.t[GKS.NM.hips].slice();return L}
 function gkSetup(g){var root=g.scene,clip=g.animations&&g.animations[0],nm=GKS.NM,B={},i;if(!clip)throw new Error('klip yo\u2018q');
@@ -608,7 +608,7 @@ return{W:function(){return W},H:function(){return H},reset:reset,play:play,pos:p
 
 /* Three.js va darvozabon modeli penalti ochilishidan oldin yuklanadi; shu sababli ko‘rinish o‘rtasida almashmaydi. */
 var GLP=null,GKAsset=null,GKAssetP=null;
-function loadGKAsset(){if(GKAsset)return Promise.resolve(GKAsset);if(GKAssetP)return GKAssetP;return loadGLTF().then(function(ok){if(!ok||!window.THREE||!window.THREE.GLTFLoader)return null;GKAssetP=new Promise(function(res){var url=o.keeperUrl||'/goalkeeper.glb?v=2';try{new window.THREE.GLTFLoader().load(url,function(g){GKAsset=g;res(g)},undefined,function(){res(null)})}catch(e){res(null)}});return GKAssetP})}
+function loadGKAsset(url){if(GKAsset)return Promise.resolve(GKAsset);if(GKAssetP)return GKAssetP;url=url||'/goalkeeper.glb?v=2';return loadGLTF().then(function(ok){if(!ok||!window.THREE||!window.THREE.GLTFLoader)return null;GKAssetP=new Promise(function(res){try{new window.THREE.GLTFLoader().load(url,function(g){GKAsset=g;res(g)},undefined,function(){res(null)})}catch(e){res(null)}});return GKAssetP})}
 function loadGLTF(){if(window.THREE&&window.THREE.GLTFLoader)return Promise.resolve(true);if(GLP)return GLP;
   var U=['https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js','https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/examples/js/loaders/GLTFLoader.js'];
   GLP=new Promise(function(res){var i=0;(function next(){if(window.THREE&&window.THREE.GLTFLoader)return res(true);if(i>=U.length){GLP=null;return res(false)}var s=document.createElement('script');s.src=U[i++];s.async=true;s.onload=function(){if(window.THREE&&window.THREE.GLTFLoader)res(true);else next()};s.onerror=function(){try{s.remove()}catch(e){}next()};document.head.appendChild(s)})()});return GLP}
