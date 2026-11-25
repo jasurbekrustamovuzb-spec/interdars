@@ -116,8 +116,7 @@ function onPop(){if(!guard)return;try{history.pushState({lv:1},'',location.href)
 function onUnload(e){if(!guard)return;e.preventDefault();e.returnValue='';return ''}
 function onKey(e){if(e.key==='Escape'){if($('#jqmod')&&!$('#jqmod').hidden)modalClose();else askExit()}}
 var WL=null;
-function wake(){try{if(navigator.wakeLock&&!WL)navigator.wakeLock.request('screen').then(function(l){WL=l;l.addEventListener('release',function(){WL=null})}).catch(function(){})}catch(e){}}
-document.addEventListener('visibilitychange',function(){if(document.hidden||!(H||P))return;wake();if(P&&P.got)pHello()});
+document.addEventListener('visibilitychange',function(){if(document.hidden||!(H||P))return;if(P&&P.got)pHello()});
 
 /* ===== overlay ===== */
 var R=null,M=null,CSS_ON=false;
@@ -310,7 +309,7 @@ function hReveal(){
   H.qst=H.qst||[];H.qst[H.qi]={k:k,ok:nok,n:aft.filter(function(p){return p.ans}).length,tot:aft.length};
   H.dist=dist;H.tops=tops;H.res=res;H.nok=nok;H.fast=fast?[fast.n,fast.a,fast.d]:null;
   H.top=aft.slice(0,5).map(function(p){return[p.i,p.n,p.a,p.s,p.d,p.rk,p.pr]});H.tt=teamBoard();
-  H.ph='rev';H.t0=Date.now();H.dur=H.set.gap*1000;H.early=0;persistH(1);bcast();hRender()}
+  H.ph='rev';H.t0=Date.now();H.dur=H.set.gap*1000;H.early=0;persistH(1);bcast();hRender();setTimeout(function(){if(H&&H.ph==='fin')leave()},8000)}
 function hBoardGo(){H.tt=teamBoard();H.ph='board';H.t0=Date.now();H.dur=H.set.gap*1000;persistH(1);bcast();hRender()}
 function hFinal(){var l=ranked(),ng=H.ng||1;
   H.fin=l.slice(0,MAXP).map(function(p){var pc=Math.round((p.cr||0)/ng*100);return[p.i,p.n,p.a,p.s,p.ok,pc,gradeOf(pc)]});
@@ -400,7 +399,7 @@ function join(pin,forceProfile){
     SND=prof.snd!==false;var me=P;
     me.done=function(r){if(me.fin)return;me.fin=true;if(r!=='ok'){clearInterval(me.hl);if(P===me){P=null;netClose()}if(me.profileGate){modalClose();closeOv()}}resolve(r)};
     me.fail=function(){LiveQuiz.err='Faol jonli test topilmadi yoki tashkilotchi bilan aloqa uzildi. ID/QR va internetni tekshiring.';me.done('none')};
-    if(forceProfile||!prof.n){me.joining=true;me.profileGate=true;openOv();view(topbar('')+'<div class="jq-cd"><div class="jq-spin"></div><p>Jonli testga ulanmoqda…</p></div>','pl');E={n:me.n,a:me.a,g:AV[me.a]?AV[me.a][3]:'a'};pEditModal();return}
+    if(forceProfile||(!prof.n&&!u.name)){me.joining=true;me.profileGate=true;openOv();view(topbar('')+'<div class="jq-cd"><div class="jq-spin"></div><p>Jonli testga ulanmoqda…</p></div>','pl');E={n:me.n,a:me.a,g:AV[me.a]?AV[me.a][3]:'a'};pEditModal();return}
     pNet();setTimeout(function(){if(!me.got&&!me.fin)me.fail()},7000)})}
 function pNet(){netOpen(P.pin,pMsg,function(s){var bad=s==='CHANNEL_ERROR'||s==='TIMED_OUT'||s==='CLOSED';conn(bad&&P&&P.got);if(s==='SUBSCRIBED'&&P)pLoop()})}
 function pHello(){if(P)send({t:'hi',p:P.pid,n:P.n,a:P.a})}
@@ -419,7 +418,7 @@ function pMsg(m){
   else if(m.t==='lg'&&window.League&&P.probe){var lgme=P,lgs={pin:P.pin,pid:P.pid,n:P.n,a:P.a};clearInterval(lgme.hl);P=null;netClose();modalClose();closeOv();if(lgme.done)lgme.done('ok');setTimeout(function(){window.League.join(lgs)},450)}
   else if(m.t==='deny'){var msg=m.why==='full'?'Xona to‘lgan':'Dars boshlangan — qo‘shilib bo‘lmaydi';LiveQuiz.err=msg;if(!P.got&&P.done)P.done('closed');else leave(msg)}
   else if(m.t==='kick'){leave('Tashkilotchi sizni xonadan chiqardi')}
-  else if(m.t==='end'){if(P.ph==='fin'){P.over=true}else{leave('Tashkilotchi testni tugatdi')}}}
+  else if(m.t==='end'){if(P.ph==='fin'){leave()}else{leave('Tashkilotchi testni tugatdi')}}}
 function pSnap(m){
   var first=!P.got;P.got=true;P.lastH=Date.now();if(m.you)P.i=m.you;
   var prev=P.ph,pq=P.qi;P.ph=m.ph;P.qi=m.qi;P.nq=m.nq;P.ng=m.ng||m.nq;P.md=!!m.md;P.ttl=m.ttl;P.dl=performance.now()+m.rem;P.dur=m.dur||1;P.lock=m.lock;P.ak=false;if(m.tm!=null)P.tm=m.tm;
@@ -431,7 +430,7 @@ function pSnap(m){
   if(m.ph==='rev'){P.k=m.k||'mcq';P.q=m.q;P.st=m.st;P.opts=m.a||[];P.c=m.c;P.dist=m.dist;P.tops=m.tops;P.res=m.res||{};P.fast=m.fast;P.ev=m.ev;P.tt=m.tt;var r=P.res[P.i];if(r)P.tot=r[2]}
   if(m.ph==='board'){P.top=m.top;P.res=m.res||{};P.tt=m.tt;var r2=P.res[P.i];if(r2)P.tot=r2[2]}
   if(m.ph==='fin'){P.all=m.all;P.tt=m.tt}
-  pRender();if(!P.hl2){P.hl2=1;IV.push(setInterval(function(){if(!P||!P.got||P.ph==='fin')return;if(Date.now()-P.lastH>16000)conn(true);else conn(false)},3000))}}
+  pRender();if(m.ph==='fin'&&!P.finTimer){P.finTimer=setTimeout(function(){if(P&&P.ph==='fin')leave()},8000)}if(!P.hl2){P.hl2=1;IV.push(setInterval(function(){if(!P||!P.got||P.ph==='fin')return;if(Date.now()-P.lastH>16000)conn(true);else conn(false)},3000))}}
 function pRender(){
   if(!P||!P.got)return;fxStop();clearInterval(PT);modalClose();
   ({lobby:pLobby,count:pCount,info:pInfo,q:pQ,rev:pRev,board:pBoard,fin:pFin})[P.ph]()}
@@ -548,7 +547,7 @@ function boot(){
   mount();
   var h=ls(LSH),p=ls(LSP),m=location.hash.match(/^#j=(\d{6})$/),pend=null;try{pend=localStorage.getItem('idPendingLive');localStorage.removeItem('idPendingLive')}catch(e){}
   var pin=m?m[1]:pend;if(m){try{history.replaceState(null,'','#bosh')}catch(e){}}
-  if(pin){if(p&&p.pin!==pin)lsDel(LSP);join(pin,true).then(function(r){if(r==='none')say(LiveQuiz.err||'Faol jonli xona topilmadi — ID/QRni tekshiring');else if(r==='closed')say(LiveQuiz.err||'Xonaga kirib bo‘lmadi')});return}
+  if(pin){if(p&&p.pin!==pin)lsDel(LSP);join(pin,false).then(function(r){if(r==='none')say(LiveQuiz.err||'Faol jonli xona topilmadi — ID/QRni tekshiring');else if(r==='closed')say(LiveQuiz.err||'Xonaga kirib bo‘lmadi')});return}
   if(h&&h.pin&&Date.now()-h.ts<STALE){hResume(h);return}else if(h)lsDel(LSH);
   if(p&&p.pin&&Date.now()-p.ts<STALE){pResume(p);return}else if(p)lsDel(LSP)}
 
