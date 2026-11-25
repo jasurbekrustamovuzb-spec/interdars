@@ -106,7 +106,7 @@ function resolve(shot,dive,seed){try{var s=simulate(shot,dive,seed);return{r:s.r
 
 /* ================= 3D SAHNA (Three.js) ================= */
 /* ================= DARVOZABON SKELETI (GLB, Mixamo): IK yechuvchi — three.js'siz sof matematika ================= */
-var KS=(function(){
+var GKS=(function(){
   var NM={hips:'Hips_01',neck:'Neck_05',head:'Head_06',sp:['Spine_02','Spine1_03','Spine2_04'],
     L:{sh:'LeftShoulder_07',ar:'LeftArm_08',fo:'LeftForeArm_09',hd:'LeftHand_010',ul:'LeftUpLeg_055',ll:'LeftLeg_056',ft:'LeftFoot_057'},
     R:{sh:'RightShoulder_031',ar:'RightArm_032',fo:'RightForeArm_033',hd:'RightHand_034',ul:'RightUpLeg_060',ll:'RightLeg_061',ft:'RightFoot_062'}};
@@ -174,7 +174,7 @@ function snd(){return o.snd?o.snd():true}
 /* ---- ovoz ---- */
 function actx(){if(ax)return ax;try{ax=new(window.AudioContext||window.webkitAudioContext)();noiseB=ax.createBuffer(1,ax.sampleRate*2,ax.sampleRate);var d=noiseB.getChannelData(0),l=0;for(var i=0;i<d.length;i++){l=(l+.04*(Math.random()*2-1))/1.04;d[i]=l*9}
     var s=ax.createBufferSource();s.buffer=noiseB;s.loop=true;var f=ax.createBiquadFilter();f.type='bandpass';f.frequency.value=520;f.Q.value=.6;gain=ax.createGain();gain.gain.value=.025;s.connect(f);f.connect(gain);gain.connect(ax.destination);s.start()}catch(e){ax=null}return ax}
-function unlock(){var a=actx();if(a&&a.state==='suspended')a.resume()}
+function unlock(){var a=actx();if(a&&a.state==='suspended'){var r=a.resume();if(r&&r.catch)r.catch(function(){})}}
 function tone(f,d,ty,v,at){if(!snd()||!ax)return;try{var t0=ax.currentTime+(at||0),os=ax.createOscillator(),g=ax.createGain();os.type=ty||'sine';os.frequency.setValueAtTime(f,t0);os.frequency.exponentialRampToValueAtTime(Math.max(30,f*.5),t0+d);g.gain.setValueAtTime(v||.1,t0);g.gain.exponentialRampToValueAtTime(.0001,t0+d);os.connect(g);g.connect(ax.destination);os.start(t0);os.stop(t0+d+.02)}catch(e){}}
 function swell(peak,dur){if(!snd()||!ax||!gain)return;try{var t0=ax.currentTime;gain.gain.cancelScheduledValues(t0);gain.gain.setValueAtTime(gain.gain.value,t0);gain.gain.linearRampToValueAtTime(peak,t0+.35);gain.gain.linearRampToValueAtTime(.025,t0+dur)}catch(e){}}
 function sfx(k){if(!snd())return;unlock();if(!ax)return;
@@ -506,8 +506,8 @@ function gkInit(){var url=o.keeperUrl||'/goalkeeper.glb?v=1';
   loadGLTF().then(function(ok){if(!ok||dead||!TH.GLTFLoader)return;
     try{new TH.GLTFLoader().load(url,function(g){if(dead)return;try{gkSetup(g);gkCredit()}catch(e){try{console.warn('darvozabon modeli:',e)}catch(x){}}},undefined,function(){})}catch(e){}})}
 function gkSample(t){for(var i=0;i<GK.tr.length;i++){var k=GK.tr[i],r=k.it.evaluate(t);if(k.p==='quaternion')k.n.quaternion.set(r[0],r[1],r[2],r[3]);else if(k.p==='position')k.n.position.set(r[0],r[1],r[2])}}
-function gkLocal(){var B=GK.B,L={hp:null,q:{},t:{}},n,b;for(n in B){b=B[n];L.q[n]=[b.quaternion.x,b.quaternion.y,b.quaternion.z,b.quaternion.w];L.t[n]=[b.position.x,b.position.y,b.position.z]}L.hp=L.t[KS.NM.hips].slice();return L}
-function gkSetup(g){var root=g.scene,clip=g.animations&&g.animations[0],nm=KS.NM,B={},i;if(!clip)throw new Error('klip yo\u2018q');
+function gkLocal(){var B=GK.B,L={hp:null,q:{},t:{}},n,b;for(n in B){b=B[n];L.q[n]=[b.quaternion.x,b.quaternion.y,b.quaternion.z,b.quaternion.w];L.t[n]=[b.position.x,b.position.y,b.position.z]}L.hp=L.t[GKS.NM.hips].slice();return L}
+function gkSetup(g){var root=g.scene,clip=g.animations&&g.animations[0],nm=GKS.NM,B={},i;if(!clip)throw new Error('klip yo\u2018q');
   function bn(n){var b=root.getObjectByName(n);if(!b)throw new Error('suyak topilmadi: '+n);B[n]=b}
   bn(nm.hips);bn(nm.neck);bn(nm.head);nm.sp.forEach(bn);['L','R'].forEach(function(s){for(var q in nm[s])bn(nm[s][q])});
   gkQ=new TH.Quaternion();gkAX=V3(1,0,0);
@@ -519,17 +519,17 @@ function gkSetup(g){var root=g.scene,clip=g.animations&&g.animations[0],nm=KS.NM
   GK.tr=clip.tracks.map(function(tr){var d=tr.name.lastIndexOf('.'),nd=root.getObjectByName(tr.name.slice(0,d));return nd?{n:nd,p:tr.name.slice(d+1),it:tr.createInterpolant()}:null}).filter(Boolean);
   GK.st=Infinity;clip.tracks.forEach(function(tr){if(tr.times.length)GK.st=Math.min(GK.st,tr.times[0])});if(!isFinite(GK.st))GK.st=0;GK.en=Math.max(GK.st+.1,clip.duration);
   gkSample(GK.en);GK.bx=B[nm.hips].position.x;GK.bz=B[nm.hips].position.z;
-  var L=gkLocal();L.hp[0]-=GK.bx;L.hp[2]-=GK.bz;KS.calcRef(L);
+  var L=gkLocal();L.hp[0]-=GK.bx;L.hp[2]-=GK.bz;GKS.calcRef(L);
   grp.scale.setScalar(GK.s);grp.rotation.y=PI;grp.position.set(0,0,ZK);scene.add(grp);
   _kobjs.forEach(function(x){x.visible=false});GK.grp=grp;GK.t0=T;GK.w=0;GK.on=true}
 /* tm: zarbadan keyingi vaqt, po: fizika skeleti (darvozabon pozasi) */
-function gkUpdate(po,tm,playing){var B=GK.B,nm=KS.NM,hp=B[nm.hips],ct=Math.min(GK.en,GK.st+Math.max(0,T-GK.t0)),w=0,i;
+function gkUpdate(po,tm,playing){var B=GK.B,nm=GKS.NM,hp=B[nm.hips],ct=Math.min(GK.en,GK.st+Math.max(0,T-GK.t0)),w=0,i;
   gkSample(ct);hp.position.x-=GK.bx;hp.position.z-=GK.bz;
   var br=Math.sin(T*2.3)*.014;B[nm.sp[1]].quaternion.multiply(gkQ.setFromAxisAngle(gkAX,br));
   if(playing&&tm>=0&&sim&&sim.plan&&sim.plan.dive)w=SMOOTH(0,.2,tm);GK.w=w;
   if(w<.002)return;
-  var s=GK.s,f=function(a){return[a[0]/s,a[1]/s,0]},L=gkLocal(),r=KS.solve(L,{P:[po.P[0]/s,po.P[1]/s,0],th:po.th,hn:[f(po.hn[0]),f(po.hn[1])],ft:[f(po.ft[0]),f(po.ft[1])],k:1/2.4}),n;
-  for(n in r.q){var a=KS.qsl(L.q[n],r.q[n],w);B[n].quaternion.set(a[0],a[1],a[2],a[3])}
+  var s=GK.s,f=function(a){return[a[0]/s,a[1]/s,0]},L=gkLocal(),r=GKS.solve(L,{P:[po.P[0]/s,po.P[1]/s,0],th:po.th,hn:[f(po.hn[0]),f(po.hn[1])],ft:[f(po.ft[0]),f(po.ft[1])],k:1/2.4}),n;
+  for(n in r.q){var a=GKS.qsl(L.q[n],r.q[n],w);B[n].quaternion.set(a[0],a[1],a[2],a[3])}
   hp.position.set(lerp(L.hp[0],r.hp[0],w),lerp(L.hp[1],r.hp[1],w),lerp(L.hp[2],r.hp[2],w))}
 /*GK-END*/
 
@@ -604,7 +604,7 @@ var onR=function(){if(!dead)fit()};window.addEventListener('resize',onR);
 return{W:function(){return W},H:function(){return H},reset:reset,play:play,pos:pos,toGoal:toGoal,onSpot:onSpot,fit:fit,unlock:unlock,busy:function(){return busy},
   setTrail:function(t){trail=t},setDive:function(u,v){dvp=u==null?null:[(u-.5)*2*HW,v*2.6]},hud:function(d){hudD=d;hudDirty=true},
   banner:function(t,col,d){setBan(t,col,d)},_dbg:function(){return{cam:cam,scene:scene,rd:rd,C:C,sim:function(){return sim},anim:function(){return anim}}},
-  destroy:function(){dead=true;try{if(gkCr&&gkCr.parentNode)gkCr.parentNode.removeChild(gkCr)}catch(e){}gkCr=null;cancelAnimationFrame(raf);window.removeEventListener('resize',onR);try{if(ax)ax.close()}catch(e){}ax=null;try{scene.traverse(function(m){if(m.geometry)m.geometry.dispose();if(m.material){(m.material.length?m.material:[m.material]).forEach(function(q){if(q.map)q.map.dispose();q.dispose()})}});rd.dispose()}catch(e){}}}}
+  destroy:function(){dead=true;try{if(gkCr&&gkCr.parentNode)gkCr.parentNode.removeChild(gkCr)}catch(e){}gkCr=null;cancelAnimationFrame(raf);window.removeEventListener('resize',onR);try{if(ax&&ax.state!=='closed'){var cr=ax.close();if(cr&&cr.catch)cr.catch(function(){})}}catch(e){}ax=null;try{scene.traverse(function(m){if(m.geometry)m.geometry.dispose();if(m.material){(m.material.length?m.material:[m.material]).forEach(function(q){if(q.map)q.map.dispose();q.dispose()})}});rd.dispose()}catch(e){}}}}
 
 /* Three.js faqat penalti sahnasi kerak bo'lganda yuklanadi */
 /* GLTFLoader (three r128 examples) — faqat darvozabon modeli uchun; yuklanmasa eski sodda darvozabon qoladi */
@@ -616,5 +616,5 @@ var THP=null;
 function load(){if(window.THREE)return Promise.resolve(true);if(THP)return THP;
   var U=['https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js','https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js'];
   THP=new Promise(function(res){var i=0;(function next(){if(window.THREE)return res(true);if(i>=U.length){THP=null;return res(false)}var s=document.createElement('script');s.src=U[i++];s.async=true;s.onload=function(){res(!!window.THREE)};s.onerror=function(){try{s.remove()}catch(e){}next()};document.head.appendChild(s)})()});return THP}
-window.PenaltyStage={v:4,simulate:simulate,resolve:resolve,create:create,load:load,_k:{keeperPlan:keeperPlan,keeperPose:keeperPose,launch:launch},_ks:KS};
+window.PenaltyStage={v:4,simulate:simulate,resolve:resolve,create:create,load:load,_k:{keeperPlan:keeperPlan,keeperPose:keeperPose,launch:launch},_ks:GKS};
 })();
