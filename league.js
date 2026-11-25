@@ -22,9 +22,9 @@ function obs(r){if(LQ().observe&&r)LQ().observe(r)}
 function pinFmt(p){return p.slice(0,3)+' '+p.slice(3)}
 function rname(size){return size===2?'Final':size===4?'Yarim final':size===8?'Chorak final':'1/'+(size/2)+' final'}
 var TM=[];function after(ms,fn){var t=setTimeout(fn,ms);TM.push(t);return t}
-var AC=null,SND=true;
-document.addEventListener('visibilitychange',function(){if(document.hidden){if(AC&&AC.state==='running')try{AC.suspend()}catch(e){}if(P&&P.ps&&P.ps.st&&P.ps.st.pause)P.ps.st.pause()}else{if(AC&&AC.state==='suspended')try{AC.resume()}catch(e){}if(P&&P.ps&&P.ps.st&&P.ps.st.resume)P.ps.st.resume()}});
-function beep(f,d,ty,v,at){if(!SND||document.hidden)return;try{if(!AC)AC=new(window.AudioContext||window.webkitAudioContext)();if(AC.state==='suspended')AC.resume();var t=AC.currentTime+(at||0),o=AC.createOscillator(),g=AC.createGain();o.type=ty||'sine';o.frequency.value=f;g.gain.setValueAtTime(v||.07,t);g.gain.exponentialRampToValueAtTime(.0001,t+d);o.connect(g);g.connect(AC.destination);o.start(t);o.stop(t+d+.02)}catch(e){}}
+var SND=false,IT=0,lastActivity=0;
+document.addEventListener('visibilitychange',function(){if(P&&P.ps&&P.ps.st){if(document.hidden&&P.ps.st.pause)P.ps.st.pause();else if(!document.hidden&&P.ps.st.resume)P.ps.st.resume()}});
+function beep(){}
 var SX={ok:function(){beep(660,.12,'triangle');beep(990,.18,'triangle',.07,.1)},bad:function(){beep(200,.3,'sawtooth',.05)},goal:function(){[523,659,784,1046].forEach(function(f,i){beep(f,.2,'triangle',.08,i*.09)})},save:function(){beep(300,.15,'square',.05);beep(220,.25,'square',.05,.12)},draw:function(){beep(500,.08,'square',.04)}};
 
 /* ===== sof mantiq: bracket, BYE, penalti ===== */
@@ -58,7 +58,7 @@ function mkShot(tr){var n=tr.length;if(n<4)return null;var a=tr[0],b=tr[n-1],dx=
 /* ===== penalti sahnasi: faqat penalti kerak bo'lganda yuklanadi (bosh sahifaga ta'sir qilmaydi) ===== */
 var STG={p:null,ok:false,err:false},PK_RES=5600,PK_WIN=1000,PK_AIM=28000;
 function loadStage(){if(window.PenaltyStage){STG.ok=true;return Promise.resolve(true)}if(STG.p)return STG.p;
-  STG.p=new Promise(function(res){var sc=document.createElement('script');sc.src='/penalty-stage.js?v=7';sc.async=true;
+  STG.p=new Promise(function(res){var sc=document.createElement('script');sc.src='/penalty-stage.js?v=8';sc.async=true;
     sc.onload=function(){if(!window.PenaltyStage){STG.ok=false;STG.err=true;STG.p=null;res(false);return}window.PenaltyStage.load().then(function(ok){STG.ok=!!ok;STG.err=!ok;if(!ok)STG.p=null;res(!!ok)})};
     sc.onerror=function(){STG.err=true;STG.p=null;try{sc.remove()}catch(e){}res(false)};document.head.appendChild(sc)});return STG.p}
 /* sahna yuklanmasa: oddiy hisob (zaxira) */
@@ -80,8 +80,9 @@ function mount(){if(R)return;var st=document.createElement('style');st.textConte
   R=document.createElement('div');R.className='lgx';R.hidden=true;R.setAttribute('role','dialog');R.setAttribute('aria-label','Chempionlar ligasi');
   R.innerHTML='<div class="lgm" id="lgm"></div><div class="lgmod" id="lgmod" hidden></div><div class="lgconn" id="lgconn" hidden>\u26a0\ufe0f Aloqa uzildi \u2014 qayta ulanmoqda\u2026</div>';
   document.body.appendChild(R);M=$('#lgm');R.addEventListener('click',onClick)}
-function openOv(){mount();R.hidden=false;document.body.style.overflow='hidden';guardOn()}
-function closeOv(){if(R)R.hidden=true;document.body.style.overflow='';guardOff();if(WL){try{WL.release()}catch(e){}WL=null}TM.forEach(clearTimeout);TM=[]}
+function openOv(){mount();R.hidden=false;document.body.style.overflow='hidden';guardOn();lastActivity=Date.now();['pointerdown','keydown','click','touchstart'].forEach(function(e){document.addEventListener(e,onActivity,true)});clearInterval(IT);IT=setInterval(function(){if(!H&&!P)return;var pen=(H&&H.ph==='pen')||(P&&P.S&&P.S.ph==='pen');if(pen&&Date.now()-lastActivity>=60000)leave('Faollik bo‘lmagani uchun penalti xonasi yopildi')},1000)}
+function onActivity(){lastActivity=Date.now()}
+function closeOv(){if(R)R.hidden=true;document.body.style.overflow='';guardOff();clearInterval(IT);IT=0;['pointerdown','keydown','click','touchstart'].forEach(function(e){document.removeEventListener(e,onActivity,true)});TM.forEach(clearTimeout);TM=[]}
 function view(h,cls){M.className='lgm '+(cls||'');M.innerHTML=h;obs(M)}
 function modal(h,k){var m=$('#lgmod');m.dataset.k=k||'';m.innerHTML='<div class="lgmb">'+h+'</div>';m.hidden=false}
 function modalClose(){var m=$('#lgmod');if(m){m.hidden=true;m.innerHTML='';m.dataset.k=''}}
@@ -96,7 +97,7 @@ function askExit(){if(!(H||P))return;if((H&&H.ph==='fin')||(P&&P.S&&P.S.ph==='fi
 function leave(msg){if(H){send({t:'end'});hStageOff();clearInterval(HT);H=null;lsDel(LSH)}
   if(P){send({t:'bye',p:P.pid});disposeStage();clearInterval(P.hl);clearInterval(P.tm);cancelAnimationFrame(P.raf||0);P=null;lsDel(LSP)}
   netClose(350);modalClose();closeOv();if(msg)say(msg)}
-function topbar(extra){return '<div class="lgt"><button class="lgib" data-act="exit" aria-label="Chiqish">\u2715</button><span class="lgpill">\ud83c\udfc6 CHEMPIONLAR LIGASI</span>'+(extra||'')+'<span class="sp"></span><button class="lgib" data-act="snd" id="lgsnd">'+(SND?'\ud83d\udd0a':'\ud83d\udd07')+'</button></div>'}
+function topbar(extra){return '<div class="lgt"><button class="lgib" data-act="exit" aria-label="Chiqish">✕</button><span class="lgpill">🏆 CHEMPIONLAR LIGASI</span>'+(extra||'')+'<span class="sp"></span></div>'}
 
 /* ===== umumiy ko'rinishlar ===== */
 function rosMap(S){var o={};(S.ros||[]).forEach(function(r){o[r[0]]=r});return o}
@@ -123,7 +124,7 @@ function host(l){
   if(src.length<2){say('Kamida 2 ta test savoli kerak');return false}
   H={v:1,pin:String(100000+Math.floor(Math.random()*900000)),lid:l.id,title:l.title,src:src,set:{time:15,nq:5,pk:3},ph:'lobby',pl:{},n:0,ri:-1,qi:-1,t0:0,dur:0,rounds:[],ts:Date.now()};
   hBoot();return true}
-function hBoot(){openOv();SND=H.set.snd!==false;if(!H.set.pk)H.set.pk=3;
+function hBoot(){openOv();SND=false;if(!H.set.pk)H.set.pk=3;
   netOpen(H.pin,hMsg,function(s){var bad=s==='CHANNEL_ERROR'||s==='TIMED_OUT'||s==='CLOSED';conn(bad);if(s==='SUBSCRIBED')bcast()});
   persist(1);hRender();clearInterval(HT);var hb=0;HT=setInterval(function(){hTick();if(++hb%13===0&&H)send({t:'h',ph:H.ph,qi:H.qi,ri:H.ri})},150)}
 var persT=0;function persist(now){if(!H)return;clearTimeout(persT);if(now){H.ts=Date.now();lsSet(LSH,H)}else persT=setTimeout(function(){if(H){H.ts=Date.now();lsSet(LSH,H)}},300)}
@@ -376,11 +377,11 @@ function fbZone(b){var ps=P&&P.ps;if(!ps||!ps.fb||ps.sent||ps.done)return;var u=
   var fb=$('#lgfb');if(fb&&ps.role==='s')fb.querySelectorAll('button').forEach(function(x){x.disabled=true})}
 
 /* ===== tugmalar ===== */
-function setSnd(v){SND=v;if(H){H.set.snd=v;persist()}var b=$('#lgsnd');if(b)b.textContent=v?'\ud83d\udd0a':'\ud83d\udd07'}
+function setSnd(){SND=false}
 function onClick(e){var m=$('#lgmod');if(e.target===m){modalClose();return}
   var b=e.target.closest('[data-act]');if(!b)return;var a=b.dataset.act,v=b.dataset.v;
   switch(a){
-    case'exit':askExit();break;case'mclose':modalClose();break;case'exitok':leave();break;case'snd':setSnd(!SND);break;
+    case'exit':askExit();break;case'mclose':modalClose();break;case'exitok':leave();break;
     case'cfg':if(H&&H.ph==='lobby'){H.set[b.dataset.k]=+v;persist();hLobby()}break;
     case'draw':hDraw();break;
     case'go':if(H){if(H.ph==='draw'||H.ph==='res')hRoundStart()}break;
