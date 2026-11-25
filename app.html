@@ -1083,9 +1083,10 @@ Object.assign(window.RX,{'Savollar':'Вопросы','Mavzu va metodni tanlang, 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 (function(){
+window.idAuthReady=false;window.idAuthenticated=false;
 var sb=window.supabase.createClient('https://kikehcuwjcucyspxdopd.supabase.co','sb_publishable_aBqimXgAK3ia1K_keuaICg_wIRBHx14');window.sb=sb;
 sb.auth.getSession().then(function(r){var s=r.data&&r.data.session;
-if(!s){try{localStorage.removeItem('idUser')}catch(e){}location.replace('/');return}
+if(!s){window.idAuthenticated=false;window.idAuthReady=true;try{localStorage.removeItem('idUser')}catch(e){}location.replace('/');return}
 var u=s.user,m=u.user_metadata||{},nm=m.full_name||m.name||(u.email||'').split('@')[0]||'Foydalanuvchi';
 var rec={name:nm,email:u.email||'',avatar:m.avatar_emoji||'',bg:m.avatar_bg||'',photo:m.avatar_url||''};
 try{var pr=JSON.parse(localStorage.getItem('idProf')||'null');if(pr&&pr.email===rec.email){rec.name=pr.name||rec.name;rec.avatar=pr.avatar==null?rec.avatar:pr.avatar;rec.bg=pr.bg==null?rec.bg:pr.bg}}catch(e){}
@@ -1978,7 +1979,7 @@ window.confetti=function(x,y,n){if(matchMedia('(prefers-reduced-motion: reduce)'
 </script>
 <script src="/ai-test.js"></script>
 <script src="/qrcode.js"></script>
-<script src="/live.js?v=3"></script>
+<script src="/live.js?v=4"></script>
 <script src="/league.js?v=3"></script>
 </body>
 </html>
