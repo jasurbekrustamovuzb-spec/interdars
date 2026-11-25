@@ -377,6 +377,7 @@ function ring(p,col){rings.push({p:p,c:col,t0:T})}
 function setBan(t,col,d){ban={t:t,c:col,t0:T,d:d||2.2}}
 function setCap(t,col){cap={t:t,c:col||'#FFC53D',t0:T,d:2.6}}
 var PARTS={glove:'Qo\u2018lqop bilan qaytardi \ud83e\udde4',arm:'Qo\u2018li bilan qaytardi',body:'Tanasi bilan qaytardi',head:'Boshi bilan qaytardi',leg:'Oyog\u2018i bilan qaytardi'};
+function updSpark(){} // stadion uchqun animatsiyasi o‘chirildi
 function update(dt){T+=dt;ex+=(exT-ex)*Math.min(1,dt*2.2);exT+=(.15-exT)*Math.min(1,dt*.5);shake*=Math.pow(.02,dt);nf*=Math.pow(.25,dt);updSpark(dt);if(react)react.t+=dt;
   var tsc=1;if(anim&&!anim.nk&&anim.slow&&anim.t>=anim.s0&&anim.t<anim.s1)tsc=.55;if(focus&&anim&&anim.t-focus.t0<focus.d)tsc=.38;tscNow=tsc;
   if(anim){anim.t+=dt*tsc;for(var i=trig.length-1;i>=0;i--)if(anim.t>=trig[i][0]){var f=trig[i][1];trig.splice(i,1);try{f()}catch(e){}}
