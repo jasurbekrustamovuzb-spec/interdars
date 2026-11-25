@@ -547,7 +547,7 @@ function boot(){
   mount();
   var h=ls(LSH),p=ls(LSP),m=location.hash.match(/^#j=(\d{6})$/),pend=null;try{pend=localStorage.getItem('idPendingLive');localStorage.removeItem('idPendingLive')}catch(e){}
   var pin=m?m[1]:pend;if(m){try{history.replaceState(null,'','#bosh')}catch(e){}}
-  if(pin){if(p&&p.pin!==pin)lsDel(LSP);join(pin,true).then(function(r){if(r==='none')say(LiveQuiz.err||'Faol jonli xona topilmadi — ID/QRni tekshiring');else if(r==='closed')say(LiveQuiz.err||'Xonaga kirib bo‘lmadi')});return}
+  if(pin){if(p&&p.pin!==pin)lsDel(LSP);if(document.documentElement.dataset.liveJoinPending){document.documentElement.style.visibility="";delete document.documentElement.dataset.liveJoinPending}join(pin,true).then(function(r){if(r==='none')say(LiveQuiz.err||'Faol jonli xona topilmadi — ID/QRni tekshiring');else if(r==='closed')say(LiveQuiz.err||'Xonaga kirib bo‘lmadi')});return}
   if(h&&h.pin&&Date.now()-h.ts<STALE){hResume(h);return}else if(h)lsDel(LSH);
   if(p&&p.pin&&Date.now()-p.ts<STALE){pResume(p);return}else if(p)lsDel(LSP)}
 
