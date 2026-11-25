@@ -28,9 +28,9 @@ function qmul(a,b){return[a[0]*b[0]-a[1]*b[1]-a[2]*b[2]-a[3]*b[3],a[0]*b[1]+a[1]
 function qstep(q,w,dt){var d=qmul([0,w[0],w[1],w[2]],q),r=[q[0]+.5*d[0]*dt,q[1]+.5*d[1]*dt,q[2]+.5*d[2]*dt,q[3]+.5*d[3]*dt],l=Math.sqrt(r[0]*r[0]+r[1]*r[1]+r[2]*r[2]+r[3]*r[3])||1;return[r[0]/l,r[1]/l,r[2]/l,r[3]/l]}
 
 /* ---- darvozabon: reja va skelet ---- */
-var ARM=.74,TOR=.56;
+var ARM=.86,TOR=.56;
 function keeperPlan(dv){if(!dv||!(dv[0]>=0))return{dive:false};
-  var tx=(clamp(dv[0],0,1)-.5)*2*HW,ty=clamp(dv[1],0,1)*2.6,dx=tx,dy=ty-1.4,d=h2(dx,dy),RM=3.55;
+  var tx=(clamp(dv[0],0,1)-.5)*2*HW,ty=clamp(dv[1],0,1)*2.6,dx=tx,dy=ty-1.4,d=h2(dx,dy),RM=3.95;
   if(d>RM){tx=dx*RM/d;ty=1.4+dy*RM/d}
   var th=clamp(Math.atan2(tx,Math.max(ty-.5,.35)),-1.45,1.45),u=[Math.sin(th),Math.cos(th)],d0=h2(tx,ty-1.4);
   return{dive:true,tx:tx,ty:ty,th:th,PT:[tx-u[0]*(TOR+ARM),Math.max(.3,ty-u[1]*(TOR+ARM))],Td:.26+.072*d0,t0:.07,lay:Math.abs(th)>.55,jump:.14+.12*ty/2.6}}
@@ -49,11 +49,11 @@ function keeperPose(pl,t){var th=0,Px,Py,u,pp,s,e,f,k,hd=[[0,0],[0,0]],ft=[[0,0]
       var fs=[Px+pp[0]*.12*sg*2-u[0]*.92+(pl.lay?0:0),Py+pp[1]*.12*sg*2-u[1]*.92];if(!pl.lay)fs[1]=Math.max(fs[1],0);if(pl.lay&&f>0)fs[1]=Math.max(.05,fs[1]);
       ft[i]=[lerp(Px+(i?.27:-.27),fs[0],e),lerp(0,fs[1],e)]}}
   var S=[Px+u[0]*TOR,Py+u[1]*TOR],Hd=[Px+u[0]*(TOR+.27),Py+u[1]*(TOR+.27)],o={P:[Px,Py],S:S,Hd:Hd,th:th,sh:[],el:[],hn:[],hp:[],kn:[],ft:[]};
-  for(var j=0;j<2;j++){var sd=j?1:-1,shd=[S[0]+pp[0]*.17*sd,S[1]+pp[1]*.17*sd],hip=[Px+pp[0]*.1*sd,Py+pp[1]*.1*sd],a1=ik2(shd[0],shd[1],hd[j][0],hd[j][1],.36,.38,sd),l1=ik2(hip[0],hip[1],ft[j][0],ft[j][1],.46,.46,sd);
+  for(var j=0;j<2;j++){var sd=j?1:-1,shd=[S[0]+pp[0]*.17*sd,S[1]+pp[1]*.17*sd],hip=[Px+pp[0]*.1*sd,Py+pp[1]*.1*sd],a1=ik2(shd[0],shd[1],hd[j][0],hd[j][1],.42,.44,sd),l1=ik2(hip[0],hip[1],ft[j][0],ft[j][1],.46,.46,sd);
     o.sh.push(shd);o.el.push(a1.j);o.hn.push(a1.e);o.hp.push(hip);o.kn.push(l1.j);o.ft.push(l1.e)}
   return o}
-function segs(o){var r=[[o.P[0],o.P[1],o.S[0],o.S[1],.22,0,'body'],[o.S[0],o.S[1],o.Hd[0],o.Hd[1],.12,0,'head']];
-  for(var j=0;j<2;j++){r.push([o.sh[j][0],o.sh[j][1],o.el[j][0],o.el[j][1],.09,1,'arm'],[o.el[j][0],o.el[j][1],o.hn[j][0],o.hn[j][1],.1,1,'arm'],[o.hn[j][0],o.hn[j][1],o.hn[j][0],o.hn[j][1],.16,2+j,'glove'],[o.hp[j][0],o.hp[j][1],o.kn[j][0],o.kn[j][1],.12,0,'leg'],[o.kn[j][0],o.kn[j][1],o.ft[j][0],o.ft[j][1],.1,0,'leg'])}
+function segs(o){var r=[[o.P[0],o.P[1],o.S[0],o.S[1],.26,0,'body'],[o.S[0],o.S[1],o.Hd[0],o.Hd[1],.14,0,'head']];
+  for(var j=0;j<2;j++){r.push([o.sh[j][0],o.sh[j][1],o.el[j][0],o.el[j][1],.12,1,'arm'],[o.el[j][0],o.el[j][1],o.hn[j][0],o.hn[j][1],.13,1,'arm'],[o.hn[j][0],o.hn[j][1],o.hn[j][0],o.hn[j][1],.22,2+j,'glove'],[o.hp[j][0],o.hp[j][1],o.kn[j][0],o.kn[j][1],.12,0,'leg'],[o.kn[j][0],o.kn[j][1],o.ft[j][0],o.ft[j][1],.1,0,'leg'])}
   return r}
 function segHit(px,py,pz,sg){var ax=sg[0],ay=sg[1],bx=sg[2],by=sg[3],dx=bx-ax,dy=by-ay,L=dx*dx+dy*dy,u=L>1e-9?clamp(((px-ax)*dx+(py-ay)*dy)/L,0,1):0,cx=ax+dx*u,cy=ay+dy*u,dz=Math.max(0,Math.abs(pz-ZK)-.12),d=h3(px-cx,py-cy,dz);
   return d<sg[4]+BR?{cx:cx,cy:cy,d:d}:null}
@@ -515,7 +515,7 @@ function gkSetup(g){var root=g.scene,clip=g.animations&&g.animations[0],nm=GKS.N
     (m.material&&m.material.length?m.material:[m.material]).forEach(function(x){if(!x)return;x.metalness=0;x.metalnessMap=null;if(x.map&&x.emissive){x.emissiveMap=x.map;x.emissive.setRGB(.16,.16,.16)}x.needsUpdate=true})});
   var grp=new TH.Group();grp.add(root);root.updateMatrixWorld(true);
   var hb=root.getObjectByName('HeadTop_End_00'),hh=hb?V3().setFromMatrixPosition(hb.matrixWorld).y:13.1;if(!(hh>1))hh=13.1;
-  GK.s=clamp(1.9/hh,.02,.6);GK.B=B;
+  GK.s=clamp(2.2/hh,.02,.6);GK.B=B;
   GK.tr=clip.tracks.map(function(tr){var d=tr.name.lastIndexOf('.'),nd=root.getObjectByName(tr.name.slice(0,d));return nd?{n:nd,p:tr.name.slice(d+1),it:tr.createInterpolant()}:null}).filter(Boolean);
   GK.st=Infinity;clip.tracks.forEach(function(tr){if(tr.times.length)GK.st=Math.min(GK.st,tr.times[0])});if(!isFinite(GK.st))GK.st=0;GK.en=Math.max(GK.st+.1,clip.duration);
   gkSample(GK.en);GK.bx=B[nm.hips].position.x;GK.bz=B[nm.hips].position.z;

@@ -55,9 +55,9 @@ function mkShot(tr){var n=tr.length;if(n<4)return null;var a=tr[0],b=tr[n-1],dx=
   return{pts:pts.map(function(p){return[Math.round(p[0]*10)/10,Math.round(p[1]*10)/10]}),fl:Math.round(1250-sp*850),tx:(E[0]-GX)/GW,ty:(E[1]-GY0)/GH,sp:sp}}
 
 /* ===== penalti sahnasi: faqat penalti kerak bo'lganda yuklanadi (bosh sahifaga ta'sir qilmaydi) ===== */
-var STG={p:null,ok:false,err:false},PK_RES=5600,PK_WIN=700,PK_AIM=14000;
+var STG={p:null,ok:false,err:false},PK_RES=5600,PK_WIN=1000,PK_AIM=28000;
 function loadStage(){if(window.PenaltyStage){STG.ok=true;return Promise.resolve(true)}if(STG.p)return STG.p;
-  STG.p=new Promise(function(res){var sc=document.createElement('script');sc.src='/penalty-stage.js?v=5';sc.async=true;
+  STG.p=new Promise(function(res){var sc=document.createElement('script');sc.src='/penalty-stage.js?v=6';sc.async=true;
     sc.onload=function(){if(!window.PenaltyStage){STG.ok=false;STG.err=true;STG.p=null;res(false);return}window.PenaltyStage.load().then(function(ok){STG.ok=!!ok;STG.err=!ok;if(!ok)STG.p=null;res(!!ok)})};
     sc.onerror=function(){STG.err=true;STG.p=null;try{sc.remove()}catch(e){}res(false)};document.head.appendChild(sc)});return STG.p}
 /* sahna yuklanmasa: oddiy hisob (zaxira) */
@@ -318,13 +318,13 @@ function pPen(prev){var S=P.S,mm=mine(S,S.ri);
     if(pn[1]==='aim'&&P.penKey!==key){if(ps.anim||(ps.st&&ps.st.busy()))return;newKick(ps,shooter?'s':'k',key)}return}
   disposeStage();P.penKey=key;
   view(topbar('<b class="lgchip">\u26bd Penalti \u00b7 '+(pn[7]||3)+' ta zarba</b>')+'<div class="lgc lgpk"><div id="lgpkh"></div><div class="lgstage" id="lgstg"><div class="lgload" id="lgload">\ud83c\udfdf\ufe0f Stadion yuklanmoqda\u2026</div><canvas id="lgcv" hidden></canvas></div><div class="lghint" id="lghint"></div><div id="lgfb"></div><div class="lgcr">Darvozabon modeli: <a href="https://sketchfab.com/3d-models/goalkeeper-stylized-rig-and-animation-7de86f9c36f84152a777f27a73646ada" target="_blank" rel="noopener">Goalkeeper Stylized</a> \u2014 P-Vi.Art (Sketchfab), <a href="http://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a>; o\u2018yin uchun moslashtirilgan</div></div>','pl');
-  var ps2=P.ps={mm:mm,role:shooter?'s':'k',trail:[],drawing:false,sent:false,done:false,anim:null,dv:null,hold:false,st:null,pend:null,fb:false,ld:0};
+  var ps2=P.ps={mm:mm,role:shooter?'s':'k',trail:[],drawing:false,sent:false,done:false,anim:null,dv:null,hold:false,st:null,pend:null,fb:false,ld:0,aimAt:Date.now(),kq:0};
   setHint(shooter?HINT_S:HINT_K);pPenHead(S,mm,pn,ros);
   loadStage().then(function(ok){if(!P||P.ps!==ps2||!$('#lgcv'))return;
     if(!ok){fallbackUI(ps2);return}
     $('#lgload').hidden=true;$('#lgcv').hidden=false;try{ps2.st=window.PenaltyStage.create($('#lgcv'),{snd:function(){return SND}})}catch(e){ps2.st=null;$('#lgcv').hidden=true;STG.err=true;fallbackUI(ps2);return}ps2.st.reset(ps2.role);if(ps2.hudD&&ps2.st.hud)ps2.st.hud(ps2.hudD);bindStage();
     if(ps2.pend){var pm=ps2.pend;ps2.pend=null;playResult(ps2,pm)}})}
-function newKick(ps,role,key){P.penKey=key;ps.role=role;ps.sent=false;ps.done=false;ps.anim=null;ps.dv=null;ps.trail=[];ps.shot=null;ps.hold=false;ps.kicked=false;ps.drawing=false;ps.lock=false;ps.pid=null;ps.sq=0;clearTimeout(ps.lt);clearInterval(ps.hb);ps.hb=0;
+function newKick(ps,role,key){clearTimeout(ps.kq);ps.kq=0;ps.aimAt=Date.now();P.penKey=key;ps.role=role;ps.sent=false;ps.done=false;ps.anim=null;ps.dv=null;ps.trail=[];ps.shot=null;ps.hold=false;ps.kicked=false;ps.drawing=false;ps.lock=false;ps.pid=null;ps.sq=0;clearTimeout(ps.lt);clearInterval(ps.hb);ps.hb=0;
   if(ps.st){ps.st.reset(role)}var fb=$('#lgfb');if(fb&&ps.fb)fbRender(ps);setHint(role==='s'?HINT_S:HINT_K)}
 function pPenHead(S,mm,pn,ros){var h=$('#lgpkh');if(!h||(P.ps&&P.ps.hold))return;var B=mm.opp,my=mm.side?pn[3]:pn[2],op=mm.side?pn[2]:pn[3];
   var rs=function(sd){return (pn[6]||[]).filter(function(x){return x[0]===sd}).map(function(x){return x[1]})},hd={l:{n:(ros[P.i]||[0,'?'])[1],g:my,r:rs(mm.side)},r:{n:(ros[B]||[0,'?'])[1],g:op,r:rs(1-mm.side)},N:pn[7]||3,k:mm.side?pn[5]:pn[4],rn:S.rn||'',lab:'Penalti'};
@@ -344,13 +344,13 @@ function mkShot2(ps,tr){var n=tr.length;if(n<4)return null;var a=tr[0],b=tr[n-1]
   var g=ps.st.toGoal(b.x,b.y),sg=.07+pw*.5;
   return{tx:Math.round(clamp(g.x+gauss()*sg,-8,8)*100)/100,ty:Math.round(clamp(g.y+gauss()*sg*.7,0,5)*100)/100,sp:Math.round(sp*10)/10,cu:Math.round(-clamp(bow*2.4,-1,1)*100)/100}}
 function bindStage(){var cv=$('#lgcv');if(!cv)return;
-  cv.addEventListener('pointerdown',function(e){var ps=P&&P.ps;if(!ps||!ps.st||ps.anim||ps.hold||ps.done)return;e.preventDefault();if(ps.drawing||ps.lock||ps.sent&&ps.role==='s')return;ps.st.unlock();var p=ps.st.pos(e);
+  cv.addEventListener('pointerdown',function(e){var ps=P&&P.ps;if(!ps||!ps.st||ps.anim||ps.hold||ps.done)return;e.preventDefault();if(ps.drawing||ps.lock||ps.sent&&ps.role==='s')return;if(ps.kq){clearTimeout(ps.kq);ps.kq=0;ps.shot=null;ps.trail=[];ps.st.setTrail(null)}ps.st.unlock();var p=ps.st.pos(e);
     if(ps.role==='s'){if(ps.st.onSpot(p.x,p.y)){ps.drawing=true;ps.pid=e.pointerId;ps.trail=[p];ps.st.setTrail(ps.trail);try{cv.setPointerCapture(e.pointerId)}catch(x){}}else say('Avval to\u2018pni bosib turing')}
     else{ps.drawing=true;ps.pid=e.pointerId;setDive(ps,p);try{cv.setPointerCapture(e.pointerId)}catch(x){}}});
   cv.addEventListener('pointermove',function(e){var ps=P&&P.ps;if(!ps||!ps.drawing||!ps.st||e.pointerId!==ps.pid)return;var p=ps.st.pos(e);if(ps.role==='s'){if(ps.trail.length<300)ps.trail.push(p)}else setDive(ps,p)});
   function up(e,cancel){var ps=P&&P.ps;if(!ps||!ps.drawing||e.pointerId!==ps.pid)return;ps.drawing=false;ps.pid=null;
     if(ps.role==='s'){if(ps.sent)return;ps.st.setTrail(null);if(cancel){ps.trail=[];return}
-      if(ps.trail.length<300)ps.trail.push(ps.st.pos(e));var sh=mkShot2(ps,ps.trail);if(!sh){ps.trail=[];say('To\u2018pdan darvoza tomon uzunroq chizing');return}ps.sent=true;ps.shot=sh;fireKick(ps,sh)}
+      if(ps.trail.length<300)ps.trail.push(ps.st.pos(e));var sh=mkShot2(ps,ps.trail);if(!sh){ps.trail=[];say('To\u2018pdan darvoza tomon uzunroq chizing');return}ps.shot=sh;ps.st.setTrail(ps.trail);var wt=Math.max(1800,ps.aimAt+3500-Date.now());clearTimeout(ps.kq);ps.kq=setTimeout(function(){ps.kq=0;if(!P||P.ps!==ps||ps.sent||ps.done||ps.anim||ps.drawing)return;ps.sent=true;ps.st.setTrail(null);fireKick(ps,sh)},wt)}
     else if(ps.dv&&!ps.lock){sendDive(ps);setHint('\ud83e\udde4 Tanlandi! Zarbani kuting\u2026 (zarba berilguncha o\u2018zgartirish mumkin)')}}
   cv.addEventListener('pointerup',function(e){up(e,false)});cv.addEventListener('pointercancel',function(e){up(e,true)})}
 function fireKick(ps,sh){var tries=0,key=P.penKey;setHint('\u26bd Zarba berildi! Darvozabon so\u2018nggi tanlovini qilmoqda\u2026');
