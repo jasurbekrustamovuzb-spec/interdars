@@ -1,10 +1,10 @@
-/* InterDars — Chempionlar ligasi: 1x1 play-off turniri (BYE, duel savollari, penalti seriyasi).
+/* InterDars \u2014 Chempionlar ligasi: 1x1 play-off turniri (BYE, duel savollari, penalti seriyasi).
    live.js bilan bir xil ID/kanal (Supabase Realtime Broadcast). live.js'dan keyin yuklanadi. */
 (function(){
 'use strict';
 if(window.League)return;
 var LSH='idLgHost',LSP='idLgPlayer',MAXP=64,STALE=3*3600*1000;
-var GX=12,GY0=14,GW=76,GH=32,GL=46,BX=50,BY=104,KX=50,KY=40,SHP=['▲','◆','●','■'];
+var GX=12,GY0=14,GW=76,GH=32,GL=46,BX=50,BY=104,KX=50,KY=40,SHP=['\u25b2','\u25c6','\u25cf','\u25a0'];
 
 /* ===== yordamchilar ===== */
 function $(s,r){return (r||document).querySelector(s)}
@@ -28,19 +28,19 @@ var SX={ok:function(){beep(660,.12,'triangle');beep(990,.18,'triangle',.07,.1)},
 
 /* ===== sof mantiq: bracket, BYE, penalti ===== */
 function mkm(a,b,st,third){var m={a:a,b:b,st:st,sa:0,sb:0,w:0,l:0};if(st==='bye')m.w=a;if(third)m.third=1;return m}
-/* N ishtirokchi → M=2^k, B=M-N ta BYE; BYE olganlar 1-bosqichda raqibsiz o'tadi */
+/* N ishtirokchi \u2192 M=2^k, B=M-N ta BYE; BYE olganlar 1-bosqichda raqibsiz o'tadi */
 function mkBracket(ids){var N=ids.length,M=1;while(M<N)M*=2;var R=Math.round(Math.log(M)/Math.LN2),B=M-N,a=shuffle(ids.slice()),sl=[],i;
   for(i=0;i<B;i++)sl.push(mkm(a[i],0,'bye'));
   for(i=B;i<N;i+=2)sl.push(mkm(a[i],a[i+1],'wait'));
   shuffle(sl);var rs=[sl];
   for(i=1;i<R;i++){var c=M/Math.pow(2,i+1),r=[];for(var j=0;j<c;j++)r.push(mkm(0,0,'wait'));rs.push(r)}
   return{M:M,R:R,B:B,rounds:rs}}
-/* N ta (1/3/5) zarba; teng bo'lsa — o'lim zarbasi (kimdir yutguncha). 0=davom, 1=A, 2=B */
+/* N ta (1/3/5) zarba; teng bo'lsa \u2014 o'lim zarbasi (kimdir yutguncha). 0=davom, 1=A, 2=B */
 function penDone(p,N){N=N||3;var a=p.ka,b=p.kb,sa=p.ga,sb=p.gb;
   if(a<=N&&b<=N){if(sa>sb+(N-b))return 1;if(sb>sa+(N-a))return 2}
   if(a===b&&a>=N&&sa!==sb)return sa>sb?1:2;return 0}
 function gauss(){return(Math.random()+Math.random()+Math.random()-1.5)*1.15}
-/* chizilgan yo'l → zarba: chizish tezligi = kuch, egrilik × tezlik = burama (spin), kuchli zarba noaniqroq */
+/* chizilgan yo'l \u2192 zarba: chizish tezligi = kuch, egrilik \u00d7 tezlik = burama (spin), kuchli zarba noaniqroq */
 function mkShot(tr){var n=tr.length;if(n<4)return null;var a=tr[0],b=tr[n-1],dx=b.x-a.x,dy=b.y-a.y,L=Math.hypot(dx,dy);
   if(L<18||dy>-6)return null;
   var D=Math.max(60,b.t-a.t),sp=clamp((L/D-.12)/.8,0,1),ux=dx/L,uy=dy/L,nx=-uy,ny=ux,bow=0,i;
@@ -77,7 +77,7 @@ function send(p){var ch=NET.ch;if(!ch)return;if(ch.state?ch.state!=='joined':!NE
 var R=null,M=null,H=null,P=null,HT=0,guard=false,WL=null;
 function mount(){if(R)return;var st=document.createElement('style');st.textContent=CSS;document.head.appendChild(st);
   R=document.createElement('div');R.className='lgx';R.hidden=true;R.setAttribute('role','dialog');R.setAttribute('aria-label','Chempionlar ligasi');
-  R.innerHTML='<div class="lgm" id="lgm"></div><div class="lgmod" id="lgmod" hidden></div><div class="lgconn" id="lgconn" hidden>⚠️ Aloqa uzildi — qayta ulanmoqda…</div>';
+  R.innerHTML='<div class="lgm" id="lgm"></div><div class="lgmod" id="lgmod" hidden></div><div class="lgconn" id="lgconn" hidden>\u26a0\ufe0f Aloqa uzildi \u2014 qayta ulanmoqda\u2026</div>';
   document.body.appendChild(R);M=$('#lgm');R.addEventListener('click',onClick)}
 function openOv(){mount();R.hidden=false;document.body.style.overflow='hidden';guardOn();try{if(navigator.wakeLock&&!WL)navigator.wakeLock.request('screen').then(function(l){WL=l;l.addEventListener('release',function(){WL=null})}).catch(function(){})}catch(e){}}
 function closeOv(){if(R)R.hidden=true;document.body.style.overflow='';guardOff();TM.forEach(clearTimeout);TM=[]}
@@ -91,25 +91,25 @@ function guardOff(){if(!guard)return;guard=false;window.removeEventListener('pop
 function onPop(){if(!guard)return;try{history.pushState({lg:1},'',location.href)}catch(e){}askExit()}
 function onUnload(e){if(!guard)return;e.preventDefault();e.returnValue='';return ''}
 function askExit(){if(!(H||P))return;if((H&&H.ph==='fin')||(P&&P.S&&P.S.ph==='fin')){leave();return}if($('#lgmod').dataset.k==='exit')return;
-  modal('<div class="em">⚠️</div><h3>'+(H?'Turnirni tugatasizmi?':'Turnirdan chiqasizmi?')+'</h3><p>'+(H?'Turnir barcha ishtirokchilar uchun to‘xtaydi.':'Siz turnirdan chiqib ketasiz.')+'</p><div class="lgbtns"><button class="lgb ghost" data-act="mclose">Qolish</button><button class="lgb bad" data-act="exitok">'+(H?'Tugatish':'Chiqish')+'</button></div>','exit')}
+  modal('<div class="em">\u26a0\ufe0f</div><h3>'+(H?'Turnirni tugatasizmi?':'Turnirdan chiqasizmi?')+'</h3><p>'+(H?'Turnir barcha ishtirokchilar uchun to\u2018xtaydi.':'Siz turnirdan chiqib ketasiz.')+'</p><div class="lgbtns"><button class="lgb ghost" data-act="mclose">Qolish</button><button class="lgb bad" data-act="exitok">'+(H?'Tugatish':'Chiqish')+'</button></div>','exit')}
 function leave(msg){if(H){send({t:'end'});hStageOff();clearInterval(HT);H=null;lsDel(LSH)}
   if(P){send({t:'bye',p:P.pid});disposeStage();clearInterval(P.hl);clearInterval(P.tm);cancelAnimationFrame(P.raf||0);P=null;lsDel(LSP)}
   netClose(350);modalClose();closeOv();if(msg)say(msg)}
-function topbar(extra){return '<div class="lgt"><button class="lgib" data-act="exit" aria-label="Chiqish">✕</button><span class="lgpill">🏆 CHEMPIONLAR LIGASI</span>'+(extra||'')+'<span class="sp"></span><button class="lgib" data-act="snd" id="lgsnd">'+(SND?'🔊':'🔇')+'</button></div>'}
+function topbar(extra){return '<div class="lgt"><button class="lgib" data-act="exit" aria-label="Chiqish">\u2715</button><span class="lgpill">\ud83c\udfc6 CHEMPIONLAR LIGASI</span>'+(extra||'')+'<span class="sp"></span><button class="lgib" data-act="snd" id="lgsnd">'+(SND?'\ud83d\udd0a':'\ud83d\udd07')+'</button></div>'}
 
 /* ===== umumiy ko'rinishlar ===== */
 function rosMap(S){var o={};(S.ros||[]).forEach(function(r){o[r[0]]=r});return o}
 function mbox(m,ros,me,d){var A=m[0],B=m[1],st=m[5];
-  function row(i,sc){var r=ros[i];return '<div class="lgr'+(i&&i===me?' me':'')+(i&&m[2]===i?' win':'')+'">'+(i?'<span>'+esc(r?r[1]:'?')+'</span><em>'+(st>=2?sc:'')+'</em>':'<span class="q">—</span>')+'</div>'}
-  return '<div class="lgmx'+(st===3?' pen':'')+'" style="animation-delay:'+(d||0)+'ms">'+row(A,m[3])+(st===1?'<div class="lgr bye">🎟️ BYE</div>':row(B,m[4]))+(st===3?'<i>⚽</i>':'')+'</div>'}
+  function row(i,sc){var r=ros[i];return '<div class="lgr'+(i&&i===me?' me':'')+(i&&m[2]===i?' win':'')+'">'+(i?'<span>'+esc(r?r[1]:'?')+'</span><em>'+(st>=2?sc:'')+'</em>':'<span class="q">\u2014</span>')+'</div>'}
+  return '<div class="lgmx'+(st===3?' pen':'')+'" style="animation-delay:'+(d||0)+'ms">'+row(A,m[3])+(st===1?'<div class="lgr bye">\ud83c\udf9f\ufe0f BYE</div>':row(B,m[4]))+(st===3?'<i>\u26bd</i>':'')+'</div>'}
 function brHTML(S,me){var ros=rosMap(S),d=0;
-  return '<div class="lgbr">'+S.br.map(function(r,ri){var t=ri===S.R-1?(r.length>1?'Final va 3-o‘rin':'Final'):rname(Math.pow(2,S.R-ri));
+  return '<div class="lgbr">'+S.br.map(function(r,ri){var t=ri===S.R-1?(r.length>1?'Final va 3-o\u2018rin':'Final'):rname(Math.pow(2,S.R-ri));
     return '<div class="lgcol'+(ri===S.ri?' cur':'')+'"><h4>'+t+'</h4>'+r.map(function(m){return mbox(m,ros,me,(d+=40))}).join('')+'</div>'}).join('')+'</div>'}
 function optsHTML(S,my,rev){return S.a.map(function(t,i){var cl='lgop o'+i;if(rev){cl+=i===S.c?' ok':(i===my?' no':' dim')}else if(my>=0)cl+=i===my?' sel':' dim';
   return '<button class="'+cl+'"'+(rev?' disabled':' data-act="ans" data-v="'+i+'"')+'><u>'+SHP[i]+'</u><span>'+esc(t)+'</span></button>'}).join('')}
 function vsBar(a,b,sc){return '<div class="lgvs">'+'<div class="s">'+av(a?a[2]:-1,46,a?a[1]:'')+'<b>'+esc(a?a[1]:'?')+'</b></div><div class="sc"><em>'+sc[0]+'</em><span>:</span><em>'+sc[1]+'</em></div><div class="s">'+av(b?b[2]:-1,46,b?b[1]:'')+'<b>'+esc(b?b[1]:'?')+'</b></div></div>'}
 function podium(S){var ros=rosMap(S),f=S.fin||[],nm=function(i){var r=ros[i];return r?'<div class="pp">'+av(r[2],56,r[1])+'<b>'+esc(r[1])+'</b></div>':'<div class="pp"></div>'};
-  return '<div class="lgpod"><div class="c s2">'+nm(f[1])+'<div class="bar">2</div></div><div class="c s1"><div class="cup">🏆</div>'+nm(f[0])+'<div class="bar">1</div></div><div class="c s3">'+nm(f[2])+'<div class="bar">3</div></div></div>'+(f[3]?'<div class="lg4">4-o‘rin: <b>'+esc((ros[f[3]]||[0,'?'])[1])+'</b></div>':'')}
+  return '<div class="lgpod"><div class="c s2">'+nm(f[1])+'<div class="bar">2</div></div><div class="c s1"><div class="cup">\ud83c\udfc6</div>'+nm(f[0])+'<div class="bar">1</div></div><div class="c s3">'+nm(f[2])+'<div class="bar">3</div></div></div>'+(f[3]?'<div class="lg4">4-o\u2018rin: <b>'+esc((ros[f[3]]||[0,'?'])[1])+'</b></div>':'')}
 
 /* =====================  TASHKILOTCHI  ===================== */
 function ok(x){return x.a&&x.a.length>=2&&x.c!=null&&(!x.k||x.k==='mcq'||x.k==='tf')}
@@ -150,8 +150,8 @@ function hDraw(){if(!H||H.ph!=='lobby')return;
   var b=mkBracket(ids);H.M=b.M;H.R=b.R;H.B=b.B;H.rounds=b.rounds;H.bronze=0;H.ri=-1;
   var q=shuffle(H.src.slice()),nq=Math.max(1,Math.min(H.set.nq,Math.floor(q.length/H.R))),need=nq*H.R;H.nq=nq;H.warn=q.length<need?1:0;H.queue=[];
   for(var i=0;i<need;i++){if(i>0&&i%q.length===0)shuffle(q);H.queue.push(q[i%q.length])}
-  H.ph='draw';H.t0=Date.now();H.dur=0;H.rn='Qur‘a';persist(1);bcast();hRender();[0,1,2].forEach(function(k){beep(400+k*150,.12,'triangle',.06,k*.12)})}
-function hRoundStart(){H.ri++;var r=H.rounds[H.ri];H.rn=r.length>1&&H.ri===H.R-1?'Final va 3-o‘rin':rname(H.M/Math.pow(2,H.ri));
+  H.ph='draw';H.t0=Date.now();H.dur=0;H.rn='Qur\u2018a';persist(1);bcast();hRender();[0,1,2].forEach(function(k){beep(400+k*150,.12,'triangle',.06,k*.12)})}
+function hRoundStart(){H.ri++;var r=H.rounds[H.ri];H.rn=r.length>1&&H.ri===H.R-1?'Final va 3-o\u2018rin':rname(H.M/Math.pow(2,H.ri));
   r.forEach(function(m){if(m.st==='wait'){m.st='duel';m.sa=m.sb=0}});
   H.qs=H.queue.slice(H.ri*H.nq,(H.ri+1)*H.nq);H.qi=-1;H.ph='pre';H.t0=Date.now();H.dur=3800;persist(1);bcast();hRender();SX.ok()}
 function hQStart(){H.qi++;H.cq=prepQ(H.qs[H.qi]);H.an={};H.ph='q';H.t0=Date.now();H.dur=H.set.time*1000;persist(1);bcast();hRender()}
@@ -212,62 +212,62 @@ function hPump(){if(HQ.busy||!HQ.q.length||!HQ.st||!H)return;var it=HQ.q.shift()
   function done(){hudFor(it.len);HQ.busy=false;if(H&&it.m.pen)it.m.pen.vis=Math.max(it.m.pen.vis||0,it.len);hCards();hPump()}
   function hudFor(len){if(!HQ.st||!HQ.st.hud||!H)return;var sq=m.pen.seq.slice(0,Math.max(0,len)),g0=0,g1=0,r0=[],r1=[];sq.forEach(function(x){(x[0]?r1:r0).push(x[1]);if(x[1]===1){if(x[0])g1++;else g0++}});HQ.st.hud({l:{n:(ro[m.a]||[0,'?'])[1],g:g0,r:r0},r:{n:(ro[m.b]||[0,'?'])[1],g:g1,r:r1},N:H.set.pk||3,k:Math.min(r0.length,r1.length),rn:H.rn||'',lab:'Penalti'})}
   hudFor(it.len-1);
-  HQ.busy=true;if(lb)lb.textContent='⚽ '+esc((ro[sh]||[0,'?'])[1])+'  →  🧤 '+esc((ro[kp]||[0,'?'])[1]);
+  HQ.busy=true;if(lb)lb.textContent='\u26bd '+esc((ro[sh]||[0,'?'])[1])+'  \u2192  \ud83e\udde4 '+esc((ro[kp]||[0,'?'])[1]);
   var ok=false;try{HQ.st.reset('v');ok=HQ.st.play({k:it.pkt.k,d:it.pkt.d,seed:it.pkt.seed,r:it.pkt.r,pt:it.pkt.pt},done)}catch(e){}
   if(!ok)done()}
 function hStageOff(){if(HQ.st){try{HQ.st.destroy()}catch(e){}HQ.st=null}HQ.q=[];HQ.busy=false}
 function hStageOn(){loadStage().then(function(ok){var cv=$('#lghcv');if(!ok||!cv||!H||H.ph!=='pen')return;var l=$('#lghload');if(l)l.hidden=true;cv.hidden=false;
-  if(HQ.st)try{HQ.st.destroy()}catch(e){}try{HQ.st=window.PenaltyStage.create(cv,{snd:function(){return SND},pad:300,maxW:720})}catch(e){HQ.st=null;cv.hidden=true;if(l){l.hidden=false;l.textContent='⚠️ 3D sahna ishga tushmadi'}return}HQ.st.reset('v');hPump()})}
+  if(HQ.st)try{HQ.st.destroy()}catch(e){}try{HQ.st=window.PenaltyStage.create(cv,{snd:function(){return SND},pad:300,maxW:720})}catch(e){HQ.st=null;cv.hidden=true;if(l){l.hidden=false;l.textContent='\u26a0\ufe0f 3D sahna ishga tushmadi'}return}HQ.st.reset('v');hPump()})}
 
 /* ----- tashkilotchi ekranlari ----- */
 function hRender(){if(!H)return;modalClose();hStageOff();({lobby:hLobby,draw:hDrawV,pre:hPre,q:hQ,rev:hQ,pen:hPen,res:hRes,fin:hFin})[H.ph]()}
 function joinUrl(){return location.origin+'/home#j='+H.pin}
 function hLobby(){var s=H.set;
   function seg(k,vals,suf){return '<div class="seg">'+vals.map(function(v){return '<button class="'+(s[k]===v?'on':'')+'" data-act="cfg" data-k="'+k+'" data-v="'+v+'">'+v+suf+'</button>'}).join('')+'</div>'}
-  view(topbar('<b class="lgchip">Kutish xonasi</b>')+'<div class="lgc lobby"><div class="lgjoin"><div class="lgpin"><small>Qo‘shilish ID</small><b>'+pinFmt(H.pin)+'</b><button class="lgb ghost sm" data-act="share">🔗 Havola</button></div><div id="lgqr" class="lgqr"></div></div>'+
+  view(topbar('<b class="lgchip">Kutish xonasi</b>')+'<div class="lgc lobby"><div class="lgjoin"><div class="lgpin"><small>Qo\u2018shilish ID</small><b>'+pinFmt(H.pin)+'</b><button class="lgb ghost sm" data-act="share">\ud83d\udd17 Havola</button></div><div id="lgqr" class="lgqr"></div></div>'+
     '<h2 class="lgh">'+esc(H.title)+'</h2><div class="lgset"><label>Savol vaqti</label>'+seg('time',[10,15,20,30],' s')+'<label>Har duelda savol</label>'+seg('nq',[3,5,7],'')+'<label>Penalti zarbalari (durangda)</label>'+seg('pk',[1,3,5],' ta')+'</div><div class="lgnote" id="lgnote"></div>'+
-    '<div class="lgcnt"><b id="lgcnt">0</b> ishtirokchi</div><div class="lggrid" id="lggrid"></div><div class="lgfoot"><button class="lgb go" data-act="draw" id="lgdraw" disabled>🎲 Random qur‘a tashlash</button></div></div>');
+    '<div class="lgcnt"><b id="lgcnt">0</b> ishtirokchi</div><div class="lggrid" id="lggrid"></div><div class="lgfoot"><button class="lgb go" data-act="draw" id="lgdraw" disabled>\ud83c\udfb2 Random qur\u2018a tashlash</button></div></div>');
   hLobbyUpdate();qr(joinUrl())}
 function hLobbyUpdate(){var g=$('#lggrid');if(!g||!H)return;var l=ros();$('#lgcnt').textContent=l.length;
-  g.innerHTML=l.map(function(r){return '<div class="lgpt">'+av(r[2],52,r[1])+'<b>'+esc(r[1])+'</b></div>'}).join('')||'<p class="lgmut">Ishtirokchilar telefondan ID yoki QR orqali qo‘shiladi…</p>';obs(g);
+  g.innerHTML=l.map(function(r){return '<div class="lgpt">'+av(r[2],52,r[1])+'<b>'+esc(r[1])+'</b></div>'}).join('')||'<p class="lgmut">Ishtirokchilar telefondan ID yoki QR orqali qo\u2018shiladi\u2026</p>';obs(g);
   var b=$('#lgdraw');if(b)b.disabled=l.length<2;
   var N=l.length,Mx=1;while(Mx<Math.max(2,N))Mx*=2;var Rr=Math.round(Math.log(Mx)/Math.LN2),need=Rr*H.set.nq,nt=$('#lgnote');
-  if(nt)nt.innerHTML=N>=2?('Taxminan <b>'+rname(Mx)+'</b>'+(Mx>N?' · <b>'+(Mx-N)+'</b> ta BYE':'')+' · '+Rr+' bosqich'+(H.src.length<need?' · <span class="w">savollar yetarli emas ('+H.src.length+' ta) — duelda savollar soni kamaytiriladi</span>':'')):''}
+  if(nt)nt.innerHTML=N>=2?('Taxminan <b>'+rname(Mx)+'</b>'+(Mx>N?' \u00b7 <b>'+(Mx-N)+'</b> ta BYE':'')+' \u00b7 '+Rr+' bosqich'+(H.src.length<need?' \u00b7 <span class="w">savollar yetarli emas ('+H.src.length+' ta) \u2014 duelda savollar soni kamaytiriladi</span>':'')):''}
 var QRL=null;function qr(text){var b=$('#lgqr');if(!b)return;
   function go(){try{var q=window.qrcode(0,'M');q.addData(text);q.make();var n=q.getModuleCount(),d='';for(var r=0;r<n;r++)for(var c=0;c<n;c++)if(q.isDark(r,c))d+='M'+c+' '+r+'h1v1h-1z';b.innerHTML='<svg viewBox="-2 -2 '+(n+4)+' '+(n+4)+'" shape-rendering="crispEdges"><path d="'+d+'" fill="#1B2150"/></svg>'}catch(e){b.textContent=text}}
   if(window.qrcode)go();else b.textContent=text}
 function hDrawV(){var S=snap(),r0=H.rounds[0],ros={};S.ros.forEach(function(r){ros[r[0]]=r});
-  var cards=r0.map(function(m,k){var A=ros[m.a],B=ros[m.b];return '<div class="lgvsc" style="animation-delay:'+(k*140)+'ms"><div class="s">'+av(A[2],50,A[1])+'<b>'+esc(A[1])+'</b></div><div class="vs">'+(m.st==='bye'?'🎟️':'VS')+'</div><div class="s">'+(B?av(B[2],50,B[1])+'<b>'+esc(B[1])+'</b>':'<b class="bye">BYE · keyingi bosqichga o‘tadi</b>')+'</div></div>'}).join('');
-  view(topbar('<b class="lgchip">Qur‘a natijasi</b>')+'<div class="lgc"><h2 class="lgh">🎲 Qur‘a tashlandi!</h2><p class="lgmut">'+Object.keys(H.pl).length+' ishtirokchi · '+(H.B?H.B+' ta omadli chipta (BYE) · ':'')+H.R+' bosqich · har duelda '+H.nq+' savol'+(H.warn?' · <span class="w">savollar takrorlanishi mumkin</span>':'')+'</p><div class="lgvsl">'+cards+'</div><div class="lgfoot"><button class="lgb go" data-act="go">▶ '+rname(H.M)+'ni boshlash</button></div></div>')}
-function hPre(){var ph=H.rn;view(topbar()+'<div class="lgcd"><small>Keyingi bosqich</small><div class="lgbig">'+esc(ph)+'</div><p>'+duels().length+' ta duel'+(H.rounds[H.ri].some(function(m){return m.st==='bye'})?' · '+H.rounds[H.ri].filter(function(m){return m.st==='bye'}).length+' ta BYE':'')+'</p></div>')}
+  var cards=r0.map(function(m,k){var A=ros[m.a],B=ros[m.b];return '<div class="lgvsc" style="animation-delay:'+(k*140)+'ms"><div class="s">'+av(A[2],50,A[1])+'<b>'+esc(A[1])+'</b></div><div class="vs">'+(m.st==='bye'?'\ud83c\udf9f\ufe0f':'VS')+'</div><div class="s">'+(B?av(B[2],50,B[1])+'<b>'+esc(B[1])+'</b>':'<b class="bye">BYE \u00b7 keyingi bosqichga o\u2018tadi</b>')+'</div></div>'}).join('');
+  view(topbar('<b class="lgchip">Qur\u2018a natijasi</b>')+'<div class="lgc"><h2 class="lgh">\ud83c\udfb2 Qur\u2018a tashlandi!</h2><p class="lgmut">'+Object.keys(H.pl).length+' ishtirokchi \u00b7 '+(H.B?H.B+' ta omadli chipta (BYE) \u00b7 ':'')+H.R+' bosqich \u00b7 har duelda '+H.nq+' savol'+(H.warn?' \u00b7 <span class="w">savollar takrorlanishi mumkin</span>':'')+'</p><div class="lgvsl">'+cards+'</div><div class="lgfoot"><button class="lgb go" data-act="go">\u25b6 '+rname(H.M)+'ni boshlash</button></div></div>')}
+function hPre(){var ph=H.rn;view(topbar()+'<div class="lgcd"><small>Keyingi bosqich</small><div class="lgbig">'+esc(ph)+'</div><p>'+duels().length+' ta duel'+(H.rounds[H.ri].some(function(m){return m.st==='bye'})?' \u00b7 '+H.rounds[H.ri].filter(function(m){return m.st==='bye'}).length+' ta BYE':'')+'</p></div>')}
 function cardHTML(m,ros){var A=ros[m.a]||[0,'?',-1],B=ros[m.b]||[0,'?',-1],an=H.ph==='q'?H.an||{}:{},p=m.pen,vis=p?(m.st==='done'?p.seq.length:Math.min(p.vis||0,p.seq.length)):0,vg=[0,0];
   if(p)for(var z=0;z<vis;z++)if(p.seq[z][1]===1)vg[p.seq[z][0]]++;
-  function seqRow(side){return p?'<div class="seqr">'+p.seq.slice(0,vis).filter(function(x){return x[0]===side}).map(function(x){return x[1]===1?'⚽':x[1]===2?'🧤':'❌'}).join('')+'</div>':''}
-  return '<div class="lgdc'+(m.st==='pen'?' pen':'')+(m.st==='done'?' done':'')+'"><div class="s'+(m.w===m.a&&m.w?' win':'')+'">'+av(A[2],40,A[1])+'<b>'+esc(A[1])+'</b>'+(an[m.a]!=null?'<i>✔</i>':'')+seqRow(0)+'</div><div class="sc"><em>'+m.sa+'</em><span>:</span><em>'+m.sb+'</em>'+(p?'<small>penalti '+vg[0]+'–'+vg[1]+'</small>':m.coin?'<small>🪙</small>':'')+'</div><div class="s'+(m.w===m.b&&m.w?' win':'')+'">'+av(B[2],40,B[1])+'<b>'+esc(B[1])+'</b>'+(an[m.b]!=null?'<i>✔</i>':'')+seqRow(1)+'</div></div>'}
+  function seqRow(side){return p?'<div class="seqr">'+p.seq.slice(0,vis).filter(function(x){return x[0]===side}).map(function(x){return x[1]===1?'\u26bd':x[1]===2?'\ud83e\udde4':'\u274c'}).join('')+'</div>':''}
+  return '<div class="lgdc'+(m.st==='pen'?' pen':'')+(m.st==='done'?' done':'')+'"><div class="s'+(m.w===m.a&&m.w?' win':'')+'">'+av(A[2],40,A[1])+'<b>'+esc(A[1])+'</b>'+(an[m.a]!=null?'<i>\u2714</i>':'')+seqRow(0)+'</div><div class="sc"><em>'+m.sa+'</em><span>:</span><em>'+m.sb+'</em>'+(p?'<small>penalti '+vg[0]+'\u2013'+vg[1]+'</small>':m.coin?'<small>\ud83e\ude99</small>':'')+'</div><div class="s'+(m.w===m.b&&m.w?' win':'')+'">'+av(B[2],40,B[1])+'<b>'+esc(B[1])+'</b>'+(an[m.b]!=null?'<i>\u2714</i>':'')+seqRow(1)+'</div></div>'}
 function cardsHTML(){var S=snap(),ros=rosMap(S),r=H.rounds[H.ri],byes=r.filter(function(m){return m.st==='bye'});
-  return r.filter(function(m){return m.st!=='bye'}).map(function(m){return cardHTML(m,ros)}).join('')+(byes.length?'<div class="lgbyes">🎟️ BYE: '+byes.map(function(m){return esc((ros[m.a]||[0,'?'])[1])}).join(', ')+'</div>':'')}
+  return r.filter(function(m){return m.st!=='bye'}).map(function(m){return cardHTML(m,ros)}).join('')+(byes.length?'<div class="lgbyes">\ud83c\udf9f\ufe0f BYE: '+byes.map(function(m){return esc((ros[m.a]||[0,'?'])[1])}).join(', ')+'</div>':'')}
 function hCards(){var c=$('#lgduels');if(c&&H&&(H.ph==='q'||H.ph==='rev'||H.ph==='pen')){c.innerHTML=cardsHTML();obs(c)}}
 function hQ(){var q=H.cq,rev=H.ph==='rev';view(topbar('<b class="lgchip">'+esc(H.rn)+'</b><b class="lgchip">'+(H.qi+1)+' / '+H.nq+'</b>')+'<div class="lgc"><div class="lgbar"><i id="lgbari" style="width:'+(rev?0:100)+'%"></i></div><div class="lgsec" id="lgsec">'+(rev?'':H.set.time)+'</div><h1 class="lgq">'+esc(q.q)+'</h1><div class="lgops host">'+optsHTML({a:q.a,c:q.c},-1,rev)+'</div><div class="lgduels" id="lgduels">'+cardsHTML()+'</div></div>');obs($('#lgduels'))}
-function hPen(){var N=H.set.pk||3;view(topbar('<b class="lgchip">'+esc(H.rn)+'</b><b class="lgchip">⚽ Penaltilar seriyasi</b>')+'<div class="lgc"><h2 class="lgh">Durang! Penaltilar seriyasi</h2><p class="lgmut">Ikkala o‘yinchi navbat bilan zarba beradi va darvozani himoya qiladi. '+N+' tadan zarba; teng bo‘lsa — kimdir yutguncha davom etadi.</p><div class="lgstage"><div class="lgload" id="lghload">🏟️ Stadion yuklanmoqda…</div><canvas id="lghcv" hidden></canvas></div><div class="lghlab" id="lghlab"></div><div class="lgduels" id="lgduels">'+cardsHTML()+'</div></div>');obs($('#lgduels'));hStageOn()}
-function hRes(){var S=snap(),nr=H.rounds[H.ri+1],nx=H.ri+1===H.R-1?(nr.length>1?'Final va 3-o‘rin':'Final'):rname(H.M/Math.pow(2,H.ri+1));
-  view(topbar('<b class="lgchip">'+esc(H.rn)+' yakunlandi</b>')+'<div class="lgc"><h2 class="lgh">✅ Bosqich yakunlandi</h2>'+brHTML(S,0)+'<div class="lgfoot"><button class="lgb go" data-act="go">▶ '+nx+'</button></div></div>')}
-function hFin(){var S=snap();view(topbar('<b class="lgchip">Turnir yakuni</b>')+'<div class="lgc"><h2 class="lgh">🏆 Chempion aniqlandi!</h2>'+podium(S)+brHTML(S,0)+'<div class="lgfoot"><button class="lgb ghost" data-act="exitok">Yopish</button></div></div>')}
+function hPen(){var N=H.set.pk||3;view(topbar('<b class="lgchip">'+esc(H.rn)+'</b><b class="lgchip">\u26bd Penaltilar seriyasi</b>')+'<div class="lgc"><h2 class="lgh">Durang! Penaltilar seriyasi</h2><p class="lgmut">Ikkala o\u2018yinchi navbat bilan zarba beradi va darvozani himoya qiladi. '+N+' tadan zarba; teng bo\u2018lsa \u2014 kimdir yutguncha davom etadi.</p><div class="lgstage"><div class="lgload" id="lghload">\ud83c\udfdf\ufe0f Stadion yuklanmoqda\u2026</div><canvas id="lghcv" hidden></canvas></div><div class="lghlab" id="lghlab"></div><div class="lgduels" id="lgduels">'+cardsHTML()+'</div></div>');obs($('#lgduels'));hStageOn()}
+function hRes(){var S=snap(),nr=H.rounds[H.ri+1],nx=H.ri+1===H.R-1?(nr.length>1?'Final va 3-o\u2018rin':'Final'):rname(H.M/Math.pow(2,H.ri+1));
+  view(topbar('<b class="lgchip">'+esc(H.rn)+' yakunlandi</b>')+'<div class="lgc"><h2 class="lgh">\u2705 Bosqich yakunlandi</h2>'+brHTML(S,0)+'<div class="lgfoot"><button class="lgb go" data-act="go">\u25b6 '+nx+'</button></div></div>')}
+function hFin(){var S=snap();view(topbar('<b class="lgchip">Turnir yakuni</b>')+'<div class="lgc"><h2 class="lgh">\ud83c\udfc6 Chempion aniqlandi!</h2>'+podium(S)+brHTML(S,0)+'<div class="lgfoot"><button class="lgb ghost" data-act="exitok">Yopish</button></div></div>')}
 
 /* =====================  ISHTIROKCHI  ===================== */
 function join(s){if(H||P)return;
   P={pin:s.pin,pid:s.pid,n:s.n,a:s.a,got:false,S:null,my:-1,i:0};var me=P;
-  openOv();view(topbar()+'<div class="lgcd"><div class="lgspin"></div><p>Turnirga ulanmoqda…</p></div>','pl');pNet()}
+  openOv();view(topbar()+'<div class="lgcd"><div class="lgspin"></div><p>Turnirga ulanmoqda\u2026</p></div>','pl');pNet()}
 function pNet(){var me=P;netOpen(me.pin,pMsg,function(s){var bad=s==='CHANNEL_ERROR'||s==='TIMED_OUT'||s==='CLOSED';conn(bad&&P&&P.got);if(s==='SUBSCRIBED'&&P)pLoop()})}
 function pHello(){if(P)send({t:'hi',p:P.pid,n:P.n,a:P.a,lg:1})}
 function pLoop(){var me=P;clearInterval(me.hl);var k=0;pHello();me.hl=setInterval(function(){if(P!==me||me.got){clearInterval(me.hl);return}if(++k>=9){clearInterval(me.hl);pFail();return}pHello()},800)}
-function pFail(){if(!P)return;view(topbar()+'<div class="lgcd"><div class="em big">📡</div><h2>Tashkilotchi bilan aloqa yo‘q</h2><p>Internetni tekshiring yoki qayta urinib ko‘ring.</p><div class="lgbtns"><button class="lgb go" data-act="retry">↻ Qayta urinish</button><button class="lgb ghost" data-act="exitok">Chiqish</button></div></div>','pl')}
-function pResume(s){P={pin:s.pin,pid:s.pid,n:s.n,a:s.a,got:false,S:null,my:-1,i:0};openOv();view(topbar()+'<div class="lgcd"><div class="lgspin"></div><p>Turnirga qayta ulanmoqda…</p></div>','pl');pNet()}
+function pFail(){if(!P)return;view(topbar()+'<div class="lgcd"><div class="em big">\ud83d\udce1</div><h2>Tashkilotchi bilan aloqa yo\u2018q</h2><p>Internetni tekshiring yoki qayta urinib ko\u2018ring.</p><div class="lgbtns"><button class="lgb go" data-act="retry">\u21bb Qayta urinish</button><button class="lgb ghost" data-act="exitok">Chiqish</button></div></div>','pl')}
+function pResume(s){P={pin:s.pin,pid:s.pid,n:s.n,a:s.a,got:false,S:null,my:-1,i:0};openOv();view(topbar()+'<div class="lgcd"><div class="lgspin"></div><p>Turnirga qayta ulanmoqda\u2026</p></div>','pl');pNet()}
 function pMsg(m){if(!P)return;if(m.to&&m.to!==P.pid)return;
   if(m.t==='s'){if(m.to||P.got)pSnap(m)}
   else if(m.t==='h'){P.lastH=Date.now();if(P.got&&P.S&&(m.ph!==P.S.ph||m.qi!==P.S.qi||m.ri!==P.S.ri))pHello()}
   else if(m.t==='k')P.ak=true;else if(m.t==='pr')pResult(m);
-  else if(m.t==='kk'){var kps=P.ps;if(kps&&kps.role==='k'&&!kps.done){kps.kicked=true;setHint('⚽ Zarba berildi! Oxirgi tanlov — 1 soniya ichida o‘zgartirishingiz mumkin.')}}
-  else if(m.t==='deny')leave(m.why==='full'?'Xona to‘lgan':'Turnir boshlangan — qo‘shilib bo‘lmaydi');
+  else if(m.t==='kk'){var kps=P.ps;if(kps&&kps.role==='k'&&!kps.done){kps.kicked=true;setHint('\u26bd Zarba berildi! Oxirgi tanlov \u2014 1 soniya ichida o\u2018zgartirishingiz mumkin.')}}
+  else if(m.t==='deny')leave(m.why==='full'?'Xona to\u2018lgan':'Turnir boshlangan \u2014 qo\u2018shilib bo\u2018lmaydi');
   else if(m.t==='end'){if(P.S&&P.S.ph==='fin')P.over=true;else leave('Tashkilotchi turnirni tugatdi')}}
 function mine(S,ri){if(!S.br)return null;var r=S.br[ri];if(!r)return null;for(var s=0;s<r.length;s++){var m=r[s];if(m[0]===P.i||m[1]===P.i)return{r:ri,s:s,m:m,side:m[0]===P.i?0:1,opp:m[0]===P.i?m[1]:m[0]}}return null}
 function pSnap(m){var first=!P.got,prev=P.S;P.got=true;P.lastH=Date.now();if(m.you)P.i=m.you;P.S=m;P.dl=performance.now()+m.rem;
@@ -278,18 +278,18 @@ function pRender(prev){var S=P.S;modalClose();clearInterval(P.tm);
   if(S.ph==='pen'){pPen(prev);return}
   disposeStage();
   ({lobby:pLobby,draw:pDraw,pre:pPre,q:pQ,rev:pRev,res:pRes,fin:pFin})[S.ph]()}
-function pLobby(){var S=P.S;view(topbar('<b class="lgchip">ID '+pinFmt(P.pin)+'</b>')+'<div class="lgc"><h2 class="lgh">'+esc(S.ttl)+'</h2><p class="lgmut">Tashkilotchi qur‘a tashlashini kuting…</p><div class="lgcnt"><b>'+S.ros.length+'</b> ishtirokchi</div><div class="lggrid">'+S.ros.map(function(r){return '<div class="lgpt'+(r[0]===P.i?' me':'')+'">'+av(r[2],52,r[1])+'<b>'+esc(r[1])+'</b></div>'}).join('')+'</div></div>','pl')}
+function pLobby(){var S=P.S;view(topbar('<b class="lgchip">ID '+pinFmt(P.pin)+'</b>')+'<div class="lgc"><h2 class="lgh">'+esc(S.ttl)+'</h2><p class="lgmut">Tashkilotchi qur\u2018a tashlashini kuting\u2026</p><div class="lgcnt"><b>'+S.ros.length+'</b> ishtirokchi</div><div class="lggrid">'+S.ros.map(function(r){return '<div class="lgpt'+(r[0]===P.i?' me':'')+'">'+av(r[2],52,r[1])+'<b>'+esc(r[1])+'</b></div>'}).join('')+'</div></div>','pl')}
 function status(S,mm){var ros=rosMap(S);
-  if(!mm){var out=S.ri>=0&&S.br&&S.br[S.ri]&&!mine(S,S.ri);return{e:out?'👀':'⏳',t:out?'Siz turnirdan chiqdingiz':'Kuting',p:out?'Turnirni tomosha qiling — chempion kim bo‘ladi?':'Bosqich boshlanishini kuting.'}}
-  if(mm.m[5]===1)return{e:'🎟️',t:'Omadli chipta (BYE)!',p:'Siz keyingi bosqichga avtomatik o‘tdingiz, raqibingizni kuting.'};
-  if(mm.m[5]===4)return{e:mm.m[2]===P.i?'🏆':'😔',t:mm.m[2]===P.i?'Siz yutdingiz!':'Mag‘lub bo‘ldingiz',p:'Boshqa duellar tugashini kuting.'};
+  if(!mm){var out=S.ri>=0&&S.br&&S.br[S.ri]&&!mine(S,S.ri);return{e:out?'\ud83d\udc40':'\u23f3',t:out?'Siz turnirdan chiqdingiz':'Kuting',p:out?'Turnirni tomosha qiling \u2014 chempion kim bo\u2018ladi?':'Bosqich boshlanishini kuting.'}}
+  if(mm.m[5]===1)return{e:'\ud83c\udf9f\ufe0f',t:'Omadli chipta (BYE)!',p:'Siz keyingi bosqichga avtomatik o\u2018tdingiz, raqibingizni kuting.'};
+  if(mm.m[5]===4)return{e:mm.m[2]===P.i?'\ud83c\udfc6':'\ud83d\ude14',t:mm.m[2]===P.i?'Siz yutdingiz!':'Mag\u2018lub bo\u2018ldingiz',p:'Boshqa duellar tugashini kuting.'};
   return null}
 function pWait(S,mm){var st=status(S,mm),sc='';view(topbar('<b class="lgchip">'+esc(S.rn)+'</b>')+'<div class="lgc"><div class="lgcd inl"><div class="em big">'+st.e+'</div><h2>'+st.t+'</h2><p>'+st.p+'</p></div>'+(S.br?brHTML(S,P.i):'')+'</div>','pl')}
 function pDraw(){var S=P.S,mm=mine(S,0),ros=rosMap(S),opp=mm&&mm.opp?ros[mm.opp]:null;
-  view(topbar()+'<div class="lgc"><div class="lgcd inl"><div class="em big">🎲</div><h2>Qur‘a tashlandi!</h2>'+(mm&&opp?'<p>Sizning raqibingiz:</p>'+vsBar(ros[P.i],opp,[0,0]):mm&&mm.m[5]===1?'<p>🎟️ Siz omadli chipta (BYE) oldingiz — keyingi bosqichga avtomatik o‘tasiz!</p>':'<p>Natijani kuting.</p>')+'</div>'+brHTML(S,P.i)+'</div>','pl');SX.draw()}
+  view(topbar()+'<div class="lgc"><div class="lgcd inl"><div class="em big">\ud83c\udfb2</div><h2>Qur\u2018a tashlandi!</h2>'+(mm&&opp?'<p>Sizning raqibingiz:</p>'+vsBar(ros[P.i],opp,[0,0]):mm&&mm.m[5]===1?'<p>\ud83c\udf9f\ufe0f Siz omadli chipta (BYE) oldingiz \u2014 keyingi bosqichga avtomatik o\u2018tasiz!</p>':'<p>Natijani kuting.</p>')+'</div>'+brHTML(S,P.i)+'</div>','pl');SX.draw()}
 function pPre(){var S=P.S,mm=mine(S,S.ri),ros=rosMap(S);
   if(!mm||mm.m[5]!==2){pWait(S,mm);return}
-  view(topbar()+'<div class="lgcd"><small>'+esc(S.rn)+'</small><div class="lgbig sm">Duel!</div>'+vsBar(ros[P.i],ros[mm.opp],[0,0])+'<p>Tayyor bo‘ling — '+S.nq+' ta savol</p></div>','pl');SX.ok()}
+  view(topbar()+'<div class="lgcd"><small>'+esc(S.rn)+'</small><div class="lgbig sm">Duel!</div>'+vsBar(ros[P.i],ros[mm.opp],[0,0])+'<p>Tayyor bo\u2018ling \u2014 '+S.nq+' ta savol</p></div>','pl');SX.ok()}
 function scoreOf(mm){return mm.side?[mm.m[4],mm.m[3]]:[mm.m[3],mm.m[4]]}
 function pQ(){var S=P.S,mm=mine(S,S.ri);if(!mm||mm.m[5]!==2){pWait(S,mm);return}var ros=rosMap(S);
   view(topbar('<b class="lgchip">'+esc(S.rn)+'</b><b class="lgchip">'+(S.qi+1)+' / '+S.nq+'</b>')+'<div class="lgc lgpq">'+vsBar(ros[P.i],ros[mm.opp],scoreOf(mm))+'<div class="lgbar"><i id="lgbari"></i></div><div class="lgsec" id="lgsec"></div><h2 class="lgq p">'+esc(S.q)+'</h2><div class="lgops" id="lgops">'+optsHTML(S,P.my,false)+'</div></div>','pl');
@@ -297,27 +297,27 @@ function pQ(){var S=P.S,mm=mine(S,S.ri);if(!mm||mm.m[5]!==2){pWait(S,mm);return}
 function pAnswer(k){if(!P||!P.S||P.S.ph!=='q'||P.my>=0)return;P.my=k;SX.draw();var o=$('#lgops');if(o)o.innerHTML=optsHTML(P.S,k,false);
   var key=P.S.ri*100+P.S.qi,tries=0;P.ak=false;(function go(){if(!P||P.S.ph!=='q'||P.S.ri*100+P.S.qi!==key||P.ak||tries>4)return;tries++;send({t:'ans',p:P.pid,qi:key,c:k});setTimeout(go,800)})()}
 function pRev(){var S=P.S,mm=mine(S,S.ri);if(!mm||mm.m[5]!==2){pWait(S,mm);return}var ros=rosMap(S),okk=P.my===S.c;if(S.qi>=S.nq-1&&mm.m[3]===mm.m[4])loadStage();
-  view(topbar('<b class="lgchip">'+esc(S.rn)+'</b><b class="lgchip">'+(S.qi+1)+' / '+S.nq+'</b>')+'<div class="lgc lgpq">'+vsBar(ros[P.i],ros[mm.opp],scoreOf(mm))+'<div class="lgverdict '+(okk?'y':'n')+'">'+(okk?'✅ To‘g‘ri! +1':P.my<0?'⏱ Javob berilmadi':'❌ Noto‘g‘ri')+'</div><h2 class="lgq p sm">'+esc(S.q)+'</h2><div class="lgops">'+optsHTML(S,P.my,true)+'</div></div>','pl');if(okk)SX.ok();else SX.bad()}
+  view(topbar('<b class="lgchip">'+esc(S.rn)+'</b><b class="lgchip">'+(S.qi+1)+' / '+S.nq+'</b>')+'<div class="lgc lgpq">'+vsBar(ros[P.i],ros[mm.opp],scoreOf(mm))+'<div class="lgverdict '+(okk?'y':'n')+'">'+(okk?'\u2705 To\u2018g\u2018ri! +1':P.my<0?'\u23f1 Javob berilmadi':'\u274c Noto\u2018g\u2018ri')+'</div><h2 class="lgq p sm">'+esc(S.q)+'</h2><div class="lgops">'+optsHTML(S,P.my,true)+'</div></div>','pl');if(okk)SX.ok();else SX.bad()}
 function pRes(){var S=P.S,mm=mine(S,S.ri),e,t,p;
   if(!mm){var o=status(S,mm);e=o.e;t=o.t;p=o.p}
-  else if(mm.m[5]===1){e='🎟️';t='Omadli chipta (BYE)!';p='Siz keyingi bosqichga avtomatik o‘tdingiz.'}
-  else if(mm.m[2]===P.i){e='🏆';t='Yutdingiz! Keyingi bosqichga chiqdingiz';p='Tashkilotchi keyingi bosqichni boshlashini kuting.'}
-  else{e='😔';t='Mag‘lub bo‘ldingiz';p='Turnirni tomosha qiling — chempion kim bo‘ladi?'}
+  else if(mm.m[5]===1){e='\ud83c\udf9f\ufe0f';t='Omadli chipta (BYE)!';p='Siz keyingi bosqichga avtomatik o\u2018tdingiz.'}
+  else if(mm.m[2]===P.i){e='\ud83c\udfc6';t='Yutdingiz! Keyingi bosqichga chiqdingiz';p='Tashkilotchi keyingi bosqichni boshlashini kuting.'}
+  else{e='\ud83d\ude14';t='Mag\u2018lub bo\u2018ldingiz';p='Turnirni tomosha qiling \u2014 chempion kim bo\u2018ladi?'}
   view(topbar('<b class="lgchip">'+esc(S.rn)+' yakunlandi</b>')+'<div class="lgc"><div class="lgcd inl"><div class="em big">'+e+'</div><h2>'+t+'</h2><p>'+p+'</p></div>'+brHTML(S,P.i)+'</div>','pl');if(mm&&mm.m[2]===P.i)SX.goal()}
-function pFin(){var S=P.S,f=S.fin||[],k=f.indexOf(P.i);view(topbar('<b class="lgchip">Turnir yakuni</b>')+'<div class="lgc"><h2 class="lgh">'+(k===0?'🏆 Siz chempionsiz!':k>0?'🏅 Siz '+(k+1)+'-o‘rinni egalladingiz!':'Turnir yakunlandi')+'</h2>'+podium(S)+brHTML(S,P.i)+'<div class="lgfoot"><button class="lgb ghost" data-act="exitok">Chiqish</button></div></div>','pl');if(k===0)SX.goal()}
+function pFin(){var S=P.S,f=S.fin||[],k=f.indexOf(P.i);view(topbar('<b class="lgchip">Turnir yakuni</b>')+'<div class="lgc"><h2 class="lgh">'+(k===0?'\ud83c\udfc6 Siz chempionsiz!':k>0?'\ud83c\udfc5 Siz '+(k+1)+'-o\u2018rinni egalladingiz!':'Turnir yakunlandi')+'</h2>'+podium(S)+brHTML(S,P.i)+'<div class="lgfoot"><button class="lgb ghost" data-act="exitok">Chiqish</button></div></div>','pl');if(k===0)SX.goal()}
 
 /* ----- penalti: ishtirokchi ekrani (sahna alohida faylda, faqat kerak bo'lganda yuklanadi) ----- */
 function disposeStage(){var ps=P&&P.ps;if(ps&&ps.st){try{ps.st.destroy()}catch(e){}}if(P){P.ps=null;P.penKey=''}}
-var HINT_S='⚽ To‘pdan boshlab darvozaga qarab barmog‘ingiz bilan chizing. Tez chizsangiz — zarba kuchli, lekin aniqlik kamayadi. Egri chizsangiz — to‘p burama uchadi!',
-    HINT_K='🧤 Darvozabon: to‘p qayerga uchishini taxmin qilib darvoza ustiga bosing. Zarbadan keyin ham 1 soniya ichida tanlovni o‘zgartirish mumkin.';
+var HINT_S='\u26bd To\u2018pdan boshlab darvozaga qarab barmog\u2018ingiz bilan chizing. Tez chizsangiz \u2014 zarba kuchli, lekin aniqlik kamayadi. Egri chizsangiz \u2014 to\u2018p burama uchadi!',
+    HINT_K='\ud83e\udde4 Darvozabon: to\u2018p qayerga uchishini taxmin qilib darvoza ustiga bosing. Zarbadan keyin ham 1 soniya ichida tanlovni o\u2018zgartirish mumkin.';
 function pPen(prev){var S=P.S,mm=mine(S,S.ri);
-  if(!mm||mm.m[5]!==3){disposeStage();var st=status(S,mm)||{e:'⚽',t:'Penaltilar seriyasi',p:'Boshqa duellar tugashini kuting.'};
-    view(topbar('<b class="lgchip">⚽ Penalti</b>')+'<div class="lgc"><div class="lgcd inl"><div class="em big">'+st.e+'</div><h2>'+st.t+'</h2><p>'+st.p+'</p></div>'+brHTML(S,P.i)+'</div>','pl');return}
+  if(!mm||mm.m[5]!==3){disposeStage();var st=status(S,mm)||{e:'\u26bd',t:'Penaltilar seriyasi',p:'Boshqa duellar tugashini kuting.'};
+    view(topbar('<b class="lgchip">\u26bd Penalti</b>')+'<div class="lgc"><div class="lgcd inl"><div class="em big">'+st.e+'</div><h2>'+st.t+'</h2><p>'+st.p+'</p></div>'+brHTML(S,P.i)+'</div>','pl');return}
   var pn=mm.m[7],ros=rosMap(S),key=mm.s+':'+pn[4]+':'+pn[5]+':'+pn[0],shooter=pn[0]===mm.side,ps=P.ps;
   if(ps&&ps.mm.r===mm.r&&ps.mm.s===mm.s&&$('#lgstg')){ps.mm=mm;pPenHead(S,mm,pn,ros);
     if(pn[1]==='aim'&&P.penKey!==key){if(ps.anim||(ps.st&&ps.st.busy()))return;newKick(ps,shooter?'s':'k',key)}return}
   disposeStage();P.penKey=key;
-  view(topbar('<b class="lgchip">⚽ Penalti · '+(pn[7]||3)+' ta zarba</b>')+'<div class="lgc lgpk"><div id="lgpkh"></div><div class="lgstage" id="lgstg"><div class="lgload" id="lgload">🏟️ Stadion yuklanmoqda…</div><canvas id="lgcv" hidden></canvas></div><div class="lghint" id="lghint"></div><div id="lgfb"></div></div>','pl');
+  view(topbar('<b class="lgchip">\u26bd Penalti \u00b7 '+(pn[7]||3)+' ta zarba</b>')+'<div class="lgc lgpk"><div id="lgpkh"></div><div class="lgstage" id="lgstg"><div class="lgload" id="lgload">\ud83c\udfdf\ufe0f Stadion yuklanmoqda\u2026</div><canvas id="lgcv" hidden></canvas></div><div class="lghint" id="lghint"></div><div id="lgfb"></div></div>','pl');
   var ps2=P.ps={mm:mm,role:shooter?'s':'k',trail:[],drawing:false,sent:false,done:false,anim:null,dv:null,hold:false,st:null,pend:null,fb:false,ld:0};
   setHint(shooter?HINT_S:HINT_K);pPenHead(S,mm,pn,ros);
   loadStage().then(function(ok){if(!P||P.ps!==ps2||!$('#lgcv'))return;
@@ -329,12 +329,12 @@ function newKick(ps,role,key){P.penKey=key;ps.role=role;ps.sent=false;ps.done=fa
 function pPenHead(S,mm,pn,ros){var h=$('#lgpkh');if(!h||(P.ps&&P.ps.hold))return;var B=mm.opp,my=mm.side?pn[3]:pn[2],op=mm.side?pn[2]:pn[3];
   var rs=function(sd){return (pn[6]||[]).filter(function(x){return x[0]===sd}).map(function(x){return x[1]})},hd={l:{n:(ros[P.i]||[0,'?'])[1],g:my,r:rs(mm.side)},r:{n:(ros[B]||[0,'?'])[1],g:op,r:rs(1-mm.side)},N:pn[7]||3,k:mm.side?pn[5]:pn[4],rn:S.rn||'',lab:'Penalti'};
   if(P.ps){P.ps.hudD=hd;if(P.ps.st&&P.ps.st.hud)P.ps.st.hud(hd)}
-  function dots(side){return (pn[6]||[]).filter(function(x){return x[0]===side}).map(function(x){return x[1]===1?'⚽':x[1]===2?'🧤':'❌'}).join('')}
+  function dots(side){return (pn[6]||[]).filter(function(x){return x[0]===side}).map(function(x){return x[1]===1?'\u26bd':x[1]===2?'\ud83e\udde4':'\u274c'}).join('')}
   h.innerHTML='<div class="lgvs sm"><div class="s"><b>'+esc((ros[P.i]||[0,'?'])[1])+'</b><span class="dots">'+dots(mm.side)+'</span></div><div class="sc"><em>'+my+'</em><span>:</span><em>'+op+'</em></div><div class="s"><b>'+esc((ros[B]||[0,'?'])[1])+'</b><span class="dots">'+dots(1-mm.side)+'</span></div></div>'}
 function setHint(t){var h=$('#lghint');if(h)h.textContent=t}
 function setDive(ps,p){var g=ps.st.toGoal(p.x,p.y),u=clamp((g.x/3.66+1)/2,0,1),v=clamp(g.y/2.6,0,1);ps.dv=[u,v];ps.st.setDive(u,v);var n=Date.now();if(!ps.ld||n-ps.ld>130){ps.ld=n;sendDive(ps)}}
 function sendDive(ps){if(!P||P.ps!==ps||!ps.dv||ps.anim||ps.done)return;send({t:'dive',p:P.pid,mi:[ps.mm.r,ps.mm.s],x:ps.dv[0],y:ps.dv[1]})}
-/* chizilgan yo'l → zarba: tezlik = kuch, egrilik = burama (spin); kuchli zarba aniqligi pasayadi */
+/* chizilgan yo'l \u2192 zarba: tezlik = kuch, egrilik = burama (spin); kuchli zarba aniqligi pasayadi */
 function mkShot2(ps,tr){var n=tr.length;if(n<4)return null;var a=tr[0],b=tr[n-1],dx=b.x-a.x,dy=b.y-a.y,L=Math.hypot(dx,dy);if(L<90||dy>-40)return null;
   var v=L/Math.max(60,b.t-a.t),sp=clamp(17+(v-.5)*9,17,31),pw=(sp-17)/14,ux=dx/L,uy=dy/L,nx=-uy,ny=ux,bow=0,i;
   for(i=1;i<n-1;i++){var d=(tr[i].x-a.x)*nx+(tr[i].y-a.y)*ny;if(Math.abs(d)>Math.abs(bow))bow=d}bow/=L;
@@ -342,16 +342,16 @@ function mkShot2(ps,tr){var n=tr.length;if(n<4)return null;var a=tr[0],b=tr[n-1]
   return{tx:Math.round(clamp(g.x+gauss()*sg,-8,8)*100)/100,ty:Math.round(clamp(g.y+gauss()*sg*.7,0,5)*100)/100,sp:Math.round(sp*10)/10,cu:Math.round(-clamp(bow*2.4,-1,1)*100)/100}}
 function bindStage(){var cv=$('#lgcv');if(!cv)return;
   cv.addEventListener('pointerdown',function(e){var ps=P&&P.ps;if(!ps||!ps.st||ps.anim||ps.hold||ps.done)return;ps.st.unlock();e.preventDefault();var p=ps.st.pos(e);
-    if(ps.role==='s'){if(ps.sent)return;if(ps.st.onSpot(p.x,p.y)){ps.drawing=true;ps.trail=[p];ps.st.setTrail(ps.trail);try{cv.setPointerCapture(e.pointerId)}catch(x){}}else say('Avval to‘pni bosib turing')}
+    if(ps.role==='s'){if(ps.sent)return;if(ps.st.onSpot(p.x,p.y)){ps.drawing=true;ps.trail=[p];ps.st.setTrail(ps.trail);try{cv.setPointerCapture(e.pointerId)}catch(x){}}else say('Avval to\u2018pni bosib turing')}
     else{ps.drawing=true;setDive(ps,p);try{cv.setPointerCapture(e.pointerId)}catch(x){}}});
   cv.addEventListener('pointermove',function(e){var ps=P&&P.ps;if(!ps||!ps.drawing||!ps.st)return;var p=ps.st.pos(e);if(ps.role==='s'){if(ps.trail.length<300)ps.trail.push(p)}else setDive(ps,p)});
   function up(){var ps=P&&P.ps;if(!ps||!ps.drawing)return;ps.drawing=false;
-    if(ps.role==='s'){var sh=mkShot2(ps,ps.trail);ps.st.setTrail(null);if(!sh){ps.trail=[];say('To‘pdan darvoza tomon uzunroq chizing');return}ps.sent=true;ps.shot=sh;fireKick(ps,sh)}
-    else if(ps.dv){sendDive(ps);setTimeout(function(){sendDive(ps)},600);setHint(ps.kicked?'🧤 Tanlov yangilandi!':'🧤 Tanlandi! Zarbani kuting… (o‘zgartirish mumkin)')}}
+    if(ps.role==='s'){var sh=mkShot2(ps,ps.trail);ps.st.setTrail(null);if(!sh){ps.trail=[];say('To\u2018pdan darvoza tomon uzunroq chizing');return}ps.sent=true;ps.shot=sh;fireKick(ps,sh)}
+    else if(ps.dv){sendDive(ps);setTimeout(function(){sendDive(ps)},600);setHint(ps.kicked?'\ud83e\udde4 Tanlov yangilandi!':'\ud83e\udde4 Tanlandi! Zarbani kuting\u2026 (o\u2018zgartirish mumkin)')}}
   cv.addEventListener('pointerup',up);cv.addEventListener('pointercancel',up)}
-function fireKick(ps,sh){var tries=0,key=P.penKey;setHint('⚽ Zarba berildi! Darvozabon so‘nggi tanlovini qilmoqda…');
+function fireKick(ps,sh){var tries=0,key=P.penKey;setHint('\u26bd Zarba berildi! Darvozabon so\u2018nggi tanlovini qilmoqda\u2026');
   (function go(){if(!P||P.ps!==ps||P.penKey!==key||ps.anim||tries>4)return;tries++;P.ak=false;send({t:'kick',p:P.pid,mi:[ps.mm.r,ps.mm.s],k:sh});setTimeout(function(){if(!P.ak)go()},900)})()}
-function resText(m,ps){var me=m.sh===ps.mm.side;return m.r==='goal'?(me?'GOL! ⚽🔥':'Gol kiritdingiz… 😬'):m.r==='save'?(me?'Darvozabon qaytardi 🧤':'SEYV! 🧤🔥'):!m.k?'Vaqt tugadi — zarba berilmadi ⏱':(m.pt?'Ustun/to‘sin — gol emas':'Aut ❌')}
+function resText(m,ps){var me=m.sh===ps.mm.side;return m.r==='goal'?(me?'GOL! \u26bd\ud83d\udd25':'Gol kiritdingiz\u2026 \ud83d\ude2c'):m.r==='save'?(me?'Darvozabon qaytardi \ud83e\udde4':'SEYV! \ud83e\udde4\ud83d\udd25'):!m.k?'Vaqt tugadi \u2014 zarba berilmadi \u23f1':(m.pt?'Ustun/to\u2018sin \u2014 gol emas':'Aut \u274c')}
 function pResult(m){var ps=P&&P.ps;if(!ps||ps.anim||!m.mi||m.mi[0]!==ps.mm.r||m.mi[1]!==ps.mm.s)return;
   ps.anim=m;ps.hold=true;ps.sent=true;ps.drawing=false;if(ps.st)ps.st.setTrail(null);
   if(!ps.st){if(ps.fb){setHint(resText(m,ps));finRes(ps)}else ps.pend=m;return}
@@ -360,18 +360,18 @@ function playResult(ps,m){if(!P||P.ps!==ps)return;ps.anim=m;ps.hold=true;setHint
   try{ok=ps.st.play({k:m.k,d:m.d,seed:m.seed,r:m.r,pt:m.pt},function(){setHint(resText(m,ps));finRes(ps)})}catch(e){}
   if(!ok){setHint(resText(m,ps));finRes(ps)}}
 function finRes(ps){if(!P||P.ps!==ps)return;ps.anim=null;ps.hold=false;ps.done=true;if(P.S&&P.S.ph==='pen')pPen()}
-/* sahna yuklanmasa — oddiy zona tanlash (o'yin to'xtamasligi uchun) */
-function fallbackUI(ps){ps.fb=true;var l=$('#lgload');if(l)l.textContent='⚠️ Stadion yuklanmadi — oddiy rejim';fbRender(ps)}
-function fbRender(ps){var fb=$('#lgfb');if(!fb)return;var h='<div class="lgzg">',r,c2,nm=['Chap','O‘rta','O‘ng'];
+/* sahna yuklanmasa \u2014 oddiy zona tanlash (o'yin to'xtamasligi uchun) */
+function fallbackUI(ps){ps.fb=true;var l=$('#lgload');if(l)l.textContent='\u26a0\ufe0f Stadion yuklanmadi \u2014 oddiy rejim';fbRender(ps)}
+function fbRender(ps){var fb=$('#lgfb');if(!fb)return;var h='<div class="lgzg">',r,c2,nm=['Chap','O\u2018rta','O\u2018ng'];
   for(r=1;r>=0;r--)for(c2=0;c2<3;c2++)h+='<button data-act="zone" data-u="'+(c2===0?.12:c2===1?.5:.88)+'" data-v="'+(r?.85:.25)+'">'+(r?'Yuqori ':'Past ')+nm[c2]+'</button>';
-  fb.innerHTML=h+'</div>';setHint(ps.role==='s'?'⚽ Zarba yo‘nalishini tanlang':'🧤 Qayerga tashlanishni tanlang')}
+  fb.innerHTML=h+'</div>';setHint(ps.role==='s'?'\u26bd Zarba yo\u2018nalishini tanlang':'\ud83e\udde4 Qayerga tashlanishni tanlang')}
 function fbZone(b){var ps=P&&P.ps;if(!ps||!ps.fb||ps.sent||ps.done)return;var u=+b.dataset.u,v=+b.dataset.v;
   if(ps.role==='s'){ps.sent=true;var sh={tx:(u-.5)*2*3.66*.8,ty:v*2.6*.85,sp:24,cu:0};ps.shot=sh;fireKick(ps,sh)}
   else{ps.dv=[u,v];sendDive(ps);setTimeout(function(){sendDive(ps)},500);setTimeout(function(){sendDive(ps)},1000)}
   var fb=$('#lgfb');if(fb&&ps.role==='s')fb.querySelectorAll('button').forEach(function(x){x.disabled=true})}
 
 /* ===== tugmalar ===== */
-function setSnd(v){SND=v;if(H){H.set.snd=v;persist()}var b=$('#lgsnd');if(b)b.textContent=v?'🔊':'🔇'}
+function setSnd(v){SND=v;if(H){H.set.snd=v;persist()}var b=$('#lgsnd');if(b)b.textContent=v?'\ud83d\udd0a':'\ud83d\udd07'}
 function onClick(e){var m=$('#lgmod');if(e.target===m){modalClose();return}
   var b=e.target.closest('[data-act]');if(!b)return;var a=b.dataset.act,v=b.dataset.v;
   switch(a){
