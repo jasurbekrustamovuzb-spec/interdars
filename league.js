@@ -58,7 +58,7 @@ function mkShot(tr){var n=tr.length;if(n<4)return null;var a=tr[0],b=tr[n-1],dx=
 /* ===== penalti sahnasi: faqat penalti kerak bo'lganda yuklanadi (bosh sahifaga ta'sir qilmaydi) ===== */
 var STG={p:null,ok:false,err:false},PK_RES=5600,PK_WIN=1000,PK_AIM=28000;
 function loadStage(){if(window.PenaltyStage){STG.ok=true;return Promise.resolve(true)}if(STG.p)return STG.p;
-  STG.p=new Promise(function(res){var sc=document.createElement('script');sc.src='/penalty-stage.js?v=8';sc.async=true;
+  STG.p=new Promise(function(res){var sc=document.createElement('script');sc.src='/penalty-stage.js?v=9';sc.async=true;
     sc.onload=function(){if(!window.PenaltyStage){STG.ok=false;STG.err=true;STG.p=null;res(false);return}window.PenaltyStage.load().then(function(ok){STG.ok=!!ok;STG.err=!ok;if(!ok)STG.p=null;res(!!ok)})};
     sc.onerror=function(){STG.err=true;STG.p=null;try{sc.remove()}catch(e){}res(false)};document.head.appendChild(sc)});return STG.p}
 /* sahna yuklanmasa: oddiy hisob (zaxira) */
@@ -250,7 +250,7 @@ function cardsHTML(){var S=snap(),ros=rosMap(S),r=H.rounds[H.ri],byes=r.filter(f
   return r.filter(function(m){return m.st!=='bye'}).map(function(m){return cardHTML(m,ros)}).join('')+(byes.length?'<div class="lgbyes">\ud83c\udf9f\ufe0f BYE: '+byes.map(function(m){return esc((ros[m.a]||[0,'?'])[1])}).join(', ')+'</div>':'')}
 function hCards(){var c=$('#lgduels');if(c&&H&&(H.ph==='q'||H.ph==='rev'||H.ph==='pen')){c.innerHTML=cardsHTML();obs(c)}}
 function hQ(){var q=H.cq,rev=H.ph==='rev';view(topbar('<b class="lgchip">'+esc(H.rn)+'</b><b class="lgchip">'+(H.qi+1)+' / '+H.nq+'</b>')+'<div class="lgc"><div class="lgbar"><i id="lgbari" style="width:'+(rev?0:100)+'%"></i></div><div class="lgsec" id="lgsec">'+(rev?'':H.set.time)+'</div><h1 class="lgq">'+esc(q.q)+'</h1><div class="lgops host">'+optsHTML({a:q.a,c:q.c},-1,rev)+'</div><div class="lgduels" id="lgduels">'+cardsHTML()+'</div></div>');obs($('#lgduels'))}
-function hPen(){var N=H.set.pk||3;view(topbar('<b class="lgchip">'+esc(H.rn)+'</b><b class="lgchip">\u26bd Penaltilar seriyasi</b>')+'<div class="lgc"><h2 class="lgh">Durang! Penaltilar seriyasi</h2><p class="lgmut">Ikkala o\u2018yinchi navbat bilan zarba beradi va darvozani himoya qiladi. '+N+' tadan zarba; teng bo\u2018lsa \u2014 kimdir yutguncha davom etadi.</p><div class="lgstage"><div class="lgload" id="lghload">\ud83c\udfdf\ufe0f Stadion yuklanmoqda\u2026</div><canvas id="lghcv" hidden></canvas></div><div class="lgcr">Darvozabon modeli: <a href="https://sketchfab.com/3d-models/goalkeeper-stylized-rig-and-animation-7de86f9c36f84152a777f27a73646ada" target="_blank" rel="noopener">Goalkeeper Stylized</a> \u2014 P-Vi.Art (Sketchfab), <a href="http://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a>; o\u2018yin uchun moslashtirilgan</div><div class="lghlab" id="lghlab"></div><div class="lgduels" id="lgduels">'+cardsHTML()+'</div></div>');obs($('#lgduels'));hStageOn()}
+function hPen(){var N=H.set.pk||3;view(topbar('<b class="lgchip">'+esc(H.rn)+'</b><b class="lgchip">\u26bd Penaltilar seriyasi</b>')+'<div class="lgc"><h2 class="lgh">Durang! Penaltilar seriyasi</h2><p class="lgmut">Ikkala o\u2018yinchi navbat bilan zarba beradi va darvozani himoya qiladi. '+N+' tadan zarba; teng bo\u2018lsa \u2014 kimdir yutguncha davom etadi.</p><div class="lgstage"><div class="lgload" id="lghload">\ud83c\udfdf\ufe0f Stadion yuklanmoqda\u2026</div><canvas id="lghcv" hidden></canvas></div><div class="lghlab" id="lghlab"></div><div class="lgduels" id="lgduels">'+cardsHTML()+'</div></div>');obs($('#lgduels'));hStageOn()}
 function hRes(){var S=snap(),nr=H.rounds[H.ri+1],nx=H.ri+1===H.R-1?(nr.length>1?'Final va 3-o\u2018rin':'Final'):rname(H.M/Math.pow(2,H.ri+1));
   view(topbar('<b class="lgchip">'+esc(H.rn)+' yakunlandi</b>')+'<div class="lgc"><h2 class="lgh">\u2705 Bosqich yakunlandi</h2>'+brHTML(S,0)+'<div class="lgfoot"><button class="lgb go" data-act="go">\u25b6 '+nx+'</button></div></div>')}
 function hFin(){var S=snap();view(topbar('<b class="lgchip">Turnir yakuni</b>')+'<div class="lgc"><h2 class="lgh">\ud83c\udfc6 Chempion aniqlandi!</h2>'+podium(S)+brHTML(S,0)+'<div class="lgfoot"><button class="lgb ghost" data-act="exitok">Yopish</button></div></div>')}
@@ -319,7 +319,7 @@ function pPen(prev){var S=P.S,mm=mine(S,S.ri);
   if(ps&&ps.mm.r===mm.r&&ps.mm.s===mm.s&&$('#lgstg')){ps.mm=mm;pPenHead(S,mm,pn,ros);
     if(pn[1]==='aim'&&P.penKey!==key){if(ps.anim||(ps.st&&ps.st.busy()))return;newKick(ps,shooter?'s':'k',key)}return}
   disposeStage();P.penKey=key;
-  view(topbar('<b class="lgchip">\u26bd Penalti \u00b7 '+(pn[7]||3)+' ta zarba</b>')+'<div class="lgc lgpk"><div id="lgpkh"></div><div class="lgstage" id="lgstg"><div class="lgload" id="lgload">\ud83c\udfdf\ufe0f Stadion yuklanmoqda\u2026</div><canvas id="lgcv" hidden></canvas></div><div class="lghint" id="lghint"></div><div id="lgfb"></div><div class="lgcr">Darvozabon modeli: <a href="https://sketchfab.com/3d-models/goalkeeper-stylized-rig-and-animation-7de86f9c36f84152a777f27a73646ada" target="_blank" rel="noopener">Goalkeeper Stylized</a> \u2014 P-Vi.Art (Sketchfab), <a href="http://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a>; o\u2018yin uchun moslashtirilgan</div></div>','pl');
+  view(topbar('<b class="lgchip">\u26bd Penalti \u00b7 '+(pn[7]||3)+' ta zarba</b>')+'<div class="lgc lgpk"><div id="lgpkh"></div><div class="lgstage" id="lgstg"><div class="lgload" id="lgload">\ud83c\udfdf\ufe0f Stadion yuklanmoqda\u2026</div><canvas id="lgcv" hidden></canvas></div><div class="lghint" id="lghint"></div><div id="lgfb"></div></div>','pl');
   var ps2=P.ps={mm:mm,role:shooter?'s':'k',trail:[],drawing:false,sent:false,done:false,anim:null,dv:null,hold:false,st:null,pend:null,fb:false,ld:0,aimAt:Date.now(),kq:0};
   setHint(shooter?HINT_S:HINT_K);pPenHead(S,mm,pn,ros);
   loadStage().then(function(ok){if(!P||P.ps!==ps2||!$('#lgcv'))return;
@@ -392,7 +392,7 @@ function onClick(e){var m=$('#lgmod');if(e.target===m){modalClose();return}
 /* ===== ochiq API ===== */
 window.League={host:host,join:function(s){setTimeout(function(){join(s)},0)},active:function(){return !!(H||P)},open:function(){if(H||P)openOv()},_t:{mkBracket:mkBracket,penDone:penDone,mkShot:mkShot,rname:rname,fbResolve:fbResolve}};
 function boot(){if(LQ().active&&LQ().active())return;var h=ls(LSH),p=ls(LSP);
-  if(h&&h.pin&&Date.now()-h.ts<STALE){H=h;hBoot();return}else if(h)lsDel(LSH);
+  if(h&&h.pin&&h.ph==='lobby'&&Date.now()-h.ts<STALE){H=h;hBoot();return}else if(h)lsDel(LSH);
   if(p&&p.pin&&Date.now()-p.ts<STALE){pResume(p);return}else if(p)lsDel(LSP)}
 if(typeof document!=='undefined'&&document.body)setTimeout(boot,500);
 
