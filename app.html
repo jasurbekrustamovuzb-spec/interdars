@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="uz" data-role="general"><script>try{var _u=JSON.parse(localStorage.getItem("idUser")||"null");var _m=location.hash.match(/^#([tj])=(\d{6})$/);if(_m){localStorage.setItem(_m[1]==="j"?"idPendingLive":"idPending",_m[2]);if(_m[1]==="j"){document.documentElement.dataset.liveJoinPending="1";document.documentElement.style.visibility="hidden";setTimeout(function(){if(document.documentElement.dataset.liveJoinPending){document.documentElement.style.visibility="";delete document.documentElement.dataset.liveJoinPending}},12000)}}var _s=Object.keys(localStorage).some(function(k){return /^sb-.*-auth-token$/.test(k)})||/[?&]code=|access_token=/.test(location.search+location.hash);if(!(_u&&_u.name)&&!_s&&!(_m&&_m[1]==="j"))location.replace("/")}catch(e){location.replace("/")}</script>
+<html lang="uz" data-role="general"><script>try{var _u=JSON.parse(localStorage.getItem("idUser")||"null");var _m=location.hash.match(/^#([tj])=(\d{6})$/);if(_m){localStorage.setItem(_m[1]==="j"?"idPendingLive":"idPending",_m[2]);if(_m[1]==="j"){document.documentElement.dataset.liveJoinPending="1";setTimeout(function(){if(document.documentElement.dataset.liveJoinPending==="1"&&window.showLiveJoinFailure)window.showLiveJoinFailure("Kirish yoki sahifa yuklanishi cho‘zildi. Internetni tekshirib, qayta urinib ko‘ring.")},10000)}}var _s=Object.keys(localStorage).some(function(k){return /^sb-.*-auth-token$/.test(k)})||/[?&]code=|access_token=/.test(location.search+location.hash);if(!(_u&&_u.name)&&!_s&&!(_m&&_m[1]==="j"))location.replace("/")}catch(e){location.replace("/")}</script>
 <script>try{var r=localStorage.getItem("idRole");if(r)document.documentElement.setAttribute("data-role",r)}catch(e){}</script>
 <head>
 <script>try{var th=localStorage.getItem("idTheme");if(th==="dark"||th==="light")document.documentElement.setAttribute("data-theme",th)}catch(e){}</script>
@@ -903,9 +903,26 @@ html{background:var(--bg)}
 .jq-av-initial,.jq-av-fallback{position:absolute;inset:0;display:grid;place-items:center}
 .jq-av-initial{font-size:calc(var(--s,56px)*.48);font-weight:900;line-height:1;color:#fff;text-shadow:0 2px 5px rgba(0,0,0,.25)}
 .jq-av-fallback{font-size:calc(var(--s,56px)*.58)}
+
+#liveJoinBoot{display:none;position:fixed;inset:0;z-index:100000;align-items:center;justify-content:center;padding:24px;background:var(--bg,#F3F5FF);color:var(--ink,#1B2150);text-align:center}
+html[data-live-join-pending] #liveJoinBoot{display:flex}
+#liveJoinBoot .ljb-card{width:min(420px,100%);padding:28px 22px;border-radius:24px;background:var(--card,#fff);box-shadow:var(--sh,0 12px 32px rgba(0,0,0,.15));display:flex;flex-direction:column;align-items:center;gap:14px}
+#liveJoinBoot .ljb-spinner{width:40px;height:40px;border:4px solid var(--line,#E3E7F8);border-top-color:var(--blue,#4B6BFF);border-radius:50%;animation:ljb-spin .8s linear infinite}
+@keyframes ljb-spin{to{transform:rotate(360deg)}}
+#liveJoinBoot p{color:var(--muted,#6B7199);font-size:14px}
+#liveJoinBoot .ljb-actions{display:none;gap:10px;flex-wrap:wrap;justify-content:center}
+#liveJoinBoot button{padding:10px 16px;border:0;border-radius:12px;background:var(--blue,#4B6BFF);color:#fff;font:700 14px/1.2 Nunito,system-ui,sans-serif;cursor:pointer}
+#liveJoinBoot button:last-child{background:transparent;color:var(--ink,#1B2150);outline:1px solid var(--line,#E3E7F8)}
+html[data-live-join-pending="timeout"] #liveJoinBoot .ljb-spinner{display:none}
+html[data-live-join-pending="timeout"] #liveJoinBoot .ljb-actions{display:flex}
+@media(prefers-reduced-motion:reduce){#liveJoinBoot .ljb-spinner{animation:none}}
 </style>
 </head>
 <body>
+<div id="liveJoinBoot" role="status" aria-live="polite">
+  <div class="ljb-card"><span class="ljb-spinner" aria-hidden="true"></span><b id="liveJoinBootTitle">Jonli xonaga ulanmoqda…</b><p id="liveJoinBootText">Havola va akkaunt tekshirilmoqda.</p><div class="ljb-actions" id="liveJoinBootActions"><button type="button" id="liveJoinRetry">Qayta urinish</button><button type="button" id="liveJoinHome">Bosh sahifa</button></div></div>
+</div>
+<script>(function(){window.showLiveJoinFailure=function(message){var root=document.documentElement;if(!root.dataset.liveJoinPending)return;root.dataset.liveJoinPending='timeout';var title=document.getElementById('liveJoinBootTitle'),text=document.getElementById('liveJoinBootText');if(title)title.textContent='Jonli testga ulanish cho‘zildi';if(text)text.textContent=message||'Internetni tekshirib, qayta urinib ko‘ring.'};var retry=document.getElementById('liveJoinRetry'),home=document.getElementById('liveJoinHome');if(retry)retry.addEventListener('click',function(){location.reload()});if(home)home.addEventListener('click',function(){try{localStorage.removeItem('idPendingLive')}catch(e){}location.replace('/home#bosh')})})();</script>
 <div class="wrap"><div class="page on" id="p-bosh">
 
   <header class="top">
@@ -1092,18 +1109,20 @@ Object.assign(window.RX,{'Savollar':'Вопросы','Mavzu va metodni tanlang, 
 (function(){
 window.idAuthReady=false;window.idAuthenticated=false;
 var sb=window.supabase.createClient('https://kikehcuwjcucyspxdopd.supabase.co','sb_publishable_aBqimXgAK3ia1K_keuaICg_wIRBHx14');window.sb=sb;
+function authReady(ok){window.idAuthenticated=!!ok;window.idAuthReady=true;try{window.dispatchEvent(new Event('id-auth-ready'))}catch(e){}}
 sb.auth.getSession().then(function(r){var s=r.data&&r.data.session;
-if(!s){window.idAuthenticated=false;window.idAuthReady=true;try{localStorage.removeItem('idUser')}catch(e){}location.replace('/');return}
+if(!s){authReady(false);try{localStorage.removeItem('idUser')}catch(e){}location.replace('/');return}
 var u=s.user,m=u.user_metadata||{},nm=m.full_name||m.name||(u.email||'').split('@')[0]||'Foydalanuvchi';
 var rec={name:nm,email:u.email||'',avatar:m.avatar_emoji||'',bg:m.avatar_bg||'',photo:m.avatar_url||''};
 try{var pr=JSON.parse(localStorage.getItem('idProf')||'null');if(pr&&pr.email===rec.email){rec.name=pr.name||rec.name;rec.avatar=pr.avatar==null?rec.avatar:pr.avatar;rec.bg=pr.bg==null?rec.bg:pr.bg}}catch(e){}
 try{localStorage.setItem('idUser',JSON.stringify(rec))}catch(e){}
 if(window.applyName)window.applyName();
 try{if(/[?&]code=|access_token=/.test(location.search+location.hash))history.replaceState(null,'','/home')}catch(e){}
-if(window.onUserReady)window.onUserReady()});
+if(window.onUserReady)window.onUserReady();
+authReady(true)
+}).catch(function(e){authReady(false);var pending=false;try{pending=!!location.hash.match(/^#j=(\d{6})$/)||!!localStorage.getItem('idPendingLive')}catch(x){}if(pending){if(window.showLiveJoinFailure)window.showLiveJoinFailure('Kirish holatini aniqlab bo‘lmadi. Internetni tekshirib, qayta urinib ko‘ring.')}else location.replace('/')});
 sb.auth.onAuthStateChange(function(ev){if(ev==='SIGNED_OUT'){try{localStorage.removeItem('idUser')}catch(e){}}});
-})();
-</script>
+})();</script>
 <script>
 (function(){
 function apply(){try{var u=JSON.parse(localStorage.getItem("idUser")||"null");if(!u||!u.name)return;
@@ -1986,7 +2005,7 @@ window.confetti=function(x,y,n){if(matchMedia('(prefers-reduced-motion: reduce)'
 </script>
 <script src="/ai-test.js"></script>
 <script src="/qrcode.js"></script>
-<script src="/live.js?v=4"></script>
+<script src="/live.js?v=5"></script>
 <script src="/league.js?v=4"></script>
 </body>
 </html>
