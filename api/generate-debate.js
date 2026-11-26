@@ -114,23 +114,34 @@ module.exports = async function handler(req, res) {
 
   const t0 = Date.now();
   try {
-    const ctl = new AbortController();
-    const to = setTimeout(() => ctl.abort(), web ? 40000 : 25000);
-    const r = await fetch(
-      'https://generativelanguage.googleapis.com/v1beta/models/' + encodeURIComponent(MODEL) + ':generateContent',
-      {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'x-goog-api-key': process.env.GEMINI_API_KEY },
-        body: JSON.stringify(payload),
-        signal: ctl.signal
-      }
-    );
-    clearTimeout(to);
-    const j = await r.json().catch(() => ({}));
+    // Asosiy model topilmasa (404), Google'ning "latest" nomiga o'tamiz
+    const models = [MODEL];
+    if (MODEL !== 'gemini-flash-latest') models.push('gemini-flash-latest');
+    let r = null, j = {};
+    for (const model of models) {
+      const pl = JSON.parse(JSON.stringify(payload));
+      if (!/2\.5-flash/.test(model)) delete pl.generationConfig.thinkingConfig;
+      const ctl = new AbortController();
+      const to = setTimeout(() => ctl.abort(), web ? 40000 : 25000);
+      r = await fetch(
+        'https://generativelanguage.googleapis.com/v1beta/models/' + encodeURIComponent(model) + ':generateContent',
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'x-goog-api-key': process.env.GEMINI_API_KEY },
+          body: JSON.stringify(pl),
+          signal: ctl.signal
+        }
+      );
+      clearTimeout(to);
+      j = await r.json().catch(() => ({}));
+      if (r.ok || r.status !== 404) break;
+      console.log('generate-debate: model topilmadi:', model);
+    }
     if (!r.ok) {
-      console.log('generate-debate: gemini', r.status, (j && j.error && j.error.status) || '', Date.now() - t0, 'ms');
+      const em = clean(j && j.error && j.error.message, 200);
+      console.log('generate-debate: gemini', r.status, (j && j.error && j.error.status) || '', em, Date.now() - t0, 'ms');
       if (r.status === 429) return send(res, 429, { error: 'AI hozir band. Birozdan keyin urinib ko’ring.', retryAfter: 30 });
-      return send(res, 502, { error: 'AI javob bermadi. Birozdan keyin qayta urinib ko’ring.' });
+      return send(res, 502, { error: 'AI javob bermadi (Gemini xatosi ' + r.status + '). Birozdan keyin qayta urinib ko’ring.' });
     }
 
     const txt = (((j.candidates || [])[0] || {}).content || {}).parts;
@@ -154,7 +165,7 @@ module.exports = async function handler(req, res) {
     if (!topics.length) return send(res, 502, { error: 'AI mavzu topa olmadi. Qayta urinib ko’ring.' });
     return send(res, 200, { topics: topics.slice(0, count) });
   } catch (e) {
-    console.log('generate-debate: error', e && e.name, Date.now() - t0, 'ms');
-    return send(res, 502, { error: 'AI javob bermadi. Birozdan keyin qayta urinib ko’ring.' });
+    console.log('generate-debate: error', e && e.name, e && e.message, Date.now() - t0, 'ms');
+    return send(res, 502, { error: 'AI javob bermadi (' + ((e && e.name === 'AbortError') ? 'vaqt tugadi' : 'server xatosi') + '). Birozdan keyin qayta urinib ko’ring.' });
   }
 };
