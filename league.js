@@ -135,7 +135,8 @@ function hReveal(){var c=H.cq.c;duels().forEach(function(m){var x=H.an[m.a]===c?
 function hRoundQEnd(){var tied=false;
   duels().forEach(function(m){m.ok=0;if(m.sa!==m.sb){m.w=m.sa>m.sb?m.a:m.b;m.l=m.sa>m.sb?m.b:m.a;m.st='done'}
     else{var starter=Math.random()<.5?0:1;m.st='pour';m.pour={turn:starter,starter:starter,results:[null,null],state:{currentPlayer:starter+1,glassFill:0,bottleFill:85,progress:0,turnStartFill:0,hasPouredThisTurn:false,isPouring:false,pourRate:0,wavePhase:0,waveAmplitude:0,bottleSloshPhase:0,bottleSloshAmp:0,lastTiltRad:0,gameOver:false}};tied=true}});
-  if(tied){H.ph='pour';H.t0=Date.now();H.dur=0;persist(1);bcast();hRender()}else hRoundDone()}
+  if(tied){H.ph='tie';H.t0=Date.now();H.dur=5000;persist(1);bcast();hRender()}else hRoundDone()}
+function startPourPhase(){if(!H||H.ph!=='tie')return;H.ph='pour';H.t0=Date.now();H.dur=0;persist(1);bcast();hRender()}
 function hRoundDone(){var r=H.rounds[H.ri];
   if(H.ri>=H.R-1){hFinal();return}
   var nx=H.rounds[H.ri+1];nx.forEach(function(m,s){if(!m.third){m.a=r[2*s].w;m.b=r[2*s+1].w}});
@@ -146,6 +147,7 @@ function hTick(){if(!H)return;var n=Date.now(),ph=H.ph;
   if(ph==='pre'&&n>=H.t0+H.dur)hQStart();
   else if(ph==='q'){var rem=H.t0+H.dur-n;if(rem<=0||allAns())hReveal();else{var b=$('#lgbari'),s=$('#lgsec');if(b)b.style.width=(rem/H.dur*100)+'%';if(s)s.textContent=Math.ceil(rem/1000)}}
   else if(ph==='rev'&&n>=H.t0+H.dur){if(H.qi<H.nq-1)hQStart();else hRoundQEnd()}
+  else if(ph==='tie'&&n>=H.t0+H.dur)startPourPhase()
   }
 /* ----- quyish duelining hakamligi ----- */
 function pourMatch(mi){var r=H.rounds[mi&&mi[0]];return r&&r[mi[1]]}
@@ -174,12 +176,14 @@ function hPourLive(msg){if(!H||H.ph!=='pour'||!msg||!Array.isArray(msg.mi)||!msg
   var opp=byI(side===0?mt.b:mt.a),to=Object.keys(H.pl).filter(function(k){return opp&&H.pl[k]===opp})[0];
   if(to)send({t:'pview',to:to,mi:msg.mi,side:side,v:mt.pour.state});
   if(Date.now()-pourMonitorAt>=120){pourMonitorAt=Date.now();hCards()}
+  var active=hostPourMatch();if(active&&active.mi[0]===msg.mi[0]&&active.mi[1]===msg.mi[1])hostPourFrameSync(active);
+  var names=$('#hostPourNames');if(names&&active)names.textContent=(active.a&&active.a.n||'Ishtirokchi')+' va '+(active.b&&active.b.n||'Raqib')+' · '+((active.p.live&&active.p.live.side===0?active.a&&active.a.n:active.b&&active.b.n)||'Ishtirokchi')+' quyayapti'
 }
 function colaState(v){v=v||{};return{currentPlayer:+v.currentPlayer===2?2:1,glassFill:clamp(+v.glassFill||0,0,100.5),bottleFill:clamp(v.bottleFill==null?85:+v.bottleFill,0,100),progress:clamp(+v.progress||0,0,1),turnStartFill:clamp(+v.turnStartFill||0,0,100),hasPouredThisTurn:!!v.hasPouredThisTurn,isPouring:!!v.isPouring,pourRate:clamp(+v.pourRate||0,0,100),wavePhase:+v.wavePhase||0,waveAmplitude:clamp(+v.waveAmplitude||0,0,10),bottleSloshPhase:+v.bottleSloshPhase||0,bottleSloshAmp:clamp(+v.bottleSloshAmp||0,0,6),lastTiltRad:+v.lastTiltRad||0,gameOver:!!v.gameOver,spill:!!v.spill,paused:!!v.paused}}
-function hPourTurn(msg){if(!H||H.ph!=='pour'||!msg||!Array.isArray(msg.mi)||!msg.v)return;var mt=pourMatch(msg.mi),pl=H.pl[msg.p];if(!mt||!pl||mt.st!=='pour'||!mt.pour)return;var side=pl.i===mt.a?0:pl.i===mt.b?1:-1,p=mt.pour;if(side<0||side!==p.turn)return;var state=colaState(msg.v),next=state.currentPlayer-1;if(next!==1-side)return;p.state=state;p.turn=next;p.live=null;var to=Object.keys(H.pl).filter(function(k){return H.pl[k]===pl})[0];if(to)send({t:'pview',to:to,mi:msg.mi,side:next,v:state});persist(1);bcast();hRender()}
+function hPourTurn(msg){if(!H||H.ph!=='pour'||!msg||!Array.isArray(msg.mi)||!msg.v)return;var mt=pourMatch(msg.mi),pl=H.pl[msg.p];if(!mt||!pl||mt.st!=='pour'||!mt.pour)return;var side=pl.i===mt.a?0:pl.i===mt.b?1:-1,p=mt.pour;if(side<0||side!==p.turn)return;var state=colaState(msg.v),next=state.currentPlayer-1;if(next!==1-side)return;p.state=state;p.turn=next;p.live=null;var to=Object.keys(H.pl).filter(function(k){return H.pl[k]===pl})[0];if(to)send({t:'pview',to:to,mi:msg.mi,side:next,v:state});persist(1);bcast();hCards();hostPourFrameSync({m:mt,p:p,a:byI(mt.a),b:byI(mt.b),mi:msg.mi})}
 
 /* ----- tashkilotchi ekranlari ----- */
-function hRender(){if(!H)return;if(hostTimerFrame){cancelAnimationFrame(hostTimerFrame);hostTimerFrame=0}modalClose();({lobby:hLobby,draw:hDrawV,pre:hPre,q:hQ,rev:hQ,pour:hPour,res:hRes,fin:hFin})[H.ph]()}
+function hRender(){if(!H)return;if(hostTimerFrame){cancelAnimationFrame(hostTimerFrame);hostTimerFrame=0}modalClose();({lobby:hLobby,draw:hDrawV,pre:hPre,q:hQ,rev:hQ,tie:hTie,pour:hPour,res:hRes,fin:hFin})[H.ph]()}
 function joinUrl(){return location.origin+'/home#j='+H.pin}
 function hLobby(){var s=H.set;
   function seg(k,vals,suf){return '<div class="seg">'+vals.map(function(v){return '<button class="'+(s[k]===v?'on':'')+'" data-act="cfg" data-k="'+k+'" data-v="'+v+'">'+v+suf+'</button>'}).join('')+'</div>'}
@@ -211,7 +215,10 @@ function cardsHTML(){var S=snap(),ros=rosMap(S),r=H.rounds[H.ri],byes=r.filter(f
   return r.filter(function(m){return m.st!=='bye'}).map(function(m){return cardHTML(m,ros)}).join('')+(byes.length?'<div class="lgbyes">🎟️ BYE: '+byes.map(function(m){return esc((ros[m.a]||[0,'?'])[1])}).join(', ')+'</div>':'')}
 function hCards(){var c=$('#lgduels');if(c&&H&&(H.ph==='q'||H.ph==='rev'||H.ph==='pour')){c.innerHTML=H.ph==='pour'?pourPairsHTML():cardsHTML();if(H.ph!=='pour')obs(c)}}
 function pourPairsHTML(){var S=snap(),ros=rosMap(S);return H.rounds[H.ri].filter(function(m){return m.st==='pour'}).map(function(m){return cardHTML(m,ros)}).join('')}
-function hPour(){view(topbar('<b class="lgchip">'+esc(H.rn)+'</b><b class="lgchip">Quyish dueli</b>')+'<div class="lgc"><h2 class="lgh">Quyish dueli</h2><div class="lgduels" id="lgduels">'+pourPairsHTML()+'</div></div>');obs($('#lgduels'))}
+function hTie(){var S=snap();view(topbar('<b class="lgchip">'+esc(H.rn)+'</b><b class="lgchip">Hal qiluvchi shart</b>')+'<div class="lgc"><h2 class="lgh">Savollar durang bo‘ldi</h2><p class="lgmut">G‘olibni aniqlash uchun hal qiluvchi shart boshlanadi: kim stakanni to‘ldirib to‘kib yuborsa, yutqazadi. Tayyorlaning — quyish dueli hozir boshlanadi.</p><div class="lgduels">'+pourPairsHTML()+'</div></div>')}
+function hostPourMatch(){if(!H||H.ph!=='pour')return null;var r=H.rounds[H.ri]||[],chosen=null;for(var i=0;i<r.length;i++)if(r[i].st==='pour'&&r[i].pour&&r[i].pour.live){chosen=r[i];break}if(!chosen)chosen=r.filter(function(m){return m.st==='pour'&&m.pour})[0];if(!chosen)return null;return{m:chosen,p:chosen.pour,a:byI(chosen.a),b:byI(chosen.b),mi:[H.ri,r.indexOf(chosen)]}}
+function hostPourFrameSync(match){var frame=$('#hostColaFrame');if(!frame||!frame.contentWindow)return;var x=match||hostPourMatch();if(!x)return;frame.contentWindow.postMessage({type:'cola-sync',mode:'watch',state:(x.p.live&&x.p.live.state)||x.p.state||{currentPlayer:x.p.turn+1,glassFill:0,bottleFill:85,progress:0},players:[x.a&&x.a.n||'Ishtirokchi',x.b&&x.b.n||'Raqib']},location.origin)}
+function hPour(){view(topbar('<b class="lgchip">'+esc(H.rn)+'</b><b class="lgchip">Quyish dueli</b>')+'<div class="lgc"><div class="lgduels" id="lgduels">'+pourPairsHTML()+'</div><div style="width:min(100%,760px);height:min(48vh,390px);min-height:230px;border-radius:16px;overflow:hidden;background:#fff3bf;border:1px solid #ffffff88"><iframe id="hostColaFrame" title="Jonli quyish jarayoni" src="/cola-duel.html?mode=watch&v=4" style="width:100%;height:100%;border:0" allow="autoplay" referrerpolicy="same-origin"></iframe></div><p class="lgmut" id="hostPourNames"></p></div>');obs($('#lgduels'));hostPourFrameSync()}
 function hostTimerTick(){if(!H||(H.ph!=='q'&&H.ph!=='rev')){hostTimerFrame=0;return}var rem=Math.max(0,H.t0+H.dur-Date.now()),bar=$('#lgbari'),sec=$('#lgsec'),ratio=H.ph==='rev'?1-rem/(H.dur||1):rem/(H.dur||1);if(bar)bar.style.width=Math.max(0,Math.min(100,ratio*100))+'%';if(sec)sec.textContent=H.ph==='rev'?'':String(Math.ceil(rem/1000));if(rem>0)hostTimerFrame=requestAnimationFrame(hostTimerTick);else hostTimerFrame=0}
 function hQ(){var rev=H.ph==='rev';view(topbar('<b class="lgchip">'+esc(H.rn)+'</b><b class="lgchip">'+(H.qi+1)+' / '+H.nq+'</b>')+'<div class="lgc"><div class="lgbar"><i id="lgbari" style="width:'+(rev?0:100)+'%"></i></div><div class="lgsec" id="lgsec">'+(rev?'':H.set.time)+'</div><div class="lgduels" id="lgduels">'+cardsHTML()+'</div></div>');obs($('#lgduels'));hostTimerFrame=requestAnimationFrame(hostTimerTick)}
 function hRes(){var S=snap(),nr=H.rounds[H.ri+1],nx=H.ri+1===H.R-1?(nr.length>1?'Final va 3-o\u2018rin':'Final'):rname(H.M/Math.pow(2,H.ri+1));
@@ -229,6 +236,7 @@ function pFail(){if(!P)return;view(topbar()+'<div class="lgcd"><div class="em bi
 function pResume(s){P={pin:s.pin,pid:s.pid,n:s.n,a:s.a,got:false,S:null,my:-1,i:0};openOv();view(topbar()+'<div class="lgcd"><div class="lgspin"></div><p>Turnirga qayta ulanmoqda\u2026</p></div>','pl');pNet()}
 function pMsg(m){if(!P)return;if(m.to&&m.to!==P.pid)return;
   if(m.t==='s'){if(m.to||P.got)pSnap(m)}
+  else if(m.t==='plive'){if(P.S&&P.S.ph==='pour'&&Array.isArray(m.mi)){var mineLive=mine(P.S,P.S.ri),liveFrame=$('#colaFrame');if(m.p!==P.pid&&m.mi[0]===P.S.ri&&mineLive&&m.mi[1]===mineLive.s&&m.side===1-mineLive.side&&liveFrame&&liveFrame.contentWindow){lastActivity=Date.now();P.opponentLive=m.v;liveFrame.contentWindow.postMessage({type:'cola-sync',mode:'watch',state:m.v},location.origin)}}}
   else if(m.t==='pview'){lastActivity=Date.now();if(P.S&&P.S.ph==='pour'&&Array.isArray(m.mi)){var mineNow=mine(P.S,P.S.ri),frame=$('#colaFrame');if(m.mi[0]===P.S.ri&&mineNow&&m.mi[1]===mineNow.s&&m.side!==mineNow.side&&frame&&frame.contentWindow)frame.contentWindow.postMessage({type:'cola-sync',mode:'watch',state:m.v},location.origin)}}
   else if(m.t==='h'){P.lastH=Date.now();if(P.got&&P.S&&(m.ph!==P.S.ph||m.qi!==P.S.qi||m.ri!==P.S.ri))pHello()}
   else if(m.t==='deny')leave(m.why==='full'?'Xona to‘ldi':'Turnir boshlangan — qo‘shilib bo‘lmaydi');
@@ -243,7 +251,7 @@ function pSnap(m){var first=!P.got,prev=P.S,samePour=!!(prev&&prev.ph==='pour'&&
   if(samePour)syncPourFrame(m,next);else pRender(prev)}
 function pRender(prev){var S=P.S;modalClose();clearInterval(P.tm);
   if(S.ph==='pour'){pPour(prev);return}
-  ({lobby:pLobby,draw:pDraw,pre:pPre,q:pQ,rev:pRev,res:pRes,fin:pFin})[S.ph]()}
+  ({lobby:pLobby,draw:pDraw,pre:pPre,q:pQ,rev:pRev,tie:pTie,res:pRes,fin:pFin})[S.ph]()}
 function pLobby(){var S=P.S;view(topbar('<b class="lgchip">ID '+pinFmt(P.pin)+'</b>')+'<div class="lgc"><h2 class="lgh">'+esc(S.ttl)+'</h2><p class="lgmut">Tashkilotchi qur\u2018a tashlashini kuting\u2026</p><div class="lgcnt"><b>'+S.ros.length+'</b> ishtirokchi</div><div class="lggrid">'+S.ros.map(function(r){return '<div class="lgpt'+(r[0]===P.i?' me':'')+'">'+av(r[2],52,r[1])+'<b>'+esc(r[1])+'</b></div>'}).join('')+'</div></div>','pl')}
 function status(S,mm){var ros=rosMap(S);
   if(!mm){var out=S.ri>=0&&S.br&&S.br[S.ri]&&!mine(S,S.ri);return{e:out?'\ud83d\udc40':'\u23f3',t:out?'Siz turnirdan chiqdingiz':'Kuting',p:out?'Turnirni tomosha qiling \u2014 chempion kim bo\u2018ladi?':'Bosqich boshlanishini kuting.'}}
@@ -251,6 +259,7 @@ function status(S,mm){var ros=rosMap(S);
   if(mm.m[5]===4)return{e:mm.m[2]===P.i?'\ud83c\udfc6':'\ud83d\ude14',t:mm.m[2]===P.i?'Siz yutdingiz!':'Mag\u2018lub bo\u2018ldingiz',p:'Boshqa duellar tugashini kuting.'};
   return null}
 function pWait(S,mm){var st=status(S,mm),sc='';view(topbar('<b class="lgchip">'+esc(S.rn)+'</b>')+'<div class="lgc"><div class="lgcd inl"><div class="em big">'+st.e+'</div><h2>'+st.t+'</h2><p>'+st.p+'</p></div>'+(S.br?brHTML(S,P.i):'')+'</div>','pl')}
+function pTie(){var S=P.S,mm=mine(S,S.ri),ros=rosMap(S),a=mm&&ros[mm.m[0]],b=mm&&ros[mm.m[1]];var detail=mm&&mm.m[5]===3?'<div class="lgduels">'+vsBar(a,b,[mm.m[3],mm.m[4]])+'</div>':'<p class="lgmut">Sizning juftlik natijangiz tayyorlanmoqda. Kutib turing.</p>';view(topbar('<b class="lgchip">'+esc(S.rn)+'</b><b class="lgchip">Hal qiluvchi shart</b>')+'<div class="lgc"><div class="lgcd inl"><div class="em big">🥤</div><h2>Hal qiluvchi shart</h2><p>Savol javoblari durang bo‘ldi. Endi stakanga xohlagan miqdorda quying. Kim stakanni to‘ldirib, kola to‘kib yuborsa yutqazadi; to‘kmagan ishtirokchi keyingi bosqichga chiqadi.</p><p class="lgmut">Quyish dueli hozir boshlanadi.</p></div>'+detail+'</div>','pl')}
 function pDraw(){var S=P.S,mm=mine(S,0),ros=rosMap(S),opp=mm&&mm.opp?ros[mm.opp]:null;
   view(topbar()+'<div class="lgc"><div class="lgcd inl"><div class="em big">\ud83c\udfb2</div><h2>Qur\u2018a tashlandi!</h2>'+(mm&&opp?'<p>Sizning raqibingiz:</p>'+vsBar(ros[P.i],opp,[0,0]):mm&&mm.m[5]===1?'<p>\ud83c\udf9f\ufe0f Siz omadli chipta (BYE) oldingiz \u2014 keyingi bosqichga avtomatik o\u2018tasiz!</p>':'<p>Natijani kuting.</p>')+'</div>'+brHTML(S,P.i)+'</div>','pl');}
 function pPre(){var S=P.S,mm=mine(S,S.ri),ros=rosMap(S);
@@ -314,7 +323,7 @@ function pPour(prev){var S=P.S,mm=mine(S,S.ri);
   refreshPour(g);if(g.started)bindPour(g)
 }
 function startPour(){var g=P&&P.pourGame;if(!g||g.started||g.submitted)return;g.started=true;g.startedAt=Date.now();g.pauseUntilInput=false;var b=$('#pourStart'),s=$('#pourSubmit'),r=$('#pourTilt');if(b)b.hidden=true;if(s)s.hidden=false;if(r)r.disabled=false;var st=$('#pourStatus');if(st)st.textContent='Idishni o‘ngga suring, keyin yuqoriga tortib eging.';bindPour(g);refreshPour(g)}
-function sendPourLive(g,force){if(!P||!P.S||!g||!g.started||g.submitted)return;var now=Date.now();if(!force&&now-(g.lastBroadcastAt||0)<100)return;g.lastBroadcastAt=now;send({t:'plive',p:P.pid,mi:[g.ri,g.mi],v:{progress:g.progress,tilt:g.tilt,fill:g.fill,used:g.used,flowing:g.flowing,spilled:g.spilled}})}
+function sendPourLive(g,force){if(!P||!P.S||!g||!g.started||g.submitted)return;var now=Date.now();if(!force&&now-(g.lastBroadcastAt||0)<100)return;g.lastBroadcastAt=now;send({t:'plive',p:P.pid,mi:[g.ri,g.mi],side:g.side, v:{progress:g.progress,tilt:g.tilt,fill:g.fill,used:g.used,flowing:g.flowing,spilled:g.spilled}})}
 function submitPour(){var g=P&&P.pourGame;if(!g||!g.started||g.submitted||!P||!P.S)return;stopPourFlow();g.submitted=true;
   var btn=$('#pourSubmit');if(btn){btn.disabled=true;btn.textContent='Natija yuborildi'}
   var msg={t:'pour',p:P.pid,mi:[g.ri,g.mi],r:{fill:g.fill,spilled:g.spilled,overflow:g.overflow,ms:Math.min(90000,Date.now()-g.startedAt)}};
@@ -360,11 +369,13 @@ function pPour(prev){var S=P.S,mm=mine(S,S.ri);if(!mm||mm.m[5]!==3){pWait(S,mm);
   var ros=rosMap(S),A=ros[mm.m[0]]||[0,'Ishtirokchi',-1],B=ros[mm.m[1]]||[0,'Raqib',-1],players=[A[1],B[1]];
   view('<div class="cola-frame-shell"><iframe id="colaFrame" title="Kola quyish dueli: '+esc(A[1])+' va '+esc(B[1])+'" src="/cola-duel.html?mode='+mode+'&v=3" allow="autoplay" referrerpolicy="same-origin"></iframe><button class="cola-exit" data-act="exit" aria-label="Turnirdan chiqish">✕</button></div>','pl cola-game');var frame=$('#colaFrame');if(frame)frame.addEventListener('load',function(){if(frame.contentWindow)frame.contentWindow.postMessage({type:'cola-sync',mode:mode,state:state,players:players},location.origin)})
 }
-function onColaFrameMessage(e){if(!P||e.origin!==location.origin||!P.S||P.S.ph!=='pour')return;var frame=$('#colaFrame'),mm=mine(P.S,P.S.ri);if(!frame||e.source!==frame.contentWindow||!mm)return;var mi=[P.S.ri,mm.s];
+function onColaFrameMessage(e){if(e.origin!==location.origin)return;
+  var hostFrame=$('#hostColaFrame');if(H&&hostFrame&&e.source===hostFrame.contentWindow&&e.data&&e.data.type==='cola-ready'){hostPourFrameSync();return}
+  if(!P||!P.S||P.S.ph!=='pour')return;var frame=$('#colaFrame'),mm=mine(P.S,P.S.ri);if(!frame||e.source!==frame.contentWindow||!mm)return;var mi=[P.S.ri,mm.s];
   if(e.data&&e.data.type==='cola-ready'){syncPourFrame(P.S,mm)}
-  else if(e.data&&e.data.type==='cola-state'&&mm.m[7]&&(+mm.m[7][0]||0)===mm.side){lastActivity=Date.now();send({t:'plive',p:P.pid,mi:mi,v:e.data.state||{}})}
+  else if(e.data&&e.data.type==='cola-state'&&mm.m[7]&&(+mm.m[7][0]||0)===mm.side){lastActivity=Date.now();send({t:'plive',p:P.pid,mi:mi,side:mm.side,v:e.data.state||{}})}
   else if(e.data&&e.data.type==='cola-turn'&&mm.m[7]&&(+mm.m[7][0]||0)===mm.side){lastActivity=Date.now();send({t:'pturn',p:P.pid,mi:mi,v:e.data.state||{}})}
-  else if(e.data&&e.data.type==='cola-spill'&&mm.m[7]&&(+mm.m[7][0]||0)===mm.side){lastActivity=Date.now();var st=Object.assign({},e.data.state||{},{spill:true});send({t:'plive',p:P.pid,mi:mi,v:st});send({t:'pour',p:P.pid,mi:mi,r:{fill:st.glassFill,spilled:true,overflow:e.data.overflow||Math.max(0,(+st.glassFill||100)-100),ms:0}})}
+  else if(e.data&&e.data.type==='cola-spill'&&mm.m[7]&&(+mm.m[7][0]||0)===mm.side){lastActivity=Date.now();var st=Object.assign({},e.data.state||{},{spill:true});send({t:'plive',p:P.pid,mi:mi,side:mm.side,v:st});send({t:'pour',p:P.pid,mi:mi,r:{fill:st.glassFill,spilled:true,overflow:e.data.overflow||Math.max(0,(+st.glassFill||100)-100),ms:0}})}
 }
 window.addEventListener('message',onColaFrameMessage);
 
