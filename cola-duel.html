@@ -837,6 +837,8 @@
       if (window.__colaMode === 'play') {
         state.handoffActive = false;
         colaNotify('cola-turn');
+        window.__colaMode = 'watch';
+        document.documentElement.dataset.colaMode = 'watch';
         return;
       }
 
