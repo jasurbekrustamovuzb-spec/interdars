@@ -1441,7 +1441,7 @@ $('#ed').addEventListener('input',function(e){var t=e.target,f=t.dataset.f;if(f=
   if(MT[W.m].t!=='qs'){W.pairs[i][f]=t.value;hint()}});
 $('#ed').addEventListener('click',function(e){var b=e.target.closest('[data-rm]');if(!b)return;(MT[W.m].t==='qs'?W.qs:W.pairs).splice(+b.dataset.rm,1);renderEditor()});
 $('#adq').addEventListener('click',function(){var isQ=MT[W.m].t==='qs',a=isQ?W.qs:W.pairs;if(isQ||a.length>=maxN())return;a.push(bp());renderEditor();var l=$$('#ed .qc');if(l.length)l[l.length-1].scrollIntoView({block:'center'})});
-function renderSummary(){var m=MT[W.m],n=validN();$('#s-t').textContent=W.topic;$('#s-c').textContent=T(W.cls);$('#s-m').textContent=T(m.n);$('#s-q').textContent=n+' '+T(m.t==='qs'?'savol':'juft')}
+function renderSummary(){var m=MT[W.m],n=validN();$('#s-t').textContent=W.topic;$('#s-m').textContent=T(m.n);$('#s-q').textContent=n+' '+T(m.t==='qs'?'savol':'juft')}
 function gen(){var c;do{c=String(100000+Math.floor(Math.random()*900000))}while(D.lessons.some(function(x){return x.code===c}));return c}
 function resetW(){W.edit=null;wizTitle();$$('#cls .pill').forEach(function(b){b.setAttribute('aria-pressed',b.dataset.c==='Sinf')});W.cls='Sinf';W.topic='';$('#topic').value='';W.m='quiz';W.xc=null;W.qs=[bq(),bq(),bq()];W.pairs=[bp(),bp(),bp()];$('#n1').disabled=true;renderOpts();step(0)}
 $('#topic').addEventListener('input',function(){W.topic=this.value.trim();$('#n1').disabled=!W.topic});
