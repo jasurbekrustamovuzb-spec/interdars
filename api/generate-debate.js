@@ -122,15 +122,15 @@ module.exports = async function handler(req, res) {
     // internet bilan muvaffaqiyatsiz bo'lsa — internetsiz.
     const models = [MODEL, 'gemini-flash-latest', 'gemini-flash-lite-latest'].filter((m, i, arr) => arr.indexOf(m) === i);
     const attempts = [];
-    models.forEach(m => attempts.push({ model: m, web }));
-    if (web) models.forEach(m => attempts.push({ model: m, web: false }));
+    if (web) attempts.push({ model: models[0], web: true });   // internet bilan faqat bir marta urinamiz
+    models.forEach(m => attempts.push({ model: m, web: false }));
 
     let r = null, j = {}, used = null;
     for (const at of attempts) {
       const left = 26000 - (Date.now() - t0);
       if (left < 4000) break;
       const ctl = new AbortController();
-      const to = setTimeout(() => ctl.abort(), Math.min(left, at.web ? 16000 : 12000));
+      const to = setTimeout(() => ctl.abort(), Math.min(left, at.web ? 12000 : 10000));
       try {
         r = await fetch(
           'https://generativelanguage.googleapis.com/v1beta/models/' + encodeURIComponent(at.model) + ':generateContent',
@@ -151,9 +151,11 @@ module.exports = async function handler(req, res) {
       console.log('generate-debate: gemini', r.status, at.model, at.web ? 'web' : 'plain', (j && j.error && j.error.status) || '', clean(j && j.error && j.error.message, 200));
       const retry = r.status === 404 || r.status === 429 || r.status === 503 || (at.web && (r.status === 400 || r.status === 403));
       if (!retry) break;
+      if (r.status === 503) await new Promise(ok => setTimeout(ok, 700));
     }
     if (!r || !r.ok) {
       const code = r ? r.status : 'tarmoq';
+      if (r && r.status === 503) return send(res, 503, { error: 'Google AI serveri hozir band. Birozdan keyin qayta urinib ko’ring.', retryAfter: 20 });
       if (r && r.status === 429) return send(res, 429, { error: 'AI hozir band (Google kvotasi tugagan). Birozdan keyin urinib ko’ring.', retryAfter: 30 });
       return send(res, 502, { error: 'AI javob bermadi (Gemini xatosi ' + code + '). Birozdan keyin qayta urinib ko’ring.' });
     }
