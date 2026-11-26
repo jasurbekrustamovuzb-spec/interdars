@@ -4,5 +4,8 @@
   ],
   "redirects": [
     { "source": "/app.html", "destination": "/home", "permanent": false }
-  ]
+  ],
+  "functions": {
+    "api/generate-debate.js": { "maxDuration": 30 }
+  }
 }

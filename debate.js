@@ -17,7 +17,7 @@ function fmt(s){s=Math.max(0,s);return Math.floor(s/60)+':'+('0'+s%60).slice(-2)
 
 /* ===== uslublar ===== */
 var CSS='#db{position:fixed;inset:0;z-index:9500;display:flex;flex-direction:column;font-family:inherit}#db[hidden]{display:none}'
-+'#db.light{background:#F4F6FC;color:#1B2340}#db.dark{background:#0E1630;color:#fff}'
++'#db.light{background:#F4F6FC;color:#1B2340;color-scheme:light}#db.dark{background:#0E1630;color:#fff;color-scheme:dark}'
 +'#db button{font:inherit;color:inherit;cursor:pointer;border:0;background:none}#db button:disabled{opacity:.55;cursor:default}'
 +'#db :focus-visible{outline:3px solid #FFC53D;outline-offset:2px}'
 +'#db .db-ic{width:44px;height:44px;border-radius:12px;font-size:18px;background:rgba(127,140,180,.18);flex:none}'
@@ -26,13 +26,24 @@ var CSS='#db{position:fixed;inset:0;z-index:9500;display:flex;flex-direction:col
 +'#db .db-eh,#db .db-lh,#db .db-sh{display:flex;align-items:center;gap:10px;padding:12px 16px}'
 +'#db .db-eh{background:#fff;border-bottom:1px solid #E1E6F4}'
 +'#db .db-nm{display:block;background:#fff;border:1.5px solid #E1E6F4;border-radius:16px;padding:10px 14px;margin-bottom:12px}#db .db-nm small{display:block;color:#69739A;font-size:13px}#db .db-nm span{display:flex;align-items:center;gap:8px}#db .db-ti{flex:1;min-width:0;font:inherit;font-size:18px;font-weight:700;border:0;background:transparent;color:inherit;padding:2px 0}#db .db-ti:focus{outline:0}'
-+'#db .db-em{flex:1;overflow:auto;padding:18px 16px 70px;width:100%;max-width:820px;margin:0 auto;box-sizing:border-box}'
++'#db .db-em{flex:1;overflow:auto;padding:18px max(16px,calc((100% - 820px)/2)) 70px;width:100%;box-sizing:border-box}'
 +'#db .db-top{display:flex;gap:10px;align-items:stretch;margin-bottom:12px}#db .db-top .db-nm{flex:1;min-width:0;margin-bottom:0}#db .db-top .db-pri{align-self:stretch;white-space:nowrap;padding:0 18px;border-radius:16px}'
++'#db .db-ap{background:#fff;border:1.5px solid #CBD5FF;border-radius:16px;padding:14px;margin-bottom:12px;display:flex;flex-direction:column;gap:12px}'
++'#db .db-apt{margin:0}#db .db-apt b{display:block;font-size:17px}#db .db-apt small,#db .db-fr small,#db .db-fl small,#db .db-sw small{display:block;color:#69739A;font-size:13px;font-weight:400}'
++'#db .db-fl{display:block}#db .db-fl .db-inp{width:100%;box-sizing:border-box;margin-top:4px}'
++'#db .db-fr{display:flex;align-items:center;gap:10px;flex-wrap:wrap}#db .db-fn{flex:1;min-width:0;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}'
++'#db .db-note{margin:-4px 0 0;font-size:12.5px;color:#69739A}'
++'#db .db-sw{display:flex;align-items:center;gap:12px;text-align:left;width:100%;padding:10px 12px;border:1.5px solid #E1E6F4;border-radius:14px}#db .db-sw b{display:block}'
++'#db .db-kn{flex:none;width:44px;height:26px;border-radius:13px;background:#C5CCE6;position:relative;transition:background .15s}#db .db-kn::after{content:"";position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:#fff;transition:transform .15s}'
++'#db .db-sw[aria-checked=true]{border-color:#4B6BFF;background:#F2F5FF}#db .db-sw[aria-checked=true] .db-kn{background:#4B6BFF}#db .db-sw[aria-checked=true] .db-kn::after{transform:translateX(18px)}'
++'#db .db-cr b{display:block;margin-bottom:6px;font-size:14px}#db .db-cr div{display:flex;gap:8px;flex-wrap:wrap}'
++'#db .db-cp{padding:8px 14px;border-radius:999px;background:#EEF1FB;font-weight:700;color:#3149D6}#db .db-cp[aria-pressed=true]{background:#4B6BFF;color:#fff}'
++'#db .db-go{width:100%;padding:13px}'
 +'@media(max-width:520px){#db .db-aw{display:none}#db .db-top .db-pri{padding:0 14px}}'
 +'#db .db-inp{flex:1;min-width:0;font:inherit;font-size:16px;padding:12px 14px;border:1.5px solid #D5DBEE;border-radius:12px;background:#fff;color:inherit}'
 +'#db .db-msg{margin:6px 2px 12px;font-size:14px;color:#3149D6}'
 +'#db .db-tc{display:flex;gap:10px;align-items:flex-start;background:#fff;border:1.5px solid #E1E6F4;border-radius:16px;padding:12px;margin-bottom:10px}'
-+'#db .db-tc textarea{flex:1;min-width:0;font:inherit;font-size:16px;line-height:1.4;border:0;resize:vertical;background:transparent;color:inherit;min-height:48px}'
++'#db .db-tc textarea{flex:1;min-width:0;font:inherit;font-size:16px;line-height:1.4;border:0;resize:none;background:transparent;color:inherit;min-height:48px}'
 +'#db .db-tc input[type=checkbox]{appearance:none;-webkit-appearance:none;width:26px;height:26px;margin:2px 0 0;border-radius:50%;border:2px solid #B9C3E6;background:#fff;flex:none;cursor:pointer;display:grid;place-items:center}#db .db-tc input[type=checkbox]:checked{background:#4B6BFF;border-color:#4B6BFF}#db .db-tc input[type=checkbox]:checked::after{content:"\\2713";color:#fff;font-weight:800;font-size:15px;line-height:1}#db .db-tc.off textarea{opacity:.5}#db .db-hint{margin:2px 4px 10px;font-size:13px;color:#69739A}'
 +'#db .db-rm{width:34px;height:34px;border-radius:10px;color:#8A93B2;flex:none}'
 +'#db .db-add{width:100%;padding:14px;border:2px dashed #B9C3E6;border-radius:16px;font-weight:700;color:#3149D6;margin:2px 0 18px}'
@@ -76,7 +87,7 @@ var CSS='#db{position:fixed;inset:0;z-index:9500;display:flex;flex-direction:col
 function open(){
   if(!document.getElementById('db-css')){var s=document.createElement('style');s.id='db-css';s.textContent=CSS;document.head.appendChild(s)}
   if(!R){R=document.createElement('div');R.id='db';R.setAttribute('role','dialog');R.setAttribute('aria-label','Munozara');
-    R.addEventListener('click',onClick);R.addEventListener('input',onInput);document.addEventListener('keydown',onKey);document.body.appendChild(R)}
+    R.addEventListener('click',onClick);R.addEventListener('input',onInput);R.addEventListener('change',onChange);document.addEventListener('keydown',onKey);document.body.appendChild(R)}
   R.hidden=false;document.documentElement.style.overflow='hidden'}
 function close(){
   stopT();clearTimeout(pt);if(S&&S.own&&S.pend){flush()}
@@ -95,6 +106,33 @@ function clone(o){return JSON.parse(JSON.stringify(o))}
 function persist(){if(!S||!S.own)return;S.pend=1;clearTimeout(pt);pt=setTimeout(flush,600)}
 function flush(){if(S&&S.pend){S.pend=0;var a=App();if(a.saveLesson)a.saveLesson(S.l,false,true)}}
 
+/* ===== AI sozlamalari ===== */
+function oo(){return S.o||(S.o={q:'',web:0,n:6,lv:2,file:null,rd:0})}
+function aiPanel(){
+  var o=oo(),h='<section class="db-ap" aria-label="AI tavsiyalari"><p class="db-apt"><b>✨ AI yordamchi</b><small>Hammasi ixtiyoriy. Hech narsa tanlamasangiz, AI o‘zi mavzu topadi.</small></p>'
+  +'<label class="db-fl"><small>Soha yoki mavzu</small><input id="db-aq" class="db-inp" maxlength="120" placeholder="Munozara qaysi soha haqida bo‘lsin?" value="'+esc(o.q)+'"></label>';
+  if(window.XT){
+    h+='<div class="db-fr">'+(o.file?'<span class="db-fn">📄 '+esc(o.file.name)+'</span><button class="db-sec" data-a="fx">Olib tashlash</button>'
+      :'<button class="db-sec" data-a="pick"'+(o.rd?' disabled':'')+'>'+(o.rd?'O‘qilmoqda…':'📄 Darslik yuklash')+'</button><small>PDF, Word, PowerPoint · 3 MB gacha</small>')+'</div>'
+      +(o.file?'<p class="db-note">Fayl qurilmangizda o‘qiladi. Faqat undan olingan matn Google AI’ga yuboriladi, fayl saqlanmaydi. Bepul rejimda Google bu matndan xizmatni yaxshilash uchun foydalanishi mumkin.</p>':'')
+      +'<input type="file" id="db-f" hidden accept=".pdf,.doc,.docx,.ppt,.pptx,.txt">'}
+  h+='<button class="db-sw" data-a="web" role="switch" aria-checked="'+(o.web?'true':'false')+'"><span class="db-kn"></span><span><b>🌐 Internetdan izlash</b><small>Mavzuga aloqador dolzarb mavzularni internetdan topadi</small></span></button>'
+  +'<div class="db-cr"><b>Nechta mavzu?</b><div>'+[4,6,8,10].map(function(n){return '<button class="db-cp" data-a="on" data-n="'+n+'" aria-pressed="'+(o.n===n)+'">'+n+'</button>'}).join('')+'</div></div>'
+  +'<div class="db-cr"><b>Qiyinlik</b><div>'+[[1,'Oson'],[2,'O‘rtacha'],[3,'Murakkab']].map(function(x){return '<button class="db-cp" data-a="ol" data-n="'+x[0]+'" aria-pressed="'+(o.lv===x[0])+'">'+x[1]+'</button>'}).join('')+'</div></div>'
+  +'<button class="db-pri db-go" data-a="aigo"'+(S.busy||o.rd?' disabled':'')+'>'+(S.busy?(o.web?'Internetdan izlanmoqda…':'Mavzular tuzilmoqda…'):'✨ Mavzularni topish')+'</button></section>';
+  return h}
+function fileMsg(c){return{big:'Fayl 3 MB dan katta',type:'Bu format qo‘llanmaydi',enc:'Fayl parol bilan himoyalangan',long:'PDF 160 sahifadan oshmasligi kerak',read:'Faylni o‘qib bo‘lmadi'}[c]||'Faylni o‘qib bo‘lmadi'}
+function readFile(f){
+  var o=oo();sync();
+  if(f.size>3*1024*1024){S.msg=fileMsg('big');return render()}
+  o.rd=1;S.msg='';render();
+  window.XT.read(f).then(function(r){
+    if(!S)return;o.rd=0;
+    if(!r||r.err){S.msg=fileMsg(r&&r.err)}
+    else if(!r.text||r.text.length<200){S.msg='Matn topilmadi — skan qilingan bo‘lishi mumkin'}
+    else{o.file={name:f.name,text:r.text.slice(0,60000)};S.msg=r.text.length>60000?'Matn qisqartirildi — faqat boshlang‘ich qismi ishlatiladi.':''}
+    render()}).catch(function(){if(!S)return;o.rd=0;S.msg=fileMsg('read');render()})}
+
 /* ===== ko‘rinishlar ===== */
 function topicCard(x,i){
   return '<div class="db-tc'+(x.on?'':' off')+'"><input type="checkbox" data-f="on" data-i="'+i+'"'+(x.on?' checked':'')+' aria-label="Munozaraga kiritish"><textarea data-f="t" data-i="'+i+'" rows="2" maxlength="300" placeholder="Munozara mavzusini yozing">'+esc(x.t)+'</textarea>'
@@ -105,11 +143,12 @@ function vEdit(){
   +'<button class="db-sec" data-a="start">Boshlash</button><button class="db-pri" data-a="save">Saqlash</button></header><main class="db-em">'
   +'<div class="db-top"><label class="db-nm"><small>Munozara nomi</small><span><input id="db-title" class="db-ti" maxlength="80" placeholder="Munozara nomini yozing" value="'+esc(S.title)+'"><i aria-hidden="true">✏️</i></span></label>'
   +'<button class="db-pri" data-a="ai"'+(S.busy?' disabled':'')+'>'+(S.busy?'Qidirilmoqda…':'✨ AI<span class="db-aw"> tavsiyalari</span>')+'</button></div>'
+  +(S.aiOpen?aiPanel():'')
   +(S.msg?'<p class="db-msg" role="status">'+esc(S.msg)+'</p>':'')
-  +d.topics.map(topicCard).join('')+(d.topics.length>1?'<p class="db-hint">Belgilangan mavzular taqsimlanadi. Keraklisini tanlang.</p>':'')+'<button class="db-add" data-a="add">＋ Mavzu tuzish</button>'
+  +d.topics.map(topicCard).join('')+(d.topics.length>1?'<p class="db-hint">Belgilangan mavzular jamoalar o’rtasida juftlanadi. Keraklisini tanlang.</p>':'')+'<button class="db-add" data-a="add">＋ Mavzu tuzish</button>'
   +'<div class="db-tm"><div><b>Jamoalar</b><small>'+(d.teams%2?'Bitta jamoa juftsiz qoladi':Math.floor(d.teams/2)+' ta munozara')+'</small></div>'
   +'<div class="db-st"><button data-a="t-" aria-label="Kamaytirish">−</button><output>'+d.teams+'</output><button data-a="t+" aria-label="Ko‘paytirish">＋</button></div>'
-  +'<button class="db-sec" data-a="draw">🎲 Taqsimlash</button></div>';
+  +'<button class="db-sec" data-a="draw" title="Har bir mavzu uchun tasdiq va inkor jamoalarini tasodifiy tanlaydi">🆚 Jamoalarni juftlash</button></div>';
   if(d.duels.length&&!d.dirty){
     h+='<div style="margin-top:14px">'+d.duels.map(function(x){return '<div class="db-dr"><span>'+esc(x.t)+'</span><i class="pro"><small>Tasdiq</small>'+tn(x.pro)+'</i><i class="con"><small>Inkor</small>'+tn(x.con)+'</i></div>'}).join('')+'</div>'}
   return h+'</main>'}
@@ -118,7 +157,7 @@ function vList(){
   +'<button class="db-ic" data-a="res" title="Natijalar" aria-label="Natijalar">🏆</button>'
   +(S.own?'<button class="db-ic" data-a="edit" title="Tahrirlash" aria-label="Tahrirlash">✏️</button>':'')
   +'<button class="db-ic" data-a="fs" title="To‘liq ekran" aria-label="To‘liq ekran">⛶</button><button class="db-ic" data-a="close" aria-label="Yopish">✕</button></div></header>';
-  if(!d.duels.length)return h+'<div class="db-empty"><h2>Hali taqsimlanmagan</h2><p>Mavzularni tanlab, jamoalarni taqsimlang.</p>'+(S.own?'<button class="db-pri" data-a="edit">Tahrirlash</button>':'')+'</div>';
+  if(!d.duels.length)return h+'<div class="db-empty"><h2>Jamoalar hali juftlanmagan</h2><p>Mavzularni tanlab, “Jamoalarni juftlash”ni bosing.</p>'+(S.own?'<button class="db-pri" data-a="edit">Tahrirlash</button>':'')+'</div>';
   return h+'<main class="db-grid">'+d.duels.map(function(x,i){
     return '<button class="db-dc" data-a="open" data-i="'+i+'"><span class="db-no">'+(i+1)+'</span>'+((x.ps||x.cs)?'<span class="db-dn">✓</span>':'')
     +'<b>'+esc(x.t)+'</b><span class="db-vs"><i class="pro">'+tn(x.pro)+'</i><i class="con">'+tn(x.con)+'</i></span></button>'}).join('')+'</main>'}
@@ -158,18 +197,20 @@ function token(){
   var sb=window.sb;if(!sb||!sb.auth)return Promise.reject(new Error('Hisobingizga qayta kiring.'));
   return sb.auth.getSession().then(function(r){var t=r&&r.data&&r.data.session&&r.data.session.access_token;if(!t)throw new Error('Hisobingizga qayta kiring.');return t})}
 function doAI(){
-  sync();S.busy=1;S.msg='';render();
-  token().then(function(tk){return fetch('/api/generate-debate',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+tk},body:JSON.stringify({count:6,exclude:S.d.topics.map(function(x){return x.t.trim()}).filter(Boolean).slice(0,30)})})})
+  sync();var o=oo();S.busy=1;S.msg='';render();
+  var ex=S.d.topics.map(function(x){return x.t.trim()}).filter(Boolean).slice(0,30);
+  token().then(function(tk){return fetch('/api/generate-debate',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+tk},body:JSON.stringify({count:o.n,level:o.lv,topic:o.q.trim(),web:!!o.web,text:o.file?o.file.text:'',exclude:ex})})})
   .then(function(r){if(r.status===404)throw new Error('soon');return r.json().then(function(j){if(!r.ok)throw new Error((j&&j.error)||'err');return j})})
   .then(function(j){if(!S)return;var a=(j.topics||[]).filter(function(x){return x&&typeof x.t==='string'&&x.t.trim()}).slice(0,10);
     S.d.topics=S.d.topics.filter(function(x){return x.t.trim()});
     a.forEach(function(x){S.d.topics.push({t:x.t.trim().slice(0,300),h:Array.isArray(x.h)?x.h.slice(0,3):[],on:1})});
+    if(a.length)S.aiOpen=0;
     S.d.dirty=1;S.chg=1;S.msg=a.length?a.length+' ta tavsiya qo’shildi. Keraksizini olib tashlang yoki o’zgartiring.':'Tavsiya topilmadi. Boshqacha yozib ko’ring.'})
   .catch(function(e){if(!S)return;var m=e&&e.message;S.msg=m==='soon'?'AI tavsiyalari tez orada ishga tushadi. Hozircha “Mavzu tuzish” orqali yozing.':(m&&m!=='err'&&m.length<120?m:'AI javob bermadi. Birozdan keyin qayta urinib ko’ring.')})
   .then(function(){if(S){S.busy=0;if(S.v==='edit')render()}})}
 
 /* ===== saqlash ===== */
-function sync(){var t=$('#db-title'),a=$('#db-ai');if(t)S.title=t.value;if(a)S.ai=a.value}
+function sync(){var t=$('#db-title'),a=$('#db-ai'),q=$('#db-aq');if(t)S.title=t.value;if(a)S.ai=a.value;if(q)oo().q=q.value}
 function save(go){
   sync();var d=S.d;
   d.topics=d.topics.filter(function(x){return x.t.trim()});d.topics.forEach(function(x){x.t=x.t.trim()});
@@ -187,17 +228,21 @@ function onInput(e){
   var t=e.target;if(!S)return;
   if(t.id==='db-title'){S.title=t.value;S.chg=1;return}
   if(t.id==='db-ai'){S.ai=t.value;return}
+  if(t.id==='db-aq'){oo().q=t.value;return}
   if(!t.dataset||!t.dataset.f)return;
   var x=S.d.topics[+t.dataset.i];if(!x)return;
   if(t.dataset.f==='on'){x.on=t.checked?1:0;if(t.parentNode&&t.parentNode.classList)t.parentNode.classList.toggle('off',!t.checked)}
   else x.t=t.value;
   S.d.dirty=1;S.chg=1}
+function onChange(e){var t=e.target;if(!S||!t||t.id!=='db-f')return;var f=t.files&&t.files[0];t.value='';if(f)readFile(f)}
 function leaveEdit(){if(S.chg&&!window.confirm('Saqlanmagan o’zgarishlar o’chadi. Chiqasizmi?'))return;close()}
 function onClick(e){
   var b=e.target.closest('[data-a]');if(!b||!S)return;
   var a=b.dataset.a,i=+b.dataset.i,d=S.d,x=d.duels&&d.duels[S.cur];
   if(a==='close'){if(S.v==='edit')leaveEdit();else close()}
-  else if(a==='save')save(false);else if(a==='start')save(true);else if(a==='ai')doAI();
+  else if(a==='save')save(false);else if(a==='start')save(true);else if(a==='ai'){sync();S.aiOpen=!S.aiOpen;render()}else if(a==='aigo')doAI();
+  else if(a==='web'){sync();oo().web=oo().web?0:1;render()}else if(a==='on'){sync();oo().n=+b.dataset.n;render()}else if(a==='ol'){sync();oo().lv=+b.dataset.n;render()}
+  else if(a==='pick'){var fi=$('#db-f');if(fi)fi.click()}else if(a==='fx'){sync();oo().file=null;render()}
   else if(a==='add'){sync();d.topics.push({t:'',h:[],on:1});d.dirty=1;S.chg=1;render();var l=R.querySelectorAll('.db-tc textarea');if(l.length)l[l.length-1].focus()}
   else if(a==='rm'){sync();d.topics.splice(i,1);if(!d.topics.length)d.topics.push({t:'',h:[],on:1});d.dirty=1;S.chg=1;render()}
   else if(a==='t-'||a==='t+'){sync();d.teams=Math.max(2,Math.min(12,d.teams+(a==='t+'?1:-1)));d.dirty=1;S.chg=1;render()}
@@ -217,7 +262,7 @@ function onClick(e){
   else if(a==='sc'&&x){var f=b.dataset.s==='p'?'ps':'cs',n=+b.dataset.n;x[f]=x[f]===n?0:n;persist();render()}}
 function onKey(e){
   if(!S||!R||R.hidden)return;var tg=e.target;
-  if(tg&&/INPUT|TEXTAREA/.test(tg.tagName)){if(e.key==='Enter'&&tg.id==='db-ai'){e.preventDefault();doAI()}return}
+  if(tg&&/INPUT|TEXTAREA/.test(tg.tagName)){if(e.key==='Enter'&&(tg.id==='db-ai'||tg.id==='db-aq')){e.preventDefault();doAI()}return}
   if(e.key==='Escape'){if(S.v==='stage'||S.v==='res'){stopT();S.v='list';render()}else if(S.v==='edit')leaveEdit();else close();return}
   if(S.v!=='stage')return;
   if(e.key==='ArrowRight')goDuel(S.cur+1);else if(e.key==='ArrowLeft')goDuel(S.cur-1);
@@ -225,7 +270,7 @@ function onKey(e){
 
 /* ===== ochiq API ===== */
 function startEdit(l,isNew){
-  open();S={l:l,isNew:isNew,v:'edit',own:true,title:l.title||(isNew?defTitle():''),ai:'',msg:'',chg:0,d:clone(l.deb),cur:0,tm:0,sp:''};
+  open();S={l:l,isNew:isNew,v:'edit',own:true,aiOpen:0,o:null,title:l.title||(isNew?defTitle():''),ai:'',msg:'',chg:0,d:clone(l.deb),cur:0,tm:0,sp:''};
   S.d.topics=S.d.topics||[];if(!S.d.topics.length)S.d.topics.push({t:'',h:[],on:1});
   S.d.teams=S.d.teams||4;S.d.duels=S.d.duels||[];render();if(isNew){var f=R.querySelector('.db-tc textarea');if(f)f.focus()}}
 window.Debate={
