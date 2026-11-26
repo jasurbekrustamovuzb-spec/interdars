@@ -1,5 +1,5 @@
 /* InterDars — Munozara mavzulari uchun AI tavsiyalari.
-   POST /api/generate-debate  { count?: number, exclude?: string[] }
+   POST /api/generate-debate  { count?, level?(1-3), topic?, text?(darslik matni), web?(internetdan izlash), exclude?: string[] }
    Header: Authorization: Bearer <Supabase access token>
    Javob: { topics: [{ t: "mavzu", h: ["maslahat", ...] }] }
    Kerakli muhit o'zgaruvchilari: SUPABASE_URL, SUPABASE_ANON_KEY, GEMINI_API_KEY
@@ -64,6 +64,10 @@ module.exports = async function handler(req, res) {
   const body = await readBody(req);
   const count = Math.max(3, Math.min(10, parseInt(body.count, 10) || 6));
   const exclude = (Array.isArray(body.exclude) ? body.exclude : []).map(x => clean(x, 200)).filter(Boolean).slice(0, 30);
+  const topic = clean(body.topic, 120);
+  const text = clean(body.text, 60000);
+  const web = body.web === true;
+  const level = { 1: 'oson (5–7-sinf o‘quvchilari uchun, kundalik hayotga yaqin)', 2: 'o‘rtacha (8–9-sinf)', 3: 'murakkab (10–11-sinf va talabalar, chuqur mulohaza talab qiladi)' }[parseInt(body.level, 10)] || 'o‘rtacha (8–9-sinf)';
 
   const prompt =
     'Sen maktab o‘quvchilari va o‘qituvchilari uchun munozara (debat) mavzularini tuzadigan yordamchisan.\n' +
@@ -71,43 +75,47 @@ module.exports = async function handler(req, res) {
     'Qoidalar:\n' +
     '- Har bir mavzu bitta to‘liq tasdiq gap bo‘lsin, jamoalar uni qo‘llab ham, inkor qilib ham bahslasha olsin.\n' +
     '- Mavzu qisqa (12 so‘zgacha), aniq va o‘quvchilarga tushunarli bo‘lsin.\n' +
-    '- Mavzular xilma-xil bo‘lsin: ta’lim, texnologiya, jamiyat, sog‘lom turmush, ekologiya, kelajak kasblari.\n' +
+    '- Qiyinlik darajasi: ' + level + '.\n' +
     '- Siyosiy, diniy va haqoratli mavzular bo‘lmasin.\n' +
     '- Har mavzuga 2 ta juda qisqa maslahat (h) qo‘sh: bahsni boshlash uchun bitta savol yoki fikr.\n' +
-    (exclude.length ? '- Mana bu mavzularni takrorlama: ' + exclude.join(' | ') + '\n' : '');
+    (topic ? '- Mavzular shu soha yoki mavzuga oid bo‘lsin: ' + topic + '\n' : '- Mavzular xilma-xil bo‘lsin: ta’lim, texnologiya, jamiyat, sog‘lom turmush, ekologiya, kelajak kasblari.\n') +
+    (text ? '- Mavzularni faqat quyidagi o‘quv materialidagi muhim g‘oya va tushunchalardan chiqar; materialda yo‘q narsani o‘ylab topma.\n' : '') +
+    (web ? '- Internetdan qidirib, shu mavzuga aloqador hozirgi dolzarb voqealar va muhokamalarga asoslangan mavzularni ham qo‘sh.\n' : '') +
+    (exclude.length ? '- Mana bu mavzularni takrorlama: ' + exclude.join(' | ') + '\n' : '') +
+    (text ? '\n=== O‘QUV MATERIALI ===\n' + text + '\n=== MATERIAL TUGADI ===\n' : '') +
+    (web ? '\nJavobni faqat shu JSON ko‘rinishida qaytar, boshqa matn yozma: {"topics":[{"t":"mavzu","h":["maslahat","maslahat"]}]}\n' : '');
 
   const payload = {
     contents: [{ role: 'user', parts: [{ text: prompt }] }],
-    generationConfig: {
-      temperature: 1,
-      maxOutputTokens: 2048,
-      responseMimeType: 'application/json',
-      responseSchema: {
-        type: 'OBJECT',
-        properties: {
-          topics: {
-            type: 'ARRAY',
-            items: {
-              type: 'OBJECT',
-              properties: {
-                t: { type: 'STRING' },
-                h: { type: 'ARRAY', items: { type: 'STRING' } }
-              },
-              required: ['t']
-            }
-          }
-        },
-        required: ['topics']
-      }
-    }
+    generationConfig: { temperature: 1, maxOutputTokens: 2048 }
   };
+  if (web) {
+    // Qidiruv vositasi JSON-sxema bilan birga ishlamaydi — javob matndan ajratib olinadi
+    payload.tools = [{ google_search: {} }];
+  } else {
+    payload.generationConfig.responseMimeType = 'application/json';
+    payload.generationConfig.responseSchema = {
+      type: 'OBJECT',
+      properties: {
+        topics: {
+          type: 'ARRAY',
+          items: {
+            type: 'OBJECT',
+            properties: { t: { type: 'STRING' }, h: { type: 'ARRAY', items: { type: 'STRING' } } },
+            required: ['t']
+          }
+        }
+      },
+      required: ['topics']
+    };
+  }
   // 2.5 modellarda "thinking" javobni sekinlashtiradi — mavzu yozish uchun kerak emas
   if (/2\.5-flash/.test(MODEL)) payload.generationConfig.thinkingConfig = { thinkingBudget: 0 };
 
   const t0 = Date.now();
   try {
     const ctl = new AbortController();
-    const to = setTimeout(() => ctl.abort(), 25000);
+    const to = setTimeout(() => ctl.abort(), web ? 40000 : 25000);
     const r = await fetch(
       'https://generativelanguage.googleapis.com/v1beta/models/' + encodeURIComponent(MODEL) + ':generateContent',
       {
@@ -128,7 +136,10 @@ module.exports = async function handler(req, res) {
     const txt = (((j.candidates || [])[0] || {}).content || {}).parts;
     const raw = Array.isArray(txt) ? txt.map(p => p.text || '').join('') : '';
     let data = {};
-    try { data = JSON.parse(raw.replace(/^```json|```$/g, '').trim()); } catch (e) { data = {}; }
+    try {
+      const m = raw.match(/\{[\s\S]*\}/);
+      data = JSON.parse(m ? m[0] : raw);
+    } catch (e) { data = {}; }
 
     const seen = new Set(exclude.map(x => x.toLowerCase()));
     const topics = [];
