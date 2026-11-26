@@ -184,7 +184,7 @@ var CSS='#db{position:fixed;inset:0;z-index:9500;display:flex;flex-direction:col
 +'#db.debate-light .db-sc button.sel{background:#19734D;border-color:#19734D;color:#fff;box-shadow:0 4px 14px rgba(25,115,77,.24)}'
 +'#db.debate-light .db-pn.con .db-sc button.sel{background:#B6423D;border-color:#B6423D;box-shadow:0 4px 14px rgba(182,66,61,.2)}'
 +'#db.debate-light .db-empty{color:#243E36}#db.debate-light .db-empty h2{color:#173B32}'
-+'@media(max-width:700px){#db.debate-light .db-grid{grid-template-columns:1fr;padding:16px 18px 36px}#db.debate-light .db-dc{min-height:260px}#db.debate-light .db-tp{font-size:clamp(28px,6vw,48px)}#db.debate-light .db-pn{min-height:24vh}}
++'@media(max-width:700px){#db.debate-light .db-grid{grid-template-columns:1fr;padding:16px 18px 36px}#db.debate-light .db-dc{min-height:260px}#db.debate-light .db-tp{font-size:clamp(28px,6vw,48px)}#db.debate-light .db-pn{min-height:24vh}}'
 +'@keyframes dbp{50%{transform:scale(1.18)}}@media(prefers-reduced-motion:reduce){#db *{transition:none!important;animation:none!important}}';
 
 function open(){
