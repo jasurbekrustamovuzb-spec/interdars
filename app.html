@@ -1303,9 +1303,9 @@ function rel(ts){var d=Math.floor((Date.now()-ts)/864e5);if(d<=0)return T('bugun
 function levelHTML(){var l=lvl();return '<div class="lv">'+l.L+'</div><div class="lvbody"><div class="lvrow"><span>'+T('Daraja:')+' <b>'+T(l.name)+'</b></span><span>'+l.inx+' / 200 XP</span></div><div class="bar"><i style="width:'+(l.inx/2)+'%"></i></div></div><div class="chip" title="'+T('Ketma-ket kunlar')+'">🔥 '+curStreak()+'</div>'}
 function stat(e,v,l){return '<div class="stat"><span class="em">'+e+'</span><b>'+v+'</b><small>'+T(l)+'</small></div>'}
 function statsHTML(){var s=st();return stat('🧩',s.c,'Yaratilgan darslar')+stat('🎮',s.p,'Topshirilgan')+stat('🎯',s.a+'%','O’rtacha natija')+stat('🏆',s.b+'%','Eng yuqori ball')}
-var ICP='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13a1 1 0 0 0 1.5.86l10.5-6.5a1 1 0 0 0 0-1.72L9.5 4.64A1 1 0 0 0 8 5.5z"/></svg>',ICG='<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>';
+var ICS='<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 10.5l6.8-4M8.6 13.5l6.8 4"/></svg>',ICP='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13a1 1 0 0 0 1.5.86l10.5-6.5a1 1 0 0 0 0-1.72L9.5 4.64A1 1 0 0 0 8 5.5z"/></svg>',ICG='<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>';
 function lcard(l){var m=MT[l.m],sub=l.sub||((l.cls?T(l.cls)+' · ':'')+rel(l.created));
-  return '<article class="lesson" data-lid="'+l.id+'"><div class="tile" style="background:'+m.bg+'">'+m.e+'</div><div class="lbody"><b>'+esc(l.title)+'</b><small>'+cnt(l)+' '+T(unit(l))+' · '+esc(sub)+'</small><span class="tag" style="background:'+m.bg+';color:'+m.fg+'">'+T(m.n)+'</span></div><div class="lacts"><button class="lplay'+(hostM(l.m)?' live':'')+'" data-play="'+l.id+'" aria-label="'+T(hostLbl(l.m))+'" title="'+T(hostLbl(l.m))+'">'+ICP+'</button><button class="lset" data-lset="'+l.id+'" aria-label="'+T('Sozlamalar')+'" title="'+T('Sozlamalar')+'" aria-haspopup="menu">'+ICG+'</button></div></article>'}
+  return '<article class="lesson" data-lid="'+l.id+'"><div class="tile" style="background:'+m.bg+'">'+m.e+'</div><div class="lbody"><b>'+esc(l.title)+'</b><small>'+cnt(l)+' '+T(unit(l))+' · '+esc(sub)+'</small><span class="tag" style="background:'+m.bg+';color:'+m.fg+'">'+T(m.n)+'</span></div><div class="lacts"><button class="lplay'+(hostM(l.m)?' live':'')+'" data-play="'+l.id+'" aria-label="'+T(hostLbl(l.m))+'" title="'+T(hostLbl(l.m))+'">'+ICP+'</button>'+(l.m==='debate'?'<button class="lset" data-lshare="'+l.id+'" aria-label="Ulashish" title="Ulashish">'+ICS+'</button>':'')+'<button class="lset" data-lset="'+l.id+'" aria-label="'+T('Sozlamalar')+'" title="'+T('Sozlamalar')+'" aria-haspopup="menu">'+ICG+'</button></div></article>'}
 function emptyCard(){return '<div class="es"><div class="em">📝</div><b>'+T('Hali test yo’q')+'</b><p>'+T('Birinchi testingizni yarating yoki tayyor testlardan boshlang.')+'</p><div class="es-a"><button class="go" data-manual>'+T('Test yaratish')+'</button><button class="go alt" data-lfall>'+T('Tayyor testlar')+'</button></div></div>'}
 function chartHTML(){var pl=D.plays.slice(0,7).reverse();
   if(!pl.length)return '<div class="es sm"><div class="em">📊</div><p>'+T('Natijalar test topshirgandan keyin shu yerda chiqadi.')+'</p></div>';
@@ -1542,7 +1542,7 @@ function openDetail(id){var l=find(id);if(!l)return;var m=MT[l.m],own=l.id.charA
 var CM=null;
 function closeCM(){if(CM){CM.remove();CM=null}}
 function openCM(id,btn){closeCM();var l=find(id);if(!l)return;var own=l.id.charAt(0)==='u',it=[];
-  it.push(['play','▶',hostLbl(l.m)]);
+  it.push(['play','▶',hostLbl(l.m)]);if(l.code)it.push(['share','🔗','Ulashish']);
   if(l.qs&&!hostM(l.m)){it.push(['live','🔴','Jonli o’tkazish']);it.push(['league','🏆','Chempionlar ligasi'])}
   if(own){it.push(['edit','✏️','Tahrirlash']);it.push(['pub','🌐','Hammaga ochiq',l.pub!==false]);it.push(['-']);it.push(['del','🗑️','O’chirish','dng'])}
   else it.push(['add','➕','Testlarimga qo’shish']);
@@ -1552,7 +1552,7 @@ function openCM(id,btn){closeCM();var l=find(id);if(!l)return;var own=l.id.charA
   var r=btn.getBoundingClientRect(),w=el.offsetWidth,hh=el.offsetHeight,left=Math.min(Math.max(10,r.right-w),innerWidth-w-10),top=r.bottom+6;if(top+hh>innerHeight-10)top=Math.max(10,r.top-hh-6);
   el.style.left=left+'px';el.style.top=top+'px'}
 function cmAct(a,id){closeCM();var l=find(id);if(!l)return;
-  if(a==='play')play(id);
+  if(a==='play')play(id);else if(a==='share')shareL(l,true);
   else if(a==='league'){hostGo(l,'league')}else if(a==='live'){if(window.LiveQuiz)window.LiveQuiz.host(l)}else if(a==='class'){if(window.LiveQuiz)window.LiveQuiz.host(l,{mode:'class'})}
   else if(a==='edit')editL(id);
   else if(a==='pub'){l.pub=l.pub===false;saveD();cloudPush(l);say(l.pub===false?'Faqat sizga ko’rinadi':'Hamma ko’ra oladi')}
@@ -1923,6 +1923,7 @@ $('#dlg').addEventListener('input',function(e){var t=e.target;if(t.id==='qb-t'){
 /* ===== umumiy bosish ===== */
 document.addEventListener('click',function(e){var t=e.target,b;
   if(b=t.closest('[data-cm]')){cmAct(b.dataset.cm,b.dataset.id);return}
+  if(b=t.closest('[data-lshare]')){shareL(find(b.dataset.lshare),true);return}
   if(b=t.closest('[data-lset]')){if(CM){closeCM()}else openCM(b.dataset.lset,b);return}
   if(b=t.closest('[data-lfall]')){lf='all';$$('#lf .pill').forEach(function(x){x.setAttribute('aria-pressed',x.dataset.f==='all')});renderLib();go('kutubxona');return}
   if(b=t.closest('[data-manual]')){if(W.edit)resetW();openWiz();return}
@@ -1976,7 +1977,7 @@ function cloudPush(l){if(!sbc())return Promise.resolve();return cuid().then(func
   function once(){var row=rowOf(l,uid),q=l.cid?sbc().from('shared_lessons').update(row).eq('id',l.cid).select('id').maybeSingle():sbc().from('shared_lessons').insert(row).select('id').single();
     return q.then(function(r){if(r.error){if(r.error.code==='23505'&&tries++<6){l.code=gen();return once()}throw r.error}if(r.data&&r.data.id&&l.cid!==r.data.id){l.cid=r.data.id;saveD()}})}
   return once()}).catch(cloudWarn)}
-window.IDApp=window.IDApp||{};window.IDApp.saveLesson=function(l,isNew,quiet){if(isNew){l.id='u'+Date.now();l.code=gen();l.cls=l.cls||'Sinf';l.created=Date.now();D.lessons.unshift(l)}try{saveD();cloudPush(l)}catch(e){console.warn(e)}if(!quiet){try{renderAll()}catch(e){console.warn('renderAll:',e)}}};
+window.IDApp=window.IDApp||{};window.IDApp.saveLesson=function(l,isNew,quiet){if(isNew){l.id='u'+Date.now();l.code=gen();l.cls=l.cls||'Sinf';l.created=Date.now();D.lessons.unshift(l)}try{saveD();cloudPush(l)}catch(e){console.warn(e)}if(!quiet){try{renderAll()}catch(e){console.warn('renderAll:',e)}}};window.IDApp.share=function(l){shareL(l,true)};
 function cloudDel(cid){if(!sbc())return;cuid().then(function(uid){if(uid)return sbc().from('shared_lessons').delete().eq('id',cid)}).catch(cloudWarn)}
 function cloudPull(){return cuid().then(function(uid){if(!uid)return;
   return sbc().from('shared_lessons').select('*').eq('owner_id',uid).order('created_at',{ascending:false}).limit(500).then(function(r){
@@ -1988,8 +1989,8 @@ function cloudPull(){return cuid().then(function(uid){if(!uid)return;
 function cloudPub(){if(!sbc())return;CL.pubAt=Date.now();cuid().then(function(uid){return sbc().from('shared_lessons').select('*').eq('is_public',true).neq('owner_id',uid||'00000000-0000-0000-0000-000000000000').order('created_at',{ascending:false}).limit(40)}).then(function(r){if(r.error)throw r.error;G=(r.data||[]).map(function(x){return lessonOf(x,false)});renderLib()}).catch(function(){})}
 window.cloudPubSoon=function(){if(Date.now()-CL.pubAt>20000)cloudPub()};
 function fetchByCode(c){if(!sbc())return Promise.resolve(null);return cuid().then(function(){return sbc().from('shared_lessons').select('*').eq('code',c).maybeSingle()}).then(function(r){if(r.error||!r.data)return null;var mine=r.data.owner_id===CL.uid,l=lessonOf(r.data,mine),ex=allL().filter(function(x){return x.cid===l.cid})[0];if(ex)return ex;if(mine){D.lessons.unshift(l);saveD()}else G.unshift(l);return l},function(){return null})}
-function shareL(l){if(!l||!l.code)return;if(l.pub===false){say('Ulashish uchun “Hammaga ochiq”ni yoqing');return}
-  var url=location.origin+'/home#t='+l.code,txt=T('InterDars’da test:')+' '+l.title;
+function shareL(l,force){if(!l||!l.code)return;if(l.pub===false){if(force&&l.id&&l.id.charAt(0)==='u'){l.pub=true;saveD();cloudPush(l)}else{say('Ulashish uchun “Hammaga ochiq”ni yoqing');return}}
+  var url=location.origin+'/home#t='+l.code,txt=(l.m==='debate'?'InterDars’da munozara mavzulari:':T('InterDars’da test:'))+' '+l.title;
   function fallback(){var x=document.createElement('textarea');x.value=url;x.setAttribute('readonly','');x.style.position='fixed';x.style.opacity='0';document.body.appendChild(x);x.select();try{document.execCommand('copy');say('Havola nusxalandi')}catch(e){say(url)}x.remove()}
   function copy(){if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(url).then(function(){say('Havola nusxalandi')},fallback);else fallback()}
   if(navigator.share&&!matchMedia('(pointer:fine)').matches){navigator.share({title:l.title,text:txt,url:url}).catch(function(e){if(e&&e.name!=='AbortError')copy()})}else copy()}
