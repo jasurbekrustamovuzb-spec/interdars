@@ -26,8 +26,9 @@ var CSS='#db{position:fixed;inset:0;z-index:9500;display:flex;flex-direction:col
 +'#db .db-eh,#db .db-lh,#db .db-sh{display:flex;align-items:center;gap:10px;padding:12px 16px}'
 +'#db .db-eh{background:#fff;border-bottom:1px solid #E1E6F4}'
 +'#db .db-nm{display:block;background:#fff;border:1.5px solid #E1E6F4;border-radius:16px;padding:10px 14px;margin-bottom:12px}#db .db-nm small{display:block;color:#69739A;font-size:13px}#db .db-nm span{display:flex;align-items:center;gap:8px}#db .db-ti{flex:1;min-width:0;font:inherit;font-size:18px;font-weight:700;border:0;background:transparent;color:inherit;padding:2px 0}#db .db-ti:focus{outline:0}'
-+'#db .db-ai .db-pri{width:100%}#db .db-em{flex:1;overflow:auto;padding:18px 16px 70px;width:100%;max-width:820px;margin:0 auto;box-sizing:border-box}'
-+'#db .db-ai{display:flex;gap:10px;margin-bottom:10px}'
++'#db .db-em{flex:1;overflow:auto;padding:18px 16px 70px;width:100%;max-width:820px;margin:0 auto;box-sizing:border-box}'
++'#db .db-top{display:flex;gap:10px;align-items:stretch;margin-bottom:12px}#db .db-top .db-nm{flex:1;min-width:0;margin-bottom:0}#db .db-top .db-pri{align-self:stretch;white-space:nowrap;padding:0 18px;border-radius:16px}'
++'@media(max-width:520px){#db .db-aw{display:none}#db .db-top .db-pri{padding:0 14px}}'
 +'#db .db-inp{flex:1;min-width:0;font:inherit;font-size:16px;padding:12px 14px;border:1.5px solid #D5DBEE;border-radius:12px;background:#fff;color:inherit}'
 +'#db .db-msg{margin:6px 2px 12px;font-size:14px;color:#3149D6}'
 +'#db .db-tc{display:flex;gap:10px;align-items:flex-start;background:#fff;border:1.5px solid #E1E6F4;border-radius:16px;padding:12px;margin-bottom:10px}'
@@ -96,14 +97,14 @@ function flush(){if(S&&S.pend){S.pend=0;var a=App();if(a.saveLesson)a.saveLesson
 
 /* ===== ko‘rinishlar ===== */
 function topicCard(x,i){
-  return '<div class="db-tc'+(x.on?'':' off')+'"><input type="checkbox" data-f="on" data-i="'+i+'"'+(x.on?' checked':'')+' aria-label="Munozaraga kiritish"><textarea data-f="t" data-i="'+i+'" rows="2" maxlength="300" placeholder="Masalan: Sun’iy intellekt foydadan ko’ra ko’proq xavf tug’diradi">'+esc(x.t)+'</textarea>'
+  return '<div class="db-tc'+(x.on?'':' off')+'"><input type="checkbox" data-f="on" data-i="'+i+'"'+(x.on?' checked':'')+' aria-label="Munozaraga kiritish"><textarea data-f="t" data-i="'+i+'" rows="2" maxlength="300" placeholder="Munozara mavzusini yozing">'+esc(x.t)+'</textarea>'
   +'<button class="db-rm" data-a="rm" data-i="'+i+'" aria-label="O‘chirish">✕</button></div>'}
 function vEdit(){
   var d=S.d,h='<header class="db-eh"><button class="db-ic" data-a="close" aria-label="Yopish">✕</button>'
   +'<span class="db-sp"></span>'
   +'<button class="db-sec" data-a="start">Boshlash</button><button class="db-pri" data-a="save">Saqlash</button></header><main class="db-em">'
-  +'<label class="db-nm"><small>Munozara nomi</small><span><input id="db-title" class="db-ti" maxlength="80" placeholder="Nom yozing" value="'+esc(S.title)+'"><i aria-hidden="true">✏️</i></span></label>'
-  +'<div class="db-ai"><button class="db-pri" data-a="ai"'+(S.busy?' disabled':'')+'>'+(S.busy?'Qidirilmoqda…':'✨ AI tavsiyalari')+'</button></div>'
+  +'<div class="db-top"><label class="db-nm"><small>Munozara nomi</small><span><input id="db-title" class="db-ti" maxlength="80" placeholder="Munozara nomini yozing" value="'+esc(S.title)+'"><i aria-hidden="true">✏️</i></span></label>'
+  +'<button class="db-pri" data-a="ai"'+(S.busy?' disabled':'')+'>'+(S.busy?'Qidirilmoqda…':'✨ AI<span class="db-aw"> tavsiyalari</span>')+'</button></div>'
   +(S.msg?'<p class="db-msg" role="status">'+esc(S.msg)+'</p>':'')
   +d.topics.map(topicCard).join('')+(d.topics.length>1?'<p class="db-hint">Belgilangan mavzular taqsimlanadi. Keraklisini tanlang.</p>':'')+'<button class="db-add" data-a="add">＋ Mavzu tuzish</button>'
   +'<div class="db-tm"><div><b>Jamoalar</b><small>'+(d.teams%2?'Bitta jamoa juftsiz qoladi':Math.floor(d.teams/2)+' ta munozara')+'</small></div>'
@@ -158,7 +159,7 @@ function token(){
   return sb.auth.getSession().then(function(r){var t=r&&r.data&&r.data.session&&r.data.session.access_token;if(!t)throw new Error('Hisobingizga qayta kiring.');return t})}
 function doAI(){
   sync();S.busy=1;S.msg='';render();
-  token().then(function(tk){return fetch('/api/generate-debate',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+tk},body:JSON.stringify({count:6})})})
+  token().then(function(tk){return fetch('/api/generate-debate',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+tk},body:JSON.stringify({count:6,exclude:S.d.topics.map(function(x){return x.t.trim()}).filter(Boolean).slice(0,30)})})})
   .then(function(r){if(r.status===404)throw new Error('soon');return r.json().then(function(j){if(!r.ok)throw new Error((j&&j.error)||'err');return j})})
   .then(function(j){if(!S)return;var a=(j.topics||[]).filter(function(x){return x&&typeof x.t==='string'&&x.t.trim()}).slice(0,10);
     S.d.topics=S.d.topics.filter(function(x){return x.t.trim()});
