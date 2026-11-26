@@ -506,7 +506,7 @@
       wins: { 1: 0, 2: 0 },
       glassFill: 0,         // 0 to 100 (%)
       turnStartFill: 0,
-      minPourRequired: 8,
+      minPourRequired: 0,
       bottleFill: 85,       // Remaining cola volume inside bottle (starts at 85%; 1 full glass drains ~68% of bottle)
       playerNames: null,
       dragPointerId: null,
@@ -735,13 +735,8 @@
       state.pourRate = 0;
       sound.updatePourSound(0);
 
-      const pouredThisTurn = state.glassFill - state.turnStartFill;
       if (!state.gameOver && state.hasPouredThisTurn && window.__colaMode === 'play') {
-        if (pouredThisTurn >= state.minPourRequired - 0.15) {
-          completePlayerTurn();
-        } else {
-          showToast(`Kamida ${state.minPourRequired}% kola quyishingiz shart! (Hozir: ${Math.floor(pouredThisTurn)}%)`);
-        }
+        completePlayerTurn();
       }
     }
 
@@ -782,17 +777,9 @@
         glassPercentText.className = 'font-black text-emerald-700 text-sm';
       }
 
-      const pouredThisTurn = Math.max(0, state.glassFill - state.turnStartFill);
       const minRatio = Math.min(100, state.glassFill);
       turnMinBar.style.width = `${minRatio}%`;
-
-      if (pouredThisTurn >= state.minPourRequired - 0.15) {
-        turnMinCheck.textContent = `Tayyor (+${Math.round(pouredThisTurn)}%) ✓`;
-        turnMinCheck.className = 'text-[11px] font-extrabold text-emerald-700 whitespace-nowrap';
-      } else {
-        turnMinCheck.textContent = `${Math.floor(pouredThisTurn)}% / ${state.minPourRequired}%`;
-        turnMinCheck.className = 'text-[11px] font-extrabold text-amber-700 whitespace-nowrap';
-      }
+      turnMinCheck.textContent = state.hasPouredThisTurn ? 'Urinish tugadi' : 'Istalgan miqdor';
 
       const name1 = document.getElementById('p1Name');
       const name2 = document.getElementById('p2Name');
