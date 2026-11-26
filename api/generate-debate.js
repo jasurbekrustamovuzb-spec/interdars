@@ -69,80 +69,95 @@ module.exports = async function handler(req, res) {
   const web = body.web === true;
   const level = { 1: 'oson (5–7-sinf o‘quvchilari uchun, kundalik hayotga yaqin)', 2: 'o‘rtacha (8–9-sinf)', 3: 'murakkab (10–11-sinf va talabalar, chuqur mulohaza talab qiladi)' }[parseInt(body.level, 10)] || 'o‘rtacha (8–9-sinf)';
 
-  const prompt =
-    'Sen maktab o‘quvchilari va o‘qituvchilari uchun munozara (debat) mavzularini tuzadigan yordamchisan.\n' +
-    'O‘zbek tilida (lotin yozuvi) roppa-rosa ' + count + ' ta munozara mavzusi yoz.\n' +
-    'Qoidalar:\n' +
-    '- Har bir mavzu bitta to‘liq tasdiq gap bo‘lsin, jamoalar uni qo‘llab ham, inkor qilib ham bahslasha olsin.\n' +
-    '- Mavzu qisqa (12 so‘zgacha), aniq va o‘quvchilarga tushunarli bo‘lsin.\n' +
-    '- Qiyinlik darajasi: ' + level + '.\n' +
-    '- Siyosiy, diniy va haqoratli mavzular bo‘lmasin.\n' +
-    '- Har mavzuga 2 ta juda qisqa maslahat (h) qo‘sh: bahsni boshlash uchun bitta savol yoki fikr.\n' +
-    (topic ? '- Mavzular shu soha yoki mavzuga oid bo‘lsin: ' + topic + '\n' : '- Mavzular xilma-xil bo‘lsin: ta’lim, texnologiya, jamiyat, sog‘lom turmush, ekologiya, kelajak kasblari.\n') +
-    (text ? '- Mavzularni faqat quyidagi o‘quv materialidagi muhim g‘oya va tushunchalardan chiqar; materialda yo‘q narsani o‘ylab topma.\n' : '') +
-    (web ? '- Internetdan qidirib, shu mavzuga aloqador hozirgi dolzarb voqealar va muhokamalarga asoslangan mavzularni ham qo‘sh.\n' : '') +
-    (exclude.length ? '- Mana bu mavzularni takrorlama: ' + exclude.join(' | ') + '\n' : '') +
-    (text ? '\n=== O‘QUV MATERIALI ===\n' + text + '\n=== MATERIAL TUGADI ===\n' : '') +
-    (web ? '\nJavobni faqat shu JSON ko‘rinishida qaytar, boshqa matn yozma: {"topics":[{"t":"mavzu","h":["maslahat","maslahat"]}]}\n' : '');
-
-  const payload = {
-    contents: [{ role: 'user', parts: [{ text: prompt }] }],
-    generationConfig: { temperature: 1, maxOutputTokens: 2048 }
-  };
-  if (web) {
-    // Qidiruv vositasi JSON-sxema bilan birga ishlamaydi — javob matndan ajratib olinadi
-    payload.tools = [{ google_search: {} }];
-  } else {
-    payload.generationConfig.responseMimeType = 'application/json';
-    payload.generationConfig.responseSchema = {
-      type: 'OBJECT',
-      properties: {
-        topics: {
-          type: 'ARRAY',
-          items: {
-            type: 'OBJECT',
-            properties: { t: { type: 'STRING' }, h: { type: 'ARRAY', items: { type: 'STRING' } } },
-            required: ['t']
-          }
-        }
-      },
-      required: ['topics']
-    };
+  function buildPrompt(useWeb) {
+    return 'Sen maktab o‘quvchilari va o‘qituvchilari uchun munozara (debat) mavzularini tuzadigan yordamchisan.\n' +
+      'O‘zbek tilida (lotin yozuvi) roppa-rosa ' + count + ' ta munozara mavzusi yoz.\n' +
+      'Qoidalar:\n' +
+      '- Har bir mavzu bitta to‘liq tasdiq gap bo‘lsin, jamoalar uni qo‘llab ham, inkor qilib ham bahslasha olsin.\n' +
+      '- Mavzu qisqa (12 so‘zgacha), aniq va o‘quvchilarga tushunarli bo‘lsin.\n' +
+      '- Qiyinlik darajasi: ' + level + '.\n' +
+      '- Siyosiy, diniy va haqoratli mavzular bo‘lmasin.\n' +
+      '- Har mavzuga 2 ta juda qisqa maslahat (h) qo‘sh: bahsni boshlash uchun bitta savol yoki fikr.\n' +
+      (topic ? '- Mavzular shu soha yoki mavzuga oid bo‘lsin: ' + topic + '\n' : '- Mavzular xilma-xil bo‘lsin: ta’lim, texnologiya, jamiyat, sog‘lom turmush, ekologiya, kelajak kasblari.\n') +
+      (text ? '- Mavzularni faqat quyidagi o‘quv materialidagi muhim g‘oya va tushunchalardan chiqar; materialda yo‘q narsani o‘ylab topma.\n' : '') +
+      (useWeb ? '- Internetdan qidirib, shu mavzuga aloqador hozirgi dolzarb voqealar va muhokamalarga asoslangan mavzularni ham qo‘sh.\n' : '') +
+      (exclude.length ? '- Mana bu mavzularni takrorlama: ' + exclude.join(' | ') + '\n' : '') +
+      (text ? '\n=== O‘QUV MATERIALI ===\n' + text + '\n=== MATERIAL TUGADI ===\n' : '') +
+      (useWeb ? '\nJavobni faqat shu JSON ko‘rinishida qaytar, boshqa matn yozma: {"topics":[{"t":"mavzu","h":["maslahat","maslahat"]}]}\n' : '');
   }
-  // 2.5 modellarda "thinking" javobni sekinlashtiradi — mavzu yozish uchun kerak emas
-  if (/2\.5-flash/.test(MODEL)) payload.generationConfig.thinkingConfig = { thinkingBudget: 0 };
+
+  function buildPayload(model, useWeb) {
+    const pl = {
+      contents: [{ role: 'user', parts: [{ text: buildPrompt(useWeb) }] }],
+      generationConfig: { temperature: 1, maxOutputTokens: 2048 }
+    };
+    if (useWeb) {
+      // Qidiruv vositasi JSON-sxema bilan birga ishlamaydi — javob matndan ajratib olinadi
+      pl.tools = [{ google_search: {} }];
+    } else {
+      pl.generationConfig.responseMimeType = 'application/json';
+      pl.generationConfig.responseSchema = {
+        type: 'OBJECT',
+        properties: {
+          topics: {
+            type: 'ARRAY',
+            items: {
+              type: 'OBJECT',
+              properties: { t: { type: 'STRING' }, h: { type: 'ARRAY', items: { type: 'STRING' } } },
+              required: ['t']
+            }
+          }
+        },
+        required: ['topics']
+      };
+    }
+    // 2.5-flash da "thinking" javobni sekinlashtiradi — mavzu yozish uchun kerak emas
+    if (/2\.5-flash/.test(model)) pl.generationConfig.thinkingConfig = { thinkingBudget: 0 };
+    return pl;
+  }
 
   const t0 = Date.now();
   try {
-    // Asosiy model topilmasa (404), Google'ning "latest" nomiga o'tamiz
-    const models = [MODEL];
-    if (MODEL !== 'gemini-flash-latest') models.push('gemini-flash-latest');
-    let r = null, j = {};
-    for (const model of models) {
-      const pl = JSON.parse(JSON.stringify(payload));
-      if (!/2\.5-flash/.test(model)) delete pl.generationConfig.thinkingConfig;
+    // Urinishlar: avval so'ralgan usul, kvota/model xatosida zaxira modellar,
+    // internet bilan muvaffaqiyatsiz bo'lsa — internetsiz.
+    const models = [MODEL, 'gemini-flash-latest', 'gemini-flash-lite-latest'].filter((m, i, arr) => arr.indexOf(m) === i);
+    const attempts = [];
+    models.forEach(m => attempts.push({ model: m, web }));
+    if (web) models.forEach(m => attempts.push({ model: m, web: false }));
+
+    let r = null, j = {}, used = null;
+    for (const at of attempts) {
+      const left = 26000 - (Date.now() - t0);
+      if (left < 4000) break;
       const ctl = new AbortController();
-      const to = setTimeout(() => ctl.abort(), web ? 40000 : 25000);
-      r = await fetch(
-        'https://generativelanguage.googleapis.com/v1beta/models/' + encodeURIComponent(model) + ':generateContent',
-        {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json', 'x-goog-api-key': process.env.GEMINI_API_KEY },
-          body: JSON.stringify(pl),
-          signal: ctl.signal
-        }
-      );
-      clearTimeout(to);
-      j = await r.json().catch(() => ({}));
-      if (r.ok || r.status !== 404) break;
-      console.log('generate-debate: model topilmadi:', model);
+      const to = setTimeout(() => ctl.abort(), Math.min(left, at.web ? 16000 : 12000));
+      try {
+        r = await fetch(
+          'https://generativelanguage.googleapis.com/v1beta/models/' + encodeURIComponent(at.model) + ':generateContent',
+          {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'x-goog-api-key': process.env.GEMINI_API_KEY },
+            body: JSON.stringify(buildPayload(at.model, at.web)),
+            signal: ctl.signal
+          }
+        );
+        j = await r.json().catch(() => ({}));
+      } catch (e) {
+        r = null; j = {};
+        console.log('generate-debate: urinish xatosi', at.model, at.web ? 'web' : 'plain', e && e.name);
+        continue;
+      } finally { clearTimeout(to); }
+      if (r.ok) { used = at; break; }
+      console.log('generate-debate: gemini', r.status, at.model, at.web ? 'web' : 'plain', (j && j.error && j.error.status) || '', clean(j && j.error && j.error.message, 200));
+      const retry = r.status === 404 || r.status === 429 || r.status === 503 || (at.web && (r.status === 400 || r.status === 403));
+      if (!retry) break;
     }
-    if (!r.ok) {
-      const em = clean(j && j.error && j.error.message, 200);
-      console.log('generate-debate: gemini', r.status, (j && j.error && j.error.status) || '', em, Date.now() - t0, 'ms');
-      if (r.status === 429) return send(res, 429, { error: 'AI hozir band. Birozdan keyin urinib ko’ring.', retryAfter: 30 });
-      return send(res, 502, { error: 'AI javob bermadi (Gemini xatosi ' + r.status + '). Birozdan keyin qayta urinib ko’ring.' });
+    if (!r || !r.ok) {
+      const code = r ? r.status : 'tarmoq';
+      if (r && r.status === 429) return send(res, 429, { error: 'AI hozir band (Google kvotasi tugagan). Birozdan keyin urinib ko’ring.', retryAfter: 30 });
+      return send(res, 502, { error: 'AI javob bermadi (Gemini xatosi ' + code + '). Birozdan keyin qayta urinib ko’ring.' });
     }
+    if (web && used && !used.web) console.log('generate-debate: internetsiz ishlatildi');
 
     const txt = (((j.candidates || [])[0] || {}).content || {}).parts;
     const raw = Array.isArray(txt) ? txt.map(p => p.text || '').join('') : '';
@@ -163,7 +178,7 @@ module.exports = async function handler(req, res) {
 
     console.log('generate-debate: ok', topics.length, 'topics', Date.now() - t0, 'ms');
     if (!topics.length) return send(res, 502, { error: 'AI mavzu topa olmadi. Qayta urinib ko’ring.' });
-    return send(res, 200, { topics: topics.slice(0, count) });
+    return send(res, 200, { topics: topics.slice(0, count), web: !!(used && used.web) });
   } catch (e) {
     console.log('generate-debate: error', e && e.name, e && e.message, Date.now() - t0, 'ms');
     return send(res, 502, { error: 'AI javob bermadi (' + ((e && e.name === 'AbortError') ? 'vaqt tugadi' : 'server xatosi') + '). Birozdan keyin qayta urinib ko’ring.' });
