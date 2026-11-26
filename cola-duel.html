@@ -113,6 +113,8 @@
     html.embedded-duel #duelToolbar,
     html.embedded-duel #bottomControlBar,
     html.embedded-duel #turnMinCheck { display: none !important; }
+    html.embedded-duel #duelProgress { justify-content: center; max-width: 700px; width: calc(100% - 24px); margin: 2px auto 0; box-shadow: none; border-radius: 999px; }
+    html.embedded-duel[data-cola-mode="watch"] #bottomControlBar { display: none !important; }
     html.embedded-duel header { max-width: 980px; padding: 10px 12px 5px; gap: 7px; }
     html.embedded-duel #player1Card,
     html.embedded-duel #player2Card { min-width: 0; padding: 8px 11px; border-radius: 14px; box-shadow: none; transform: none; }
@@ -227,26 +229,13 @@
     </div>
 
     <!-- LIVE METERS: GLASS FILL & MINIMUM TURN REQUIREMENT -->
-    <div class="glass-panel rounded-2xl px-3.5 py-2 flex flex-wrap items-center justify-between gap-2 text-xs">
-      <div class="flex items-center gap-2">
-        <span class="text-slate-600 font-semibold">Stakan to'lishi:</span>
-        <span id="glassPercentText" class="font-black text-emerald-700 text-sm">0%</span>
-        <span class="text-slate-400 font-semibold">/ 100%</span>
+    <div id="duelProgress" class="glass-panel rounded-2xl px-3.5 py-2 flex items-center gap-3 text-xs">
+      <span aria-hidden="true">🥤</span>
+      <span id="glassPercentText" class="font-black text-emerald-700 text-sm">0%</span>
+      <div class="flex-1 h-2.5 bg-slate-200 rounded-full overflow-hidden border border-slate-300/80 p-0.5">
+        <div id="turnMinBar" class="h-full rounded-full bg-gradient-to-r from-amber-500 to-emerald-500 transition-all duration-100" style="width: 0%"></div>
       </div>
-
-      <!-- Turn Pour Progress Pill -->
-      <div class="flex items-center gap-2 flex-1 max-w-xs">
-        <span class="text-slate-600 font-semibold whitespace-nowrap text-[11px]">Urinish me'yori:</span>
-        <div class="w-full h-2.5 bg-slate-200 rounded-full overflow-hidden border border-slate-300/80 p-0.5">
-          <div id="turnMinBar" class="h-full rounded-full bg-gradient-to-r from-amber-500 to-emerald-500 transition-all duration-100" style="width: 0%"></div>
-        </div>
-        <span id="turnMinCheck" class="text-[11px] font-extrabold text-amber-700 whitespace-nowrap">Kamida 8%</span>
-      </div>
-
-      <div class="hidden md:flex items-center gap-1.5 text-slate-700 font-semibold">
-        <span class="inline-block w-2.5 h-2.5 rounded-full bg-red-500"></span>
-        <span>Qizil chiziqdan oshsa — to'kiladi!</span>
-      </div>
+      <span id="turnMinCheck" class="hidden">Kamida 8%</span>
     </div>
   </header>
 
@@ -792,7 +781,7 @@
       }
 
       const pouredThisTurn = Math.max(0, state.glassFill - state.turnStartFill);
-      const minRatio = Math.min(100, (pouredThisTurn / state.minPourRequired) * 100);
+      const minRatio = Math.min(100, state.glassFill);
       turnMinBar.style.width = `${minRatio}%`;
 
       if (pouredThisTurn >= state.minPourRequired - 0.15) {
