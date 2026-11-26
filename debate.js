@@ -26,7 +26,7 @@ var CSS='#db{position:fixed;inset:0;z-index:9500;display:flex;flex-direction:col
 +'#db .db-eh,#db .db-lh,#db .db-sh{display:flex;align-items:center;gap:10px;padding:12px 16px}'
 +'#db .db-eh{background:#fff;border-bottom:1px solid #E1E6F4}'
 +'#db .db-nm{display:block;background:#fff;border:1.5px solid #E1E6F4;border-radius:16px;padding:10px 14px;margin-bottom:12px}#db .db-nm small{display:block;color:#69739A;font-size:13px}#db .db-nm span{display:flex;align-items:center;gap:8px}#db .db-ti{flex:1;min-width:0;font:inherit;font-size:18px;font-weight:700;border:0;background:transparent;color:inherit;padding:2px 0}#db .db-ti:focus{outline:0}'
-+'#db .db-em{flex:1;overflow:auto;padding:18px max(16px,calc((100% - 820px)/2)) 70px;width:100%;box-sizing:border-box}'
++'#db .db-em{flex:1;overflow:auto;padding:18px max(16px,calc((100% - 820px)/2)) 70px;width:100%;box-sizing:border-box;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}'
 +'#db .db-top{display:flex;gap:10px;align-items:stretch;margin-bottom:12px}#db .db-top .db-nm{flex:1;min-width:0;margin-bottom:0}#db .db-top .db-pri{align-self:stretch;white-space:nowrap;padding:0 18px;border-radius:16px}'
 +'#db .db-ap{background:#fff;border:1.5px solid #CBD5FF;border-radius:16px;padding:14px;margin-bottom:12px;display:flex;flex-direction:column;gap:12px}'
 +'#db .db-apt{margin:0}#db .db-apt b{display:block;font-size:17px}#db .db-apt small,#db .db-fr small,#db .db-fl small,#db .db-sw small{display:block;color:#69739A;font-size:13px;font-weight:400}'
@@ -182,8 +182,10 @@ function vRes(){
   +'<div class="db-lg">'+rows.map(function(r,i){return '<div class="db-rk"><span>'+(i===0&&r.s>0?'🏆':(i+1))+'</span><b>'+esc(tn(r.k))+'</b><em>'+r.s+'</em></div>'}).join('')+'</div>'}
 function render(){
   if(!S)return;
+  var m0=R.querySelector('.db-em'),st=m0?m0.scrollTop:0;
   R.className=S.v==='edit'?'light':'dark';
-  R.innerHTML=S.v==='edit'?vEdit():S.v==='stage'?vStage():S.v==='res'?vRes():vList()}
+  R.innerHTML=S.v==='edit'?vEdit():S.v==='stage'?vStage():S.v==='res'?vRes():vList();
+  if(st){var m1=R.querySelector('.db-em');if(m1)m1.scrollTop=st}}
 
 /* ===== taymer ===== */
 function stopT(){clearInterval(iv);iv=0;run=0}
@@ -205,7 +207,7 @@ function doAI(){
     S.d.topics=S.d.topics.filter(function(x){return x.t.trim()});
     a.forEach(function(x){S.d.topics.push({t:x.t.trim().slice(0,300),h:Array.isArray(x.h)?x.h.slice(0,3):[],on:1})});
     if(a.length)S.aiOpen=0;
-    S.d.dirty=1;S.chg=1;S.msg=a.length?a.length+' ta tavsiya qo’shildi. Keraksizini olib tashlang yoki o’zgartiring.':'Tavsiya topilmadi. Boshqacha yozib ko’ring.'})
+    S.d.dirty=1;S.chg=1;S.msg=a.length?a.length+' ta tavsiya qo’shildi'+(o.web&&j.web===false?' (internetdan izlab bo’lmadi, shuning uchun mavzular AI’ning o’z bilimi asosida tuzildi)':'')+'. Keraksizini olib tashlang yoki o’zgartiring.':'Tavsiya topilmadi. Boshqacha yozib ko’ring.'})
   .catch(function(e){if(!S)return;var m=e&&e.message;S.msg=m==='soon'?'AI tavsiyalari tez orada ishga tushadi. Hozircha “Mavzu tuzish” orqali yozing.':(m&&m!=='err'&&m.length<120?m:'AI javob bermadi. Birozdan keyin qayta urinib ko’ring.')})
   .then(function(){if(S){S.busy=0;if(S.v==='edit')render()}})}
 
@@ -234,6 +236,7 @@ function onInput(e){
   if(t.dataset.f==='on'){x.on=t.checked?1:0;if(t.parentNode&&t.parentNode.classList)t.parentNode.classList.toggle('off',!t.checked)}
   else x.t=t.value;
   S.d.dirty=1;S.chg=1}
+function pressed(b){var l=b.parentNode.children;for(var k=0;k<l.length;k++)l[k].setAttribute('aria-pressed',l[k]===b?'true':'false')}
 function onChange(e){var t=e.target;if(!S||!t||t.id!=='db-f')return;var f=t.files&&t.files[0];t.value='';if(f)readFile(f)}
 function leaveEdit(){if(S.chg&&!window.confirm('Saqlanmagan o’zgarishlar o’chadi. Chiqasizmi?'))return;close()}
 function onClick(e){
@@ -241,7 +244,7 @@ function onClick(e){
   var a=b.dataset.a,i=+b.dataset.i,d=S.d,x=d.duels&&d.duels[S.cur];
   if(a==='close'){if(S.v==='edit')leaveEdit();else close()}
   else if(a==='save')save(false);else if(a==='start')save(true);else if(a==='ai'){sync();S.aiOpen=!S.aiOpen;render()}else if(a==='aigo')doAI();
-  else if(a==='web'){sync();oo().web=oo().web?0:1;render()}else if(a==='on'){sync();oo().n=+b.dataset.n;render()}else if(a==='ol'){sync();oo().lv=+b.dataset.n;render()}
+  else if(a==='web'){var ow=oo();ow.web=ow.web?0:1;b.setAttribute('aria-checked',ow.web?'true':'false')}else if(a==='on'){oo().n=+b.dataset.n;pressed(b)}else if(a==='ol'){oo().lv=+b.dataset.n;pressed(b)}
   else if(a==='pick'){var fi=$('#db-f');if(fi)fi.click()}else if(a==='fx'){sync();oo().file=null;render()}
   else if(a==='add'){sync();d.topics.push({t:'',h:[],on:1});d.dirty=1;S.chg=1;render();var l=R.querySelectorAll('.db-tc textarea');if(l.length)l[l.length-1].focus()}
   else if(a==='rm'){sync();d.topics.splice(i,1);if(!d.topics.length)d.topics.push({t:'',h:[],on:1});d.dirty=1;S.chg=1;render()}
