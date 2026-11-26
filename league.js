@@ -232,12 +232,13 @@ function pMsg(m){if(!P)return;if(m.to&&m.to!==P.pid)return;
   else if(m.t==='deny')leave(m.why==='full'?'Xona to‘ldi':'Turnir boshlangan — qo‘shilib bo‘lmaydi');
   else if(m.t==='end'){if(P.S&&P.S.ph==='fin')P.over=true;else leave('Tashkilotchi turnirni tugatdi')}}
 function mine(S,ri){if(!S.br)return null;var r=S.br[ri];if(!r)return null;for(var s=0;s<r.length;s++){var m=r[s];if(m[0]===P.i||m[1]===P.i)return{r:ri,s:s,m:m,side:m[0]===P.i?0:1,opp:m[0]===P.i?m[1]:m[0]}}return null}
-function pSnap(m){var first=!P.got,prev=P.S,samePour=!!(prev&&prev.ph==='pour'&&m.ph==='pour'&&prev.ri===m.ri);
-  if(samePour){var old=mine(prev,prev.ri),next=mine(m,m.ri);samePour=!!(old&&next&&old.s===next.s&&old.m[7]&&next.m[7]&&old.m[7][0]===next.m[7][0])}
+function syncPourFrame(S,mm){var frame=$('#colaFrame');if(!frame||!frame.contentWindow||!mm)return;var d=mm.m[7]||[0,0,[0,0],null],mode=(+d[0]||0)===mm.side?'play':'watch',ros=rosMap(S),players=[(ros[mm.m[0]]||[0,'Ishtirokchi'])[1],(ros[mm.m[1]]||[0,'Raqib'])[1]];frame.contentWindow.postMessage({type:'cola-sync',mode:mode,state:d[3]||{currentPlayer:(+d[0]||0)+1,glassFill:0,bottleFill:85,progress:0},players:players},location.origin)}
+function pSnap(m){var first=!P.got,prev=P.S,samePour=!!(prev&&prev.ph==='pour'&&m.ph==='pour'&&prev.ri===m.ri),old=null,next=null;
+  if(samePour){old=mine(prev,prev.ri);next=mine(m,m.ri);samePour=!!(old&&next&&old.s===next.s&&old.m[5]===3&&next.m[5]===3)}
   P.got=true;P.lastH=Date.now();if(m.you)P.i=m.you;P.S=m;P.dl=performance.now()+m.rem;
   if(first){conn(false);lsSet(LSP,{pin:P.pin,pid:P.pid,n:P.n,a:P.a,ts:Date.now()})}
   if(m.ph==='q'&&!(prev&&prev.ph==='q'&&prev.ri===m.ri&&prev.qi===m.qi)){P.my=-1;P.ak=false}
-  if(!samePour)pRender(prev)}
+  if(samePour)syncPourFrame(m,next);else pRender(prev)}
 function pRender(prev){var S=P.S;modalClose();clearInterval(P.tm);
   if(S.ph==='pour'){pPour(prev);return}
   ({lobby:pLobby,draw:pDraw,pre:pPre,q:pQ,rev:pRev,res:pRes,fin:pFin})[S.ph]()}
@@ -261,11 +262,11 @@ function pAnswer(k){if(!P||!P.S||P.S.ph!=='q'||P.my>=0)return;P.my=k;var o=$('#l
   var key=P.S.ri*100+P.S.qi,tries=0;P.ak=false;(function go(){if(!P||P.S.ph!=='q'||P.S.ri*100+P.S.qi!==key||P.ak||tries>4)return;tries++;send({t:'ans',p:P.pid,qi:key,c:k});setTimeout(go,800)})()}
 function pRev(){var S=P.S,mm=mine(S,S.ri);if(!mm||mm.m[5]!==2){pWait(S,mm);return}var ros=rosMap(S),okk=P.my===S.c;
   view(topbar('<b class="lgchip">'+esc(S.rn)+'</b><b class="lgchip">'+(S.qi+1)+' / '+S.nq+'</b>')+'<div class="lgc lgpq">'+vsBar(ros[P.i],ros[mm.opp],scoreOf(mm))+'<div class="lgverdict '+(okk?'y':'n')+'">'+(okk?'\u2705 To\u2018g\u2018ri! +1':P.my<0?'\u23f1 Javob berilmadi':'\u274c Noto\u2018g\u2018ri')+'</div><h2 class="lgq p sm">'+esc(S.q)+'</h2><div class="lgops">'+optsHTML(S,P.my,true)+'</div></div>','pl');}
-function pRes(){var S=P.S,mm=mine(S,S.ri),e,t,p;
+function pRes(){var S=P.S,mm=mine(S,S.ri),e,t,p,ros=rosMap(S);
   if(!mm){var o=status(S,mm);e=o.e;t=o.t;p=o.p}
   else if(mm.m[5]===1){e='\ud83c\udf9f\ufe0f';t='Omadli chipta (BYE)!';p='Siz keyingi bosqichga avtomatik o\u2018tdingiz.'}
   else if(mm.m[2]===P.i){e='\ud83c\udfc6';t='Yutdingiz! Keyingi bosqichga chiqdingiz';p='Tashkilotchi keyingi bosqichni boshlashini kuting.'}
-  else{e='\ud83d\ude14';t='Mag\u2018lub bo\u2018ldingiz';p='Turnirni tomosha qiling \u2014 chempion kim bo\u2018ladi?'}
+  else{var winner=ros[mm.m[2]];e='\ud83d\ude14';t='Mag\u2018lub bo\u2018ldingiz';p=(winner?winner[1]+' ':'Raqibingiz ')+ 'yutdi va keyingi bosqichga chiqdi. Turnir yakunini kuting.'}
   view(topbar('<b class="lgchip">'+esc(S.rn)+' yakunlandi</b>')+'<div class="lgc"><div class="lgcd inl"><div class="em big">'+e+'</div><h2>'+t+'</h2><p>'+p+'</p></div>'+brHTML(S,P.i)+'</div>','pl');}
 function pFin(){var S=P.S,f=S.fin||[],k=f.indexOf(P.i);view(topbar('<b class="lgchip">Turnir yakuni</b>')+'<div class="lgc"><h2 class="lgh">'+(k===0?'\ud83c\udfc6 Siz chempionsiz!':k>0?'\ud83c\udfc5 Siz '+(k+1)+'-o\u2018rinni egalladingiz!':'Turnir yakunlandi')+'</h2>'+podium(S)+brHTML(S,P.i)+'<div class="lgfoot"><button class="lgb ghost" data-act="exitok">Chiqish</button></div></div>','pl');}
 
@@ -358,7 +359,7 @@ function pPour(prev){var S=P.S,mm=mine(S,S.ri);if(!mm||mm.m[5]!==3){pWait(S,mm);
   view('<div class="cola-frame-shell"><iframe id="colaFrame" title="Kola quyish dueli: '+esc(A[1])+' va '+esc(B[1])+'" src="/cola-duel.html?mode='+mode+'&v=3" allow="autoplay" referrerpolicy="same-origin"></iframe><button class="cola-exit" data-act="exit" aria-label="Turnirdan chiqish">✕</button></div>','pl cola-game');var frame=$('#colaFrame');if(frame)frame.addEventListener('load',function(){if(frame.contentWindow)frame.contentWindow.postMessage({type:'cola-sync',mode:mode,state:state,players:players},location.origin)})
 }
 function onColaFrameMessage(e){if(!P||e.origin!==location.origin||!P.S||P.S.ph!=='pour')return;var frame=$('#colaFrame'),mm=mine(P.S,P.S.ri);if(!frame||e.source!==frame.contentWindow||!mm)return;var mi=[P.S.ri,mm.s];
-  if(e.data&&e.data.type==='cola-ready'){var d=mm.m[7]||[0,0,[0,0],null],mode=(+d[0]||0)===mm.side?'play':'watch',state=d[3]||{currentPlayer:(+d[0]||0)+1,glassFill:0,bottleFill:85,progress:0},ros=rosMap(P.S),players=[(ros[mm.m[0]]||[0,'Ishtirokchi'])[1],(ros[mm.m[1]]||[0,'Raqib'])[1]];frame.contentWindow.postMessage({type:'cola-sync',mode:mode,state:state,players:players},location.origin)}
+  if(e.data&&e.data.type==='cola-ready'){syncPourFrame(P.S,mm)}
   else if(e.data&&e.data.type==='cola-state'&&mm.m[7]&&(+mm.m[7][0]||0)===mm.side)send({t:'plive',p:P.pid,mi:mi,v:e.data.state||{}});
   else if(e.data&&e.data.type==='cola-turn'&&mm.m[7]&&(+mm.m[7][0]||0)===mm.side)send({t:'pturn',p:P.pid,mi:mi,v:e.data.state||{}});
   else if(e.data&&e.data.type==='cola-spill'&&mm.m[7]&&(+mm.m[7][0]||0)===mm.side){var st=Object.assign({},e.data.state||{},{spill:true});send({t:'plive',p:P.pid,mi:mi,v:st});send({t:'pour',p:P.pid,mi:mi,r:{fill:st.glassFill,spilled:true,overflow:e.data.overflow||Math.max(0,(+st.glassFill||100)-100),ms:0}})}
