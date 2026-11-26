@@ -25,14 +25,14 @@ var CSS='#db{position:fixed;inset:0;z-index:9500;display:flex;flex-direction:col
 +'#db .db-sec{background:#E4EAFF;color:#3149D6;border-radius:12px;padding:11px 16px;font-weight:700;flex:none}'
 +'#db .db-eh,#db .db-lh,#db .db-sh{display:flex;align-items:center;gap:10px;padding:12px 16px}'
 +'#db .db-eh{background:#fff;border-bottom:1px solid #E1E6F4}'
-+'#db .db-ti{border-bottom:2px dashed transparent;flex:1;min-width:0;font:inherit;font-size:20px;font-weight:700;border:0;background:transparent;color:inherit}'
-+'#db .db-ti:hover,#db .db-ti:focus{border-bottom-color:#B9C3E6;outline:0}#db .db-ai .db-pri{width:100%}#db .db-em{flex:1;overflow:auto;padding:18px 16px 70px;width:100%;max-width:820px;margin:0 auto;box-sizing:border-box}'
++'#db .db-nm{display:block;background:#fff;border:1.5px solid #E1E6F4;border-radius:16px;padding:10px 14px;margin-bottom:12px}#db .db-nm small{display:block;color:#69739A;font-size:13px}#db .db-nm span{display:flex;align-items:center;gap:8px}#db .db-ti{flex:1;min-width:0;font:inherit;font-size:18px;font-weight:700;border:0;background:transparent;color:inherit;padding:2px 0}#db .db-ti:focus{outline:0}'
++'#db .db-ai .db-pri{width:100%}#db .db-em{flex:1;overflow:auto;padding:18px 16px 70px;width:100%;max-width:820px;margin:0 auto;box-sizing:border-box}'
 +'#db .db-ai{display:flex;gap:10px;margin-bottom:10px}'
 +'#db .db-inp{flex:1;min-width:0;font:inherit;font-size:16px;padding:12px 14px;border:1.5px solid #D5DBEE;border-radius:12px;background:#fff;color:inherit}'
 +'#db .db-msg{margin:6px 2px 12px;font-size:14px;color:#3149D6}'
 +'#db .db-tc{display:flex;gap:10px;align-items:flex-start;background:#fff;border:1.5px solid #E1E6F4;border-radius:16px;padding:12px;margin-bottom:10px}'
 +'#db .db-tc textarea{flex:1;min-width:0;font:inherit;font-size:16px;line-height:1.4;border:0;resize:vertical;background:transparent;color:inherit;min-height:48px}'
-+'#db .db-tc input[type=checkbox]{width:22px;height:22px;margin-top:2px;accent-color:#4B6BFF;flex:none}'
++'#db .db-tc input[type=checkbox]{appearance:none;-webkit-appearance:none;width:26px;height:26px;margin:2px 0 0;border-radius:50%;border:2px solid #B9C3E6;background:#fff;flex:none;cursor:pointer;display:grid;place-items:center}#db .db-tc input[type=checkbox]:checked{background:#4B6BFF;border-color:#4B6BFF}#db .db-tc input[type=checkbox]:checked::after{content:"\\2713";color:#fff;font-weight:800;font-size:15px;line-height:1}#db .db-tc.off textarea{opacity:.5}#db .db-hint{margin:2px 4px 10px;font-size:13px;color:#69739A}'
 +'#db .db-rm{width:34px;height:34px;border-radius:10px;color:#8A93B2;flex:none}'
 +'#db .db-add{width:100%;padding:14px;border:2px dashed #B9C3E6;border-radius:16px;font-weight:700;color:#3149D6;margin:2px 0 18px}'
 +'#db .db-tm{display:flex;align-items:center;gap:12px;flex-wrap:wrap;background:#fff;border-radius:16px;padding:14px;border:1.5px solid #E1E6F4}'
@@ -84,7 +84,7 @@ function close(){
 
 /* ===== mantiq ===== */
 function draw(d){
-  var n=d.teams,on=d.topics.filter(function(x){return x.t.trim()}),k=Math.min(Math.floor(n/2),on.length),ids=[],i;
+  var n=d.teams,on=d.topics.filter(function(x){return x.on&&x.t.trim()}),k=Math.min(Math.floor(n/2),on.length),ids=[],i;
   for(i=0;i<n;i++)ids.push(i);ids=shuffle(ids);on=shuffle(on.slice());d.duels=[];
   for(i=0;i<k;i++)d.duels.push({t:on[i].t,h:on[i].h||[],pro:ids[2*i],con:ids[2*i+1],ps:0,cs:0});
   d.dirty=0}
@@ -96,15 +96,16 @@ function flush(){if(S&&S.pend){S.pend=0;var a=App();if(a.saveLesson)a.saveLesson
 
 /* ===== ko‘rinishlar ===== */
 function topicCard(x,i){
-  return '<div class="db-tc"><textarea data-f="t" data-i="'+i+'" rows="2" maxlength="300" placeholder="Masalan: Sun’iy intellekt foydadan ko’ra ko’proq xavf tug’diradi">'+esc(x.t)+'</textarea>'
+  return '<div class="db-tc'+(x.on?'':' off')+'"><input type="checkbox" data-f="on" data-i="'+i+'"'+(x.on?' checked':'')+' aria-label="Munozaraga kiritish"><textarea data-f="t" data-i="'+i+'" rows="2" maxlength="300" placeholder="Masalan: Sun’iy intellekt foydadan ko’ra ko’proq xavf tug’diradi">'+esc(x.t)+'</textarea>'
   +'<button class="db-rm" data-a="rm" data-i="'+i+'" aria-label="O‘chirish">✕</button></div>'}
 function vEdit(){
   var d=S.d,h='<header class="db-eh"><button class="db-ic" data-a="close" aria-label="Yopish">✕</button>'
-  +'<input id="db-title" class="db-ti" maxlength="80" title="Nomini o’zgartirish" placeholder="Munozara nomi" value="'+esc(S.title)+'">'
+  +'<span class="db-sp"></span>'
   +'<button class="db-sec" data-a="start">Boshlash</button><button class="db-pri" data-a="save">Saqlash</button></header><main class="db-em">'
+  +'<label class="db-nm"><small>Munozara nomi</small><span><input id="db-title" class="db-ti" maxlength="80" placeholder="Nom yozing" value="'+esc(S.title)+'"><i aria-hidden="true">✏️</i></span></label>'
   +'<div class="db-ai"><button class="db-pri" data-a="ai"'+(S.busy?' disabled':'')+'>'+(S.busy?'Qidirilmoqda…':'✨ AI tavsiyalari')+'</button></div>'
   +(S.msg?'<p class="db-msg" role="status">'+esc(S.msg)+'</p>':'')
-  +d.topics.map(topicCard).join('')+'<button class="db-add" data-a="add">＋ Mavzu tuzish</button>'
+  +d.topics.map(topicCard).join('')+(d.topics.length>1?'<p class="db-hint">Belgilangan mavzular taqsimlanadi. Keraklisini tanlang.</p>':'')+'<button class="db-add" data-a="add">＋ Mavzu tuzish</button>'
   +'<div class="db-tm"><div><b>Jamoalar</b><small>'+(d.teams%2?'Bitta jamoa juftsiz qoladi':Math.floor(d.teams/2)+' ta munozara')+'</small></div>'
   +'<div class="db-st"><button data-a="t-" aria-label="Kamaytirish">−</button><output>'+d.teams+'</output><button data-a="t+" aria-label="Ko‘paytirish">＋</button></div>'
   +'<button class="db-sec" data-a="draw">🎲 Taqsimlash</button></div>';
@@ -172,6 +173,7 @@ function save(go){
   sync();var d=S.d;
   d.topics=d.topics.filter(function(x){return x.t.trim()});d.topics.forEach(function(x){x.t=x.t.trim()});
   if(!d.topics.length){S.msg='Kamida bitta mavzu yozing yoki “AI tavsiyalari”ni bosing.';if(!d.topics.length)d.topics.push({t:'',h:[],on:1});return render()}
+  if(!d.topics.some(function(x){return x.on})){S.msg='Kamida bitta mavzuni belgilang.';return render()}
   if(d.dirty||!d.duels.length)draw(d);
   var a=App();if(!a.saveLesson){S.msg='Saqlab bo’lmadi: app.html eski. app.html va debate.js ni birga joylang va sahifani yangilang.';return render()}
   S.l.title=(S.title||'').trim()||defTitle();S.l.deb=d;
@@ -182,9 +184,13 @@ function save(go){
 /* ===== hodisalar ===== */
 function onInput(e){
   var t=e.target;if(!S)return;
-  if(t.id==='db-title'){S.title=t.value;S.chg=1}
-  else if(t.id==='db-ai')S.ai=t.value;
-  else if(t.dataset&&t.dataset.f){var x=S.d.topics[+t.dataset.i];if(!x)return;if(t.dataset.f==='on')x.on=t.checked?1:0;else x.t=t.value;S.d.dirty=1;S.chg=1}}
+  if(t.id==='db-title'){S.title=t.value;S.chg=1;return}
+  if(t.id==='db-ai'){S.ai=t.value;return}
+  if(!t.dataset||!t.dataset.f)return;
+  var x=S.d.topics[+t.dataset.i];if(!x)return;
+  if(t.dataset.f==='on'){x.on=t.checked?1:0;if(t.parentNode&&t.parentNode.classList)t.parentNode.classList.toggle('off',!t.checked)}
+  else x.t=t.value;
+  S.d.dirty=1;S.chg=1}
 function leaveEdit(){if(S.chg&&!window.confirm('Saqlanmagan o’zgarishlar o’chadi. Chiqasizmi?'))return;close()}
 function onClick(e){
   var b=e.target.closest('[data-a]');if(!b||!S)return;
