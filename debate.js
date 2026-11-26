@@ -25,8 +25,8 @@ var CSS='#db{position:fixed;inset:0;z-index:9500;display:flex;flex-direction:col
 +'#db .db-sec{background:#E4EAFF;color:#3149D6;border-radius:12px;padding:11px 16px;font-weight:700;flex:none}'
 +'#db .db-eh,#db .db-lh,#db .db-sh{display:flex;align-items:center;gap:10px;padding:12px 16px}'
 +'#db .db-eh{background:#fff;border-bottom:1px solid #E1E6F4}'
-+'#db .db-ti{flex:1;min-width:0;font:inherit;font-size:20px;font-weight:700;border:0;background:transparent;color:inherit}'
-+'#db .db-em{flex:1;overflow:auto;padding:18px 16px 70px;width:100%;max-width:820px;margin:0 auto;box-sizing:border-box}'
++'#db .db-ti{border-bottom:2px dashed transparent;flex:1;min-width:0;font:inherit;font-size:20px;font-weight:700;border:0;background:transparent;color:inherit}'
++'#db .db-ti:hover,#db .db-ti:focus{border-bottom-color:#B9C3E6;outline:0}#db .db-ai .db-pri{width:100%}#db .db-em{flex:1;overflow:auto;padding:18px 16px 70px;width:100%;max-width:820px;margin:0 auto;box-sizing:border-box}'
 +'#db .db-ai{display:flex;gap:10px;margin-bottom:10px}'
 +'#db .db-inp{flex:1;min-width:0;font:inherit;font-size:16px;padding:12px 14px;border:1.5px solid #D5DBEE;border-radius:12px;background:#fff;color:inherit}'
 +'#db .db-msg{margin:6px 2px 12px;font-size:14px;color:#3149D6}'
@@ -84,25 +84,25 @@ function close(){
 
 /* ===== mantiq ===== */
 function draw(d){
-  var n=d.teams,on=d.topics.filter(function(x){return x.on&&x.t.trim()}),k=Math.min(Math.floor(n/2),on.length),ids=[],i;
+  var n=d.teams,on=d.topics.filter(function(x){return x.t.trim()}),k=Math.min(Math.floor(n/2),on.length),ids=[],i;
   for(i=0;i<n;i++)ids.push(i);ids=shuffle(ids);on=shuffle(on.slice());d.duels=[];
   for(i=0;i<k;i++)d.duels.push({t:on[i].t,h:on[i].h||[],pro:ids[2*i],con:ids[2*i+1],ps:0,cs:0});
   d.dirty=0}
+function who(){try{var u=JSON.parse(localStorage.getItem('idUser')||'null')||{};return String(u.name||'').trim().split(/\s+/)[0]}catch(e){return ''}}
+function defTitle(){var n=who();return n?n+'ning munozara kechasi':'Munozara kechasi'}
 function clone(o){return JSON.parse(JSON.stringify(o))}
 function persist(){if(!S||!S.own)return;S.pend=1;clearTimeout(pt);pt=setTimeout(flush,600)}
 function flush(){if(S&&S.pend){S.pend=0;var a=App();if(a.saveLesson)a.saveLesson(S.l,false,true)}}
 
 /* ===== ko‘rinishlar ===== */
 function topicCard(x,i){
-  return '<div class="db-tc"><input type="checkbox" data-f="on" data-i="'+i+'"'+(x.on?' checked':'')+' aria-label="Tanlash">'
-  +'<textarea data-f="t" data-i="'+i+'" rows="2" maxlength="300" placeholder="Masalan: Maktablarda telefonni taqiqlash kerak">'+esc(x.t)+'</textarea>'
+  return '<div class="db-tc"><textarea data-f="t" data-i="'+i+'" rows="2" maxlength="300" placeholder="Masalan: Sun’iy intellekt foydadan ko’ra ko’proq xavf tug’diradi">'+esc(x.t)+'</textarea>'
   +'<button class="db-rm" data-a="rm" data-i="'+i+'" aria-label="O‘chirish">✕</button></div>'}
 function vEdit(){
   var d=S.d,h='<header class="db-eh"><button class="db-ic" data-a="close" aria-label="Yopish">✕</button>'
-  +'<input id="db-title" class="db-ti" maxlength="80" placeholder="Munozara nomi" value="'+esc(S.title)+'">'
+  +'<input id="db-title" class="db-ti" maxlength="80" title="Nomini o’zgartirish" placeholder="Munozara nomi" value="'+esc(S.title)+'">'
   +'<button class="db-sec" data-a="start">Boshlash</button><button class="db-pri" data-a="save">Saqlash</button></header><main class="db-em">'
-  +'<div class="db-ai"><input id="db-ai" class="db-inp" maxlength="200" placeholder="Mavzu yoki yo’nalish yozing" value="'+esc(S.ai||'')+'">'
-  +'<button class="db-pri" data-a="ai"'+(S.busy?' disabled':'')+'>'+(S.busy?'Qidirilmoqda…':'✨ AI tavsiyalari')+'</button></div>'
+  +'<div class="db-ai"><button class="db-pri" data-a="ai"'+(S.busy?' disabled':'')+'>'+(S.busy?'Qidirilmoqda…':'✨ AI tavsiyalari')+'</button></div>'
   +(S.msg?'<p class="db-msg" role="status">'+esc(S.msg)+'</p>':'')
   +d.topics.map(topicCard).join('')+'<button class="db-add" data-a="add">＋ Mavzu tuzish</button>'
   +'<div class="db-tm"><div><b>Jamoalar</b><small>'+(d.teams%2?'Bitta jamoa juftsiz qoladi':Math.floor(d.teams/2)+' ta munozara')+'</small></div>'
@@ -156,10 +156,8 @@ function token(){
   var sb=window.sb;if(!sb||!sb.auth)return Promise.reject(new Error('Hisobingizga qayta kiring.'));
   return sb.auth.getSession().then(function(r){var t=r&&r.data&&r.data.session&&r.data.session.access_token;if(!t)throw new Error('Hisobingizga qayta kiring.');return t})}
 function doAI(){
-  sync();var q=(S.ai||'').trim();
-  if(q.length<3){S.msg='Mavzu yoki yo’nalishni yozing.';return render()}
-  S.busy=1;S.msg='';render();
-  token().then(function(tk){return fetch('/api/generate-debate',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+tk},body:JSON.stringify({topic:q,count:6})})})
+  sync();S.busy=1;S.msg='';render();
+  token().then(function(tk){return fetch('/api/generate-debate',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+tk},body:JSON.stringify({count:6})})})
   .then(function(r){if(r.status===404)throw new Error('soon');return r.json().then(function(j){if(!r.ok)throw new Error((j&&j.error)||'err');return j})})
   .then(function(j){if(!S)return;var a=(j.topics||[]).filter(function(x){return x&&typeof x.t==='string'&&x.t.trim()}).slice(0,10);
     S.d.topics=S.d.topics.filter(function(x){return x.t.trim()});
@@ -174,10 +172,11 @@ function save(go){
   sync();var d=S.d;
   d.topics=d.topics.filter(function(x){return x.t.trim()});d.topics.forEach(function(x){x.t=x.t.trim()});
   if(!d.topics.length){S.msg='Kamida bitta mavzu yozing yoki “AI tavsiyalari”ni bosing.';if(!d.topics.length)d.topics.push({t:'',h:[],on:1});return render()}
-  if(!d.topics.some(function(x){return x.on})){S.msg='Kamida bitta mavzuni belgilang.';return render()}
   if(d.dirty||!d.duels.length)draw(d);
-  var a=App();if(!a.saveLesson){say('Saqlab bo’lmadi — sahifani yangilang');return}
-  S.l.title=(S.title||'').trim()||'Munozara';S.l.deb=d;a.saveLesson(S.l,S.isNew);S.isNew=false;S.chg=0;S.own=true;say('Saqlandi');
+  var a=App();if(!a.saveLesson){S.msg='Saqlab bo’lmadi: app.html eski. app.html va debate.js ni birga joylang va sahifani yangilang.';return render()}
+  S.l.title=(S.title||'').trim()||defTitle();S.l.deb=d;
+  try{a.saveLesson(S.l,S.isNew)}catch(err){console.error('Munozara saqlash xatosi:',err);if(S.isNew&&!S.l.id){S.msg='Saqlab bo’lmadi: '+((err&&err.message)||err);return render()}}
+  S.isNew=false;S.chg=0;S.own=true;say('Saqlandi');
   if(go){S.v='list';S.cur=0;render()}else close()}
 
 /* ===== hodisalar ===== */
@@ -219,9 +218,9 @@ function onKey(e){
 
 /* ===== ochiq API ===== */
 function startEdit(l,isNew){
-  open();S={l:l,isNew:isNew,v:'edit',own:true,title:l.title||'',ai:'',msg:'',chg:0,d:clone(l.deb),cur:0,tm:0,sp:''};
+  open();S={l:l,isNew:isNew,v:'edit',own:true,title:l.title||(isNew?defTitle():''),ai:'',msg:'',chg:0,d:clone(l.deb),cur:0,tm:0,sp:''};
   S.d.topics=S.d.topics||[];if(!S.d.topics.length)S.d.topics.push({t:'',h:[],on:1});
-  S.d.teams=S.d.teams||4;S.d.duels=S.d.duels||[];render()}
+  S.d.teams=S.d.teams||4;S.d.duels=S.d.duels||[];render();if(isNew){var f=R.querySelector('.db-tc textarea');if(f)f.focus()}}
 window.Debate={
   create:function(){startEdit({m:'debate',title:'',deb:{teams:4,topics:[],duels:[]}},true)},
   edit:function(l){if(l&&l.deb)startEdit(l,false)},

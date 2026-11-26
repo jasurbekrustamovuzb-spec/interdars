@@ -1976,7 +1976,7 @@ function cloudPush(l){if(!sbc())return Promise.resolve();return cuid().then(func
   function once(){var row=rowOf(l,uid),q=l.cid?sbc().from('shared_lessons').update(row).eq('id',l.cid).select('id').maybeSingle():sbc().from('shared_lessons').insert(row).select('id').single();
     return q.then(function(r){if(r.error){if(r.error.code==='23505'&&tries++<6){l.code=gen();return once()}throw r.error}if(r.data&&r.data.id&&l.cid!==r.data.id){l.cid=r.data.id;saveD()}})}
   return once()}).catch(cloudWarn)}
-window.IDApp=window.IDApp||{};window.IDApp.saveLesson=function(l,isNew,quiet){if(isNew){l.id='u'+Date.now();l.code=gen();l.cls=l.cls||'Sinf';l.created=Date.now();D.lessons.unshift(l)}saveD();cloudPush(l);if(!quiet)renderAll()};
+window.IDApp=window.IDApp||{};window.IDApp.saveLesson=function(l,isNew,quiet){if(isNew){l.id='u'+Date.now();l.code=gen();l.cls=l.cls||'Sinf';l.created=Date.now();D.lessons.unshift(l)}try{saveD();cloudPush(l)}catch(e){console.warn(e)}if(!quiet){try{renderAll()}catch(e){console.warn('renderAll:',e)}}};
 function cloudDel(cid){if(!sbc())return;cuid().then(function(uid){if(uid)return sbc().from('shared_lessons').delete().eq('id',cid)}).catch(cloudWarn)}
 function cloudPull(){return cuid().then(function(uid){if(!uid)return;
   return sbc().from('shared_lessons').select('*').eq('owner_id',uid).order('created_at',{ascending:false}).limit(500).then(function(r){
@@ -2009,7 +2009,7 @@ window.confetti=function(x,y,n){if(matchMedia('(prefers-reduced-motion: reduce)'
 <script src="/qrcode.js"></script>
 <script src="/live.js?v=7"></script>
 <script src="/league.js?v=7"></script>
-<script src="/debate.js?v=1"></script>
+<script src="/debate.js?v=3"></script>
 </body>
 </html>
 
