@@ -17,6 +17,7 @@ function fmt(s){s=Math.max(0,s);return Math.floor(s/60)+':'+('0'+s%60).slice(-2)
 
 /* ===== uslublar ===== */
 var CSS='#db{position:fixed;inset:0;z-index:9500;display:flex;flex-direction:column;font-family:inherit}#db[hidden]{display:none}'
++'html.db-open body>*:not(#db){visibility:hidden!important}'
 +'#db.light{background:#F4F6FC;color:#1B2340;color-scheme:light}#db.dark{background:#0E1630;color:#fff;color-scheme:dark}'
 +'#db button{font:inherit;color:inherit;cursor:pointer;border:0;background:none}#db button:disabled{opacity:.55;cursor:default}'
 +'#db :focus-visible{outline:3px solid #FFC53D;outline-offset:2px}'
@@ -88,10 +89,10 @@ function open(){
   if(!document.getElementById('db-css')){var s=document.createElement('style');s.id='db-css';s.textContent=CSS;document.head.appendChild(s)}
   if(!R){R=document.createElement('div');R.id='db';R.setAttribute('role','dialog');R.setAttribute('aria-label','Munozara');
     R.addEventListener('click',onClick);R.addEventListener('input',onInput);R.addEventListener('change',onChange);document.addEventListener('keydown',onKey);document.body.appendChild(R)}
-  R.hidden=false;document.documentElement.style.overflow='hidden'}
+  R.hidden=false;document.documentElement.style.overflow='hidden';document.documentElement.classList.add('db-open')}
 function close(){
   stopT();clearTimeout(pt);if(S&&S.own&&S.pend){flush()}
-  if(R){R.hidden=true;R.innerHTML=''}S=null;document.documentElement.style.overflow='';
+  if(R){R.hidden=true;R.innerHTML=''}S=null;document.documentElement.style.overflow='';document.documentElement.classList.remove('db-open');
   try{if(document.fullscreenElement&&document.exitFullscreen)document.exitFullscreen()}catch(e){}}
 
 /* ===== mantiq ===== */
