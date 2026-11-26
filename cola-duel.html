@@ -470,7 +470,7 @@
     function colaSnapshot() {
       return {
         currentPlayer: state.currentPlayer, glassFill: state.glassFill, bottleFill: state.bottleFill,
-        progress: state.controlProgress, turnStartFill: state.turnStartFill, paused: document.hidden,
+        progress: state.handoffDrop ? 0 : state.controlProgress, turnStartFill: state.turnStartFill, paused: document.hidden,
         hasPouredThisTurn: state.hasPouredThisTurn, isPouring: state.isPouring,
         pourRate: state.pourRate, wavePhase: state.wavePhase, waveAmplitude: state.waveAmplitude,
         bottleSloshPhase: state.bottleSloshPhase, bottleSloshAmp: state.bottleSloshAmp,
@@ -510,6 +510,7 @@
       bottleFill: 85,       // Remaining cola volume inside bottle (starts at 85%; 1 full glass drains ~68% of bottle)
       playerNames: null,
       dragPointerId: null,
+      handoffDrop: false,
       controlProgress: 0,   // 0..1
       targetControl: 0,
       isDragging: false,
@@ -711,6 +712,7 @@
       if (window.__colaMode !== 'play' || state.gameOver || state.handoffActive) return;
       sound.init();
       state.isDragging = true;
+      state.handoffDrop = false;
       state.dragPointerId = pointerId;
       state.dragStartX = clientX;
       state.dragStartProgress = state.targetControl;
@@ -835,6 +837,7 @@
       state.turnStartFill = state.glassFill;
       state.hasPouredThisTurn = false;
       state.targetControl = 0;
+      state.handoffDrop = true;
       state.isDragging = false;
 
       // Fresh bottle only if current bottle runs too low (< 14%) so players watch one bottle drain across turns
