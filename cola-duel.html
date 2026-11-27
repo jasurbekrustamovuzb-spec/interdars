@@ -107,6 +107,7 @@
     .animate-pop-in {
       animation: popIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
     }
+    html.embedded-duel .glass-panel { backdrop-filter: none; -webkit-backdrop-filter: none; background: rgba(255,255,255,0.93); }
     html.embedded-duel #handoffOverlay,
     html.embedded-duel #resultOverlay,
     html.embedded-duel #restartBtn,
@@ -462,6 +463,8 @@
     // ==========================================
     const LIFT_END_PROGRESS = 0.34; // 0..0.34 = lift to fixed spot; 0.34..1.0 = tilt up to 118 deg
     const MAX_TILT_DEG = 118;
+    const PERFECT_MIN = 99.4; // 99.4..100 = "100%" (win if the player lets go here)
+    const NEAR_BRIM = 14;     // flow slows down in the last 14% so 100% is reachable
     if (window.parent !== window) document.documentElement.classList.add('embedded-duel');
     window.__colaMode = new URLSearchParams(location.search).get('mode') || (window.parent !== window ? 'watch' : 'standalone');
     window.__colaRemote = null;
@@ -474,7 +477,7 @@
         hasPouredThisTurn: state.hasPouredThisTurn, isPouring: state.isPouring,
         pourRate: state.pourRate, wavePhase: state.wavePhase, waveAmplitude: state.waveAmplitude,
         bottleSloshPhase: state.bottleSloshPhase, bottleSloshAmp: state.bottleSloshAmp,
-        lastTiltRad: state.lastTiltRad, gameOver: state.gameOver
+        lastTiltRad: state.lastTiltRad, gameOver: state.gameOver, perfect: !!state.perfect
       };
     }
     function colaNotify(type, extra) {
@@ -493,7 +496,7 @@
         state.controlProgress = +r.progress || 0; state.targetControl = state.controlProgress; state.turnStartFill = +r.turnStartFill || 0;
         state.hasPouredThisTurn = !!r.hasPouredThisTurn; state.isPouring = !!r.isPouring; state.pourRate = +r.pourRate || 0;
         state.wavePhase = +r.wavePhase || 0; state.waveAmplitude = +r.waveAmplitude || 0; state.bottleSloshPhase = +r.bottleSloshPhase || 0;
-        state.bottleSloshAmp = +r.bottleSloshAmp || 0; state.lastTiltRad = +r.lastTiltRad || 0; state.gameOver = !!r.gameOver; state.remotePaused = !!r.paused;
+        state.bottleSloshAmp = +r.bottleSloshAmp || 0; state.lastTiltRad = +r.lastTiltRad || 0; state.gameOver = !!r.gameOver; state.remotePaused = !!r.paused; state.perfect = !!r.perfect;
         state.handoffActive = false;
       }
       document.documentElement.dataset.colaMode = window.__colaMode;
@@ -591,7 +594,7 @@
     let backgroundCacheKey = '';
     function resizeCanvas() {
       const rect = canvas.parentElement.getBoundingClientRect();
-      dpr = Math.min(window.devicePixelRatio || 1, 2);
+      dpr = Math.min(window.devicePixelRatio || 1, window.parent !== window ? 1.5 : 2);
       width = rect.width;
       height = rect.height;
       canvas.width = width * dpr;
@@ -615,8 +618,12 @@
       const glassTopY = glassBottomY - glassH;
 
       // Bottle dimensions
-      const bottleW = Math.min(isMobile ? 66 : 82, width * 0.18);
-      const bottleH = Math.min(isMobile ? 190 : 232, height * 0.37);
+      const bottleRefW = isMobile ? 66 : 82;
+      const bottleRefH = isMobile ? 190 : 232;
+      const bottleScale = Math.max(0.3, Math.min(1, (height * 0.37) / bottleRefH, (width * 0.18) / bottleRefW));
+      const bottleW = bottleRefW * bottleScale;
+      const bottleH = bottleRefH * bottleScale;
+      const glassScale = Math.max(0.3, Math.min(1, glassH / (isMobile ? 168 : 212)));
 
       // Resting position on table (left side)
       const restX = width * (isMobile ? 0.23 : 0.29);
@@ -624,7 +631,7 @@
 
       // FIXED POURING POSITION (Identical height & X offset on every attempt!)
       const pourAnchorX = glassCenterX - glassW * 0.80;
-      const pourAnchorY = glassTopY - (isMobile ? 48 : 64);
+      const pourAnchorY = glassTopY - (isMobile ? 48 : 64) * bottleScale;
 
       return {
         isMobile,
@@ -636,6 +643,10 @@
         glassTopY,
         bottleW,
         bottleH,
+        bottleRefW,
+        bottleRefH,
+        bottleScale,
+        glassScale,
         restX,
         restY,
         pourAnchorX,
@@ -696,6 +707,7 @@
     // 5. INPUT & GUIDED DRAG CONTROLS
     // ==========================================
     function updateSliderVisuals() {
+      if (window.parent !== window) return; // slider is hidden inside the tournament frame
       const pct = Math.max(0, Math.min(100, state.controlProgress * 100));
       sliderFill.style.width = `${pct}%`;
       const trackWidth = sliderTrack.clientWidth - 16;
@@ -736,6 +748,7 @@
       sound.updatePourSound(0);
 
       if (!state.gameOver && state.hasPouredThisTurn && window.__colaMode === 'play') {
+        if (state.glassFill >= PERFECT_MIN && state.glassFill <= 100) { triggerPerfectWin(); return; }
         completePlayerTurn();
       }
     }
@@ -761,13 +774,19 @@
     // ==========================================
     // 6. TURN MANAGEMENT & GAME RULES
     // ==========================================
+    let lastHudKey = '';
     function updateHUD() {
+      const hudKey = [state.stage, state.wins[1], state.wins[2], Math.round(state.glassFill * 2), state.glassFill >= PERFECT_MIN ? 1 : 0,
+        state.hasPouredThisTurn ? 1 : 0, state.currentPlayer, state.playerNames ? state.playerNames.join('~') : '',
+        (window.__colaMode === 'watch' && window.__colaRemote && window.__colaRemote.paused) ? 1 : 0].join('|');
+      if (hudKey === lastHudKey) return;
+      lastHudKey = hudKey;
       stageBadge.textContent = `${state.stage}-Bosqich`;
       p1WinsEl.textContent = state.wins[1];
       p2WinsEl.textContent = state.wins[2];
 
       const displayFill = Math.min(100, Math.round(state.glassFill));
-      glassPercentText.textContent = `${displayFill}%`;
+      glassPercentText.textContent = state.glassFill >= PERFECT_MIN ? '100% 🎯' : `${displayFill}%`;
 
       if (displayFill >= 85) {
         glassPercentText.className = 'font-black text-red-600 text-sm animate-pulse';
@@ -861,6 +880,45 @@
       state.handoffActive = false;
     });
 
+    function spawnConfetti(m) {
+      const colors = ['#22c55e', '#facc15', '#ef4444', '#3b82f6', '#f97316', '#ffffff'];
+      for (let i = 0; i < 70; i++) {
+        state.splashes.push({
+          x: m.glassCenterX + (Math.random() - 0.5) * m.glassW, y: m.glassTopY,
+          vx: (Math.random() - 0.5) * 9, vy: -3 - Math.random() * 7,
+          radius: 2 + Math.random() * 2.6, alpha: 1, color: colors[i % colors.length]
+        });
+      }
+    }
+
+    function triggerPerfectWin() {
+      if (state.gameOver) return;
+      state.gameOver = true;
+      state.perfect = true;
+      state.perfectAt = performance.now();
+      state.glassFill = 100;
+      state.isDragging = false;
+      state.targetControl = 0;
+      sound.playWin();
+      const winner = state.currentPlayer;
+      const loser = winner === 1 ? 2 : 1;
+      state.wins[winner] += 1;
+      updateHUD();
+      spawnConfetti(getSceneMetrics());
+
+      if (window.__colaMode === 'play') {
+        colaNotify('cola-perfect');
+        return;
+      }
+      setTimeout(() => {
+        resultReasonBadge.textContent = `${winner}-Ishtirokchi aynan 100% quydi!`;
+        winnerTitle.textContent = `${winner}-Ishtirokchi G'olib!`;
+        winnerSubtitle.innerHTML = `<span class="text-emerald-700 font-extrabold">${winner}-Ishtirokchi</span> stakanni aynan 100% to'ldirdi va <span class="text-emerald-700 font-extrabold">keyingi bosqichga</span> o'tdi!`;
+        resultOverlay.classList.remove('hidden');
+        resultOverlay.classList.add('flex');
+      }, 900);
+    }
+
     function triggerOverflowLoss() {
       if (state.gameOver) return;
       state.gameOver = true;
@@ -921,6 +979,7 @@
       state.waveAmplitude = 0;
       state.bottleSloshAmp = 0;
       state.gameOver = false;
+      state.perfect = false;
       state.handoffActive = false;
       state.bubbles = [];
       state.bottleBubbles = [];
@@ -951,7 +1010,7 @@
     function updatePhysics(dt) {
       if (window.__colaMode === 'watch' && window.__colaRemote) {
         const remote = window.__colaRemote;
-        const follow = 1 - Math.exp(-18 * dt);
+        const follow = 1 - Math.exp(-26 * dt);
         state.currentPlayer = remote.currentPlayer || 1;
         state.glassFill += ((+remote.glassFill || 0) - state.glassFill) * follow;
         state.bottleFill += ((remote.bottleFill == null ? 85 : +remote.bottleFill) - state.bottleFill) * follow;
@@ -977,11 +1036,15 @@
             state.splashes.push({ x: m.glassCenterX + side * (m.glassW * 0.48), y: m.glassTopY + 4, vx: side * (1.6 + Math.random() * 4.5), vy: -2.2 - Math.random() * 4.5, radius: 2.5 + Math.random() * 4, alpha: 1 });
           }
         }
+        if (remote.perfect && !state.remotePerfect) {
+          state.remotePerfect = true; state.perfect = true; state.perfectAt = performance.now();
+          state.glassFill = 100; spawnConfetti(m);
+        } else if (!remote.perfect) { state.remotePerfect = false; state.perfect = false; }
         state.splashes.forEach(s => { s.x += s.vx; s.y += s.vy; s.vy += 0.18; s.alpha -= 0.025; });
         state.splashes = state.splashes.filter(s => s.alpha > 0);
-        return { tiltAngleRad, bottleLiquid: computeBottleLiquidState(state.bottleFill, tiltAngleRad, m.bottleW, m.bottleH) };
+        return { tiltAngleRad, bottleLiquid: computeBottleLiquidState(state.bottleFill, tiltAngleRad, m.bottleRefW, m.bottleRefH) };
       }
-      const lerpSpeed = state.isDragging ? 13 : 8.5;
+      const lerpSpeed = state.isDragging ? 40 : 10;
       state.controlProgress += (state.targetControl - state.controlProgress) * Math.min(1, lerpSpeed * dt);
       if (Math.abs(state.targetControl - state.controlProgress) < 0.001) {
         state.controlProgress = state.targetControl;
@@ -999,7 +1062,7 @@
       state.bottleSloshPhase += dt * 9.5;
 
       const m = getSceneMetrics();
-      const bottleLiquid = computeBottleLiquidState(state.bottleFill, tiltAngleRad, m.bottleW, m.bottleH);
+      const bottleLiquid = computeBottleLiquidState(state.bottleFill, tiltAngleRad, m.bottleRefW, m.bottleRefH);
 
       // Pouring ONLY occurs when the horizontal gravity liquid surface physically reaches the spout!
       if (!state.gameOver && !state.handoffActive && state.isDragging && bottleLiquid.isAtSpout && state.bottleFill > 0.4) {
@@ -1007,8 +1070,11 @@
         state.hasPouredThisTurn = true;
 
         // Flow rate scales smoothly with how deep the spout is submerged beneath the horizontal liquid plane
-        const submersionNorm = Math.min(1, bottleLiquid.spoutSubmersion / (m.bottleH * 0.22));
-        state.pourRate = 5.0 + Math.pow(submersionNorm, 1.2) * 34;
+        const submersionNorm = Math.min(1, bottleLiquid.spoutSubmersion / (m.bottleRefH * 0.22));
+        let flowRate = 5.0 + Math.pow(submersionNorm, 1.2) * 34;
+        const roomLeft = Math.max(0, 100 - state.glassFill);
+        if (roomLeft < NEAR_BRIM) flowRate *= Math.max(0.12, roomLeft / NEAR_BRIM);
+        state.pourRate = flowRate;
 
         const pouredAmount = state.pourRate * dt;
         state.glassFill += pouredAmount;
@@ -1208,8 +1274,8 @@
       ctx.ellipse(cx, botY + 4, botW * 0.9, 10, 0, 0, Math.PI * 2);
       ctx.fill();
 
-      const wallThick = 5;
-      const baseThick = 11;
+      const wallThick = 5 * m.glassScale;
+      const baseThick = 11 * m.glassScale;
 
       function traceInteriorPath() {
         ctx.beginPath();
@@ -1378,30 +1444,31 @@
       const liftEase = 1 - Math.pow(1 - liftRaw, 3);
 
       const bottleX = m.restX + (m.pourAnchorX - m.restX) * liftEase;
-      const arcLift = Math.sin(liftEase * Math.PI) * 18;
+      const arcLift = Math.sin(liftEase * Math.PI) * 18 * m.bottleScale;
       const bottleY = m.restY + (m.pourAnchorY - m.restY) * liftEase - arcLift;
 
-      const bw = m.bottleW;
-      const bh = m.bottleH;
+      const bk = m.bottleScale;
+      const bw = m.bottleRefW;
+      const bh = m.bottleRefH;
 
       // Soft warm shadow under bottle when on table
       if (liftEase < 0.92) {
         const shadowAlpha = (1 - liftEase) * 0.48;
         ctx.fillStyle = `rgba(69, 26, 3, ${shadowAlpha})`;
         ctx.beginPath();
-        ctx.ellipse(m.restX, m.tableY + 4, bw * 0.65 * (1 - liftEase * 0.3), 8, 0, 0, Math.PI * 2);
+        ctx.ellipse(m.restX, m.tableY + 4, m.bottleW * 0.65 * (1 - liftEase * 0.3), 8 * bk, 0, 0, Math.PI * 2);
         ctx.fill();
       }
 
       // Compute bottle lower spout lip in world coordinates
       const spoutLocalX = bw * 0.12;
       const spoutLocalY = -bh / 2 - 12;
-      const spoutWorldX = bottleX + spoutLocalX * Math.cos(tiltAngleRad) - spoutLocalY * Math.sin(tiltAngleRad);
-      const spoutWorldY = bottleY + spoutLocalX * Math.sin(tiltAngleRad) + spoutLocalY * Math.cos(tiltAngleRad);
+      const spoutWorldX = bottleX + bk * (spoutLocalX * Math.cos(tiltAngleRad) - spoutLocalY * Math.sin(tiltAngleRad));
+      const spoutWorldY = bottleY + bk * (spoutLocalX * Math.sin(tiltAngleRad) + spoutLocalY * Math.cos(tiltAngleRad));
 
       // 1. Continuous Dark Cola Stream from spout into clear glass
       if (state.isPouring) {
-        const streamWidth = Math.max(2.6, Math.min(9, state.pourRate * 0.24));
+        const streamWidth = Math.max(2.2, Math.min(9, state.pourRate * 0.24)) * Math.max(0.6, m.bottleScale);
         const targetX = m.glassCenterX - 3;
         const targetY = Math.max(m.glassTopY + 6, glassSurfaceY);
 
@@ -1435,6 +1502,7 @@
       ctx.save();
       ctx.translate(bottleX, bottleY);
       ctx.rotate(tiltAngleRad);
+      ctx.scale(bk, bk);
 
       const halfW = bw / 2;
       const halfH = bh / 2;
@@ -1608,8 +1676,8 @@
 
       // Subtle floating percentage pill near bottle base so player can track remaining cola easily
       ctx.save();
-      const pillX = bottleX - bw * 0.75;
-      const pillY = bottleY + bh * 0.15;
+      const pillX = bottleX - m.bottleW * 0.75;
+      const pillY = bottleY + m.bottleH * 0.15;
       ctx.fillStyle = 'rgba(255, 255, 255, 0.88)';
       ctx.strokeStyle = 'rgba(220, 38, 38, 0.35)';
       ctx.lineWidth = 1.2;
@@ -1627,11 +1695,31 @@
 
     function drawSplashes() {
       for (const s of state.splashes) {
-        ctx.fillStyle = `rgba(43, 11, 4, ${s.alpha})`;
+        if (s.color) { ctx.globalAlpha = Math.max(0, Math.min(1, s.alpha)); ctx.fillStyle = s.color; }
+        else ctx.fillStyle = `rgba(43, 11, 4, ${s.alpha})`;
         ctx.beginPath();
         ctx.arc(s.x, s.y, s.radius, 0, Math.PI * 2);
         ctx.fill();
+        if (s.color) ctx.globalAlpha = 1;
       }
+    }
+
+    function drawPerfectBanner(m) {
+      if (!state.perfect) return;
+      const p = Math.min(1, (performance.now() - (state.perfectAt || 0)) / 350);
+      const e = 1 - Math.pow(1 - p, 3);
+      ctx.save();
+      ctx.translate(m.glassCenterX, Math.max(30, m.glassTopY - 26));
+      ctx.scale(0.6 + 0.4 * e, 0.6 + 0.4 * e);
+      ctx.globalAlpha = e;
+      ctx.textAlign = 'center';
+      ctx.font = '900 30px Outfit, sans-serif';
+      ctx.lineWidth = 6;
+      ctx.strokeStyle = '#ffffff';
+      ctx.strokeText('100% 🎯', 0, 0);
+      ctx.fillStyle = '#15803d';
+      ctx.fillText('100% 🎯', 0, 0);
+      ctx.restore();
     }
 
     // ==========================================
@@ -1652,8 +1740,9 @@
       const { surfaceY } = drawGlassAndCola(m);
       drawColaBottleAndStream(m, tiltAngleRad, surfaceY, bottleLiquid);
       drawSplashes();
+      drawPerfectBanner(m);
 
-      if (window.__colaMode === 'play' && now - window.__colaLastSend >= 90 && !state.gameOver) {
+      if (window.__colaMode === 'play' && now - window.__colaLastSend >= 70 && !state.gameOver) {
         window.__colaLastSend = now;
         colaNotify('cola-state');
       }
