@@ -1258,12 +1258,13 @@ class:{n:'Interaktiv dars',e:'📺',g:'#1AA9CC,#4B6BFF',t:'qs',min:3,k:'team',tm
 mystery:{n:'Sirli kartalar',e:'🃏',g:'#8A63F5,#E94F9A',t:'qs',min:4,k:'team',tm:'20–30 daq',s:'Proyektorda, guruhlar bilan',d:'Savollar kartalar ortiga yashiriladi: sovg’a, shartli va minus kartalar ham uchraydi. Ustoz proyektorda guruhlar ballini boshqaradi.',bg:'#F6E4FF',fg:'#7A2DB5'},
 league:{n:'Chempionlar ligasi',e:'🏆',g:'#FFB400,#FF3B5C',t:'qs',min:4,k:'team',tm:'20–40 daq',s:'Play-off turniri',d:'Ustoz xona ochadi, o’quvchilar qo’shiladi va random qur’a tashlanadi. Raqiblar 1 ga 1 bellashadi: yutgan keyingi bosqichga chiqadi, durangda “Quyish dueli” g‘olibni aniqlaydi. Ishtirokchilar soni 2 ning darajasi bo’lmasa, omadli chipta (BYE) beriladi.',bg:'#FFF0C9',fg:'#8A5B00'},
 debate:{n:'Munozara',e:'🎙️',g:'#14A36F,#4B6BFF',t:'deb',min:1,k:'team',tm:'20–40 daq',s:'Tasdiq va inkor',d:'Jamoalar mavzuni himoya qiladi yoki inkor etadi. Bitta katta ekranda o’tkaziladi: mavzu ochiladi, taymer ixtiyoriy, baho bir bosishda qo’yiladi.',bg:'#DDF7EE',fg:'#0F7A5A'},
+wheel:{n:'Omad barabani',e:'🎡',g:'#7A4DFF,#FF5D73',t:'wh',min:1,k:'team',tm:'10–40 daq',s:'Kim javob beradi?',d:'Baraban aylanadi, tushgan ishtirokchi sirli kartadan savol tanlaydi. Ismlarni yozing yoki jadval yuklang.',bg:'#EDE6FF',fg:'#5B34D6'},
   cross:{n:'Krossvord',e:'🧩',g:'#8A63F5,#AE8BFF',t:'pairs',min:3,k:'team',tm:'15 daq',s:'Tez orada',d:'Mavzu bo’yicha so’zlarni topib, katakchalarni to’ldiring.',bg:'#EDE6FF',fg:'#5B38C7',soon:1}};
 MT.mystery.txt=1;MT.class.txt=1;
-var MORD=['quiz','team','memory','mill','live','league','debate','class','mystery','cross'];
-function hostM(m){return m==='live'||m==='class'||m==='league'||m==='debate'}
-function hostLbl(m){return m==='live'?'Jonli o’tkazish':m==='class'?'Dars o’tkazish':m==='league'?'Turnir o’tkazish':m==='debate'?'Munozarani boshlash':'Boshlash'}
-function hostGo(l,k){if(k==='debate'){if(window.Debate)window.Debate.host(l);else say('Munozara yuklanmadi — sahifani yangilang');return}if(k==='league'){if(window.League)window.League.host(l);else say('Chempionlar ligasi yuklanmadi — sahifani yangilang')}else if(window.LiveQuiz)window.LiveQuiz.host(l,k==='class'?{mode:'class'}:undefined)}
+var MORD=['quiz','team','memory','mill','live','league','debate','wheel','class','mystery','cross'];
+function hostM(m){return m==='live'||m==='class'||m==='league'||m==='debate'||m==='wheel'}
+function hostLbl(m){return m==='live'?'Jonli o’tkazish':m==='class'?'Dars o’tkazish':m==='league'?'Turnir o’tkazish':m==='debate'?'Munozarani boshlash':m==='wheel'?'Barabanni boshlash':'Boshlash'}
+function hostGo(l,k){if(k==='wheel'){if(window.Wheel)window.Wheel.host(l);else say('Baraban yuklanmadi — sahifani yangilang');return}if(k==='debate'){if(window.Debate)window.Debate.host(l);else say('Munozara yuklanmadi — sahifani yangilang');return}if(k==='league'){if(window.League)window.League.host(l);else say('Chempionlar ligasi yuklanmadi — sahifani yangilang')}else if(window.LiveQuiz)window.LiveQuiz.host(l,k==='class'?{mode:'class'}:undefined)}
 var PR=[100,200,300,500,1000,2000,4000,8000,16000,32000,64000,125000,250000,500000,1000000];
 var TEAMS=[{e:'🦊',n:'Qizil jamoa'},{e:'🐬',n:'Ko’k jamoa'},{e:'🐸',n:'Yashil jamoa'}];
 function Q(q,a,c){return{q:q,a:a,c:c}}
@@ -1293,8 +1294,8 @@ Q('Amudaryo qaysi suv havzasiga quyiladi?',['Kaspiy dengizi','Orol dengizi','Iss
 Q('Qizilqum cho’li qaysi ikki daryo oralig’ida joylashgan?',['Amudaryo va Sirdaryo','Zarafshon va Qashqadaryo','Chirchiq va Ohangaron','Sirdaryo va Norin'],0),
 Q('O’zbekistondagi eng katta ko’l qaysi?',['Sarez','Aydarko’l','Tuzkon','Dengizko’l'],1),
 Q('O’zbekiston hududining katta qismini qanday relyef egallagan?',['Tekisliklar','Baland tog’lar','Muzliklar','Okean tubi'],0)]}];
-function cnt(l){return l.deb?((l.deb.duels&&l.deb.duels.length)||(l.deb.topics||[]).length):l.qs?l.qs.length:l.pairs.length}
-function unit(l){return l.deb?'mavzu':l.qs?'savol':'juft'}
+function cnt(l){return l.wh?(l.wh.names||[]).length:l.deb?((l.deb.duels&&l.deb.duels.length)||(l.deb.topics||[]).length):l.qs?l.qs.length:l.pairs.length}
+function unit(l){return l.wh?'ishtirokchi':l.deb?'mavzu':l.qs?'savol':'juft'}
 var G=[];function allL(){return D.lessons.concat(READY,G)}
 function find(id){var a=allL();for(var i=0;i<a.length;i++)if(a[i].id===id)return a[i]}
 function rel(ts){var d=Math.floor((Date.now()-ts)/864e5);if(d<=0)return T('bugun');if(d===1)return T('kecha');return d+' '+T('kun oldin')}
@@ -1305,7 +1306,7 @@ function stat(e,v,l){return '<div class="stat"><span class="em">'+e+'</span><b>'
 function statsHTML(){var s=st();return stat('🧩',s.c,'Yaratilgan darslar')+stat('🎮',s.p,'Topshirilgan')+stat('🎯',s.a+'%','O’rtacha natija')+stat('🏆',s.b+'%','Eng yuqori ball')}
 var ICS='<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 10.5l6.8-4M8.6 13.5l6.8 4"/></svg>',ICP='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13a1 1 0 0 0 1.5.86l10.5-6.5a1 1 0 0 0 0-1.72L9.5 4.64A1 1 0 0 0 8 5.5z"/></svg>',ICG='<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>';
 function lcard(l){var m=MT[l.m],sub=l.sub||((l.cls?T(l.cls)+' · ':'')+rel(l.created));
-  return '<article class="lesson" data-lid="'+l.id+'"><div class="tile" style="background:'+m.bg+'">'+m.e+'</div><div class="lbody"><b>'+esc(l.title)+'</b><small>'+cnt(l)+' '+T(unit(l))+' · '+esc(sub)+'</small><span class="tag" style="background:'+m.bg+';color:'+m.fg+'">'+T(m.n)+'</span></div><div class="lacts"><button class="lplay'+(hostM(l.m)?' live':'')+'" data-play="'+l.id+'" aria-label="'+T(hostLbl(l.m))+'" title="'+T(hostLbl(l.m))+'">'+ICP+'</button>'+(l.m==='debate'?'<button class="lset" data-lshare="'+l.id+'" aria-label="Ulashish" title="Ulashish">'+ICS+'</button>':'')+'<button class="lset" data-lset="'+l.id+'" aria-label="'+T('Sozlamalar')+'" title="'+T('Sozlamalar')+'" aria-haspopup="menu">'+ICG+'</button></div></article>'}
+  return '<article class="lesson" data-lid="'+l.id+'"><div class="tile" style="background:'+m.bg+'">'+m.e+'</div><div class="lbody"><b>'+esc(l.title)+'</b><small>'+cnt(l)+' '+T(unit(l))+' · '+esc(sub)+'</small><span class="tag" style="background:'+m.bg+';color:'+m.fg+'">'+T(m.n)+'</span></div><div class="lacts"><button class="lplay'+(hostM(l.m)?' live':'')+'" data-play="'+l.id+'" aria-label="'+T(hostLbl(l.m))+'" title="'+T(hostLbl(l.m))+'">'+ICP+'</button>'+(l.m==='debate'||l.m==='wheel'?'<button class="lset" data-lshare="'+l.id+'" aria-label="Ulashish" title="Ulashish">'+ICS+'</button>':'')+'<button class="lset" data-lset="'+l.id+'" aria-label="'+T('Sozlamalar')+'" title="'+T('Sozlamalar')+'" aria-haspopup="menu">'+ICG+'</button></div></article>'}
 function emptyCard(){return '<div class="es"><div class="em">📝</div><b>'+T('Hali test yo’q')+'</b><p>'+T('Birinchi testingizni yarating yoki tayyor testlardan boshlang.')+'</p><div class="es-a"><button class="go" data-manual>'+T('Test yaratish')+'</button><button class="go alt" data-lfall>'+T('Tayyor testlar')+'</button></div></div>'}
 function chartHTML(){var pl=D.plays.slice(0,7).reverse();
   if(!pl.length)return '<div class="es sm"><div class="em">📊</div><p>'+T('Natijalar test topshirgandan keyin shu yerda chiqadi.')+'</p></div>';
@@ -1321,7 +1322,7 @@ function renderLib(){var q=nz($('#q').value.trim());
   var list=libPool().filter(function(l){return !q||nz(l.title+' '+(l.sub||'')+' '+MT[l.m].n).indexOf(q)>-1});
   if(!list.length&&lf==='own'&&!q){$('#ll').innerHTML=emptyCard();$('#le').style.display='none';return}
   $('#ll').innerHTML=list.map(lcard).join('');$('#le').style.display=list.length?'none':'block'}
-function renderOpts(){var methods=W.qs.some(function(x){return x.k==='text'})?['class']:MORD.filter(function(k){return k!=='debate'});if(methods.indexOf(W.m)<0)W.m=methods[0];$('#opts').innerHTML=methods.map(function(k){var m=MT[k];return '<button class="opt" aria-pressed="'+(W.m===k)+'" data-mk2="'+k+'"'+(m.soon?' disabled':'')+'><span class="tile" style="background:'+m.bg+'">'+m.e+'</span><b>'+T(m.n)+'</b>'+(m.soon?'<em class="sn">'+T('Tez orada')+'</em>':'')+'</button>'}).join('')}
+function renderOpts(){var methods=W.qs.some(function(x){return x.k==='text'})?['class']:MORD.filter(function(k){return k!=='debate'&&k!=='wheel'});if(methods.indexOf(W.m)<0)W.m=methods[0];$('#opts').innerHTML=methods.map(function(k){var m=MT[k];return '<button class="opt" aria-pressed="'+(W.m===k)+'" data-mk2="'+k+'"'+(m.soon?' disabled':'')+'><span class="tile" style="background:'+m.bg+'">'+m.e+'</span><b>'+T(m.n)+'</b>'+(m.soon?'<em class="sn">'+T('Tez orada')+'</em>':'')+'</button>'}).join('')}
 function renderAll(){
   $('#lv1').innerHTML=levelHTML();$('#lv2').innerHTML=levelHTML();
   $('#hl').innerHTML=D.lessons.length?D.lessons.slice(0,3).map(lcard).join(''):emptyCard();
@@ -1486,27 +1487,27 @@ $('#sx').addEventListener('click',closeS);sq.addEventListener('input',renderS);s
 pills('#sf',function(b){sfv=b.dataset.f;renderS()});
 $('#sres').addEventListener('click',function(e){var b=e.target.closest('.sit');if(!b)return;closeS();
   if(b.dataset.t==='m')openPicker(b.dataset.id);else openDetail(b.dataset.id)});
-function createFor(k){if(MT[k].soon){say('Tez orada — hozircha tayyorlanmoqda');return}closeDlg();if(k==='debate'){if(window.Debate)window.Debate.create();else say('Munozara yuklanmadi — sahifani yangilang');return}if(W.edit)resetW();setM(k);openWiz()}
+function createFor(k){if(MT[k].soon){say('Tez orada — hozircha tayyorlanmoqda');return}closeDlg();if(k==='wheel'){if(window.Wheel)window.Wheel.create();else say('Baraban yuklanmadi — sahifani yangilang');return}if(k==='debate'){if(window.Debate)window.Debate.create();else say('Munozara yuklanmadi — sahifani yangilang');return}if(W.edit)resetW();setM(k);openWiz()}
 function pickMethod(k){openPicker(k)}
 /* metod uchun test tanlash */
 var PK={k:'quiz',tab:'own',q:''};
-function compat(arr,k){var t=MT[k].t;return arr.filter(function(l){return t==='deb'?!!l.deb:t==='qs'?!!l.qs:!!l.pairs})}
+function compat(arr,k){var t=MT[k].t;return arr.filter(function(l){return t==='wh'?!!l.wh:t==='deb'?!!l.deb:t==='qs'?!!l.qs:!!l.pairs})}
 function pkAll(k){var own=compat(D.lessons,k),ids={};own.forEach(function(l){ids[l.id]=1});return{own:own,all:own.concat(compat(READY.concat(G),k).filter(function(l){return !ids[l.id]}))}}
 function openPicker(k){var m=MT[k];if(m.soon){say('Tez orada — hozircha tayyorlanmoqda');return}
   var p=pkAll(k);PK={k:k,tab:p.own.length?'own':'all',q:''};
   $('#dsh').className='dsh pk';
-  $('#dsh').innerHTML='<div class="pkh"><span class="tile" style="background:'+m.bg+'">'+m.e+'</span><div><h2>'+T(m.n)+'</h2><small>'+T(k==='debate'?'Qaysi munozara bilan o’tkazamiz?':'Qaysi test bilan o’tkazamiz?')+'</small></div><button class="icon-btn" data-dx aria-label="'+T('Yopish')+'">✕</button></div>'
-  +'<div class="pk-top"><div class="pills" id="pkt"><button class="pill" data-pt="own">'+T(k==='debate'?'Mening munozaralarim':'Mening testlarim')+'</button><button class="pill" data-pt="all">'+T('Hammasi')+'</button></div></div>'
-  +'<div class="srch pk-s"><svg width="20" height="20" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg><input class="inp" id="pkq" placeholder="'+T(k==='debate'?'Munozara nomini qidiring':'Test nomini qidiring')+'" aria-label="'+T('Qidirish')+'" autocomplete="off"></div>'
+  $('#dsh').innerHTML='<div class="pkh"><span class="tile" style="background:'+m.bg+'">'+m.e+'</span><div><h2>'+T(m.n)+'</h2><small>'+T(k==='wheel'?'Qaysi baraban bilan o’tkazamiz?':k==='debate'?'Qaysi munozara bilan o’tkazamiz?':'Qaysi test bilan o’tkazamiz?')+'</small></div><button class="icon-btn" data-dx aria-label="'+T('Yopish')+'">✕</button></div>'
+  +'<div class="pk-top"><div class="pills" id="pkt"><button class="pill" data-pt="own">'+T(k==='wheel'?'Mening barabanlarim':k==='debate'?'Mening munozaralarim':'Mening testlarim')+'</button><button class="pill" data-pt="all">'+T('Hammasi')+'</button></div></div>'
+  +'<div class="srch pk-s"><svg width="20" height="20" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg><input class="inp" id="pkq" placeholder="'+T(k==='wheel'?'Baraban nomini qidiring':k==='debate'?'Munozara nomini qidiring':'Test nomini qidiring')+'" aria-label="'+T('Qidirish')+'" autocomplete="off"></div>'
   +'<div class="pk-list" id="pkl"></div>'
-  +'<div class="pk-foot"><button class="cta" data-pknew>＋ '+T(k==='debate'?'Yangi munozara tuzish':'Yangi test yaratish')+'</button></div>';
+  +'<div class="pk-foot"><button class="cta" data-pknew>＋ '+T(k==='wheel'?'Yangi baraban tuzish':k==='debate'?'Yangi munozara tuzish':'Yangi test yaratish')+'</button></div>';
   $('#dlg').hidden=false;syncOv();pkRender()}
 function pkRow(l,m){var cn=cnt(l),dis=cn<m.min,lm=MT[l.m]||m;
   return '<button class="pk-row'+(dis?' dis':'')+(hostM(PK.k)?' live':'')+'" data-pkrow="'+l.id+'"'+(dis?' disabled':'')+'><span class="tile" style="background:'+lm.bg+'">'+lm.e+'</span><div class="lbody"><b>'+esc(l.title)+'</b><small>'+cn+' '+T(unit(l))+(dis?' · '+T('kamida')+' '+m.min+' '+T(unit(l))+' '+T('kerak'):'')+(l.sub?' · '+esc(l.sub):'')+'</small></div><i class="pk-go" aria-hidden="true"></i></button>'}
 function pkRender(){var m=MT[PK.k],p=pkAll(PK.k),q=nz(PK.q.trim()),base=PK.tab==='own'?p.own:p.all;
   var list=base.filter(function(l){return !q||nz(l.title+' '+(l.sub||'')).indexOf(q)>-1});
   $$('#pkt .pill').forEach(function(b){b.setAttribute('aria-pressed',b.dataset.pt===PK.tab)});
-  $('#pkl').innerHTML=list.length?list.map(function(l){return pkRow(l,m)}).join(''):'<div class="pk-empty"><div style="font-size:38px">'+(PK.tab==='own'&&!q?'📝':'🔍')+'</div><b>'+T(PK.tab==='own'&&!q?(PK.k==='debate'?'Hali munozarangiz yo’q':'Hali testingiz yo’q'):'Hech narsa topilmadi')+'</b><span>'+T(PK.tab==='own'&&!q?(PK.k==='debate'?'Yangi munozara tuzing.':'Yangi test yarating yoki “Hammasi” bo’limidan tayyor testni tanlang.'):'Boshqa so’z yozib ko’ring.')+'</span></div>'}
+  $('#pkl').innerHTML=list.length?list.map(function(l){return pkRow(l,m)}).join(''):'<div class="pk-empty"><div style="font-size:38px">'+(PK.tab==='own'&&!q?'📝':'🔍')+'</div><b>'+T(PK.tab==='own'&&!q?(PK.k==='wheel'?'Hali barabaningiz yo’q':PK.k==='debate'?'Hali munozarangiz yo’q':'Hali testingiz yo’q'):'Hech narsa topilmadi')+'</b><span>'+T(PK.tab==='own'&&!q?(PK.k==='wheel'?'Yangi baraban tuzing.':PK.k==='debate'?'Yangi munozara tuzing.':'Yangi test yarating yoki “Hammasi” bo’limidan tayyor testni tanlang.'):'Boshqa so’z yozib ko’ring.')+'</span></div>'}
 function launch(l,k){closeDlg();if(hostM(k)){hostGo(l,k);return}
   var c=Object.assign({},l,{m:k});sov.hidden=true;$('#play').hidden=false;syncOv();$('#play').scrollTop=0;start(c)}
 
@@ -1556,13 +1557,13 @@ function cmAct(a,id){closeCM();var l=find(id);if(!l)return;
   else if(a==='league'){hostGo(l,'league')}else if(a==='live'){if(window.LiveQuiz)window.LiveQuiz.host(l)}else if(a==='class'){if(window.LiveQuiz)window.LiveQuiz.host(l,{mode:'class'})}
   else if(a==='edit')editL(id);
   else if(a==='pub'){l.pub=l.pub===false;saveD();cloudPush(l);say(l.pub===false?'Faqat sizga ko’rinadi':'Hamma ko’ra oladi')}
-  else if(a==='add'){var c={id:'u'+Date.now(),code:gen(),title:l.title,cls:'Sinf',m:l.m,created:Date.now()};if(l.deb)c.deb=JSON.parse(JSON.stringify(l.deb));else if(l.qs)c.qs=JSON.parse(JSON.stringify(l.qs));else c.pairs=JSON.parse(JSON.stringify(l.pairs));D.lessons.unshift(c);saveD();cloudPush(c);renderAll();say('Testlarimga qo’shildi')}
+  else if(a==='add'){var c={id:'u'+Date.now(),code:gen(),title:l.title,cls:'Sinf',m:l.m,created:Date.now()};if(l.wh)c.wh=JSON.parse(JSON.stringify(l.wh));else if(l.deb)c.deb=JSON.parse(JSON.stringify(l.deb));else if(l.qs)c.qs=JSON.parse(JSON.stringify(l.qs));else c.pairs=JSON.parse(JSON.stringify(l.pairs));D.lessons.unshift(c);saveD();cloudPush(c);renderAll();say('Testlarimga qo’shildi')}
   else if(a==='del')ask('Test o’chirilsinmi?','Test butunlay o’chiriladi.','O’chirish',function(){var dl=find(id);if(dl&&dl.cid)cloudDel(dl.cid);D.lessons=D.lessons.filter(function(x){return x.id!==id});saveD();renderAll();say('Test o’chirildi')})}
 document.addEventListener('pointerdown',function(e){if(CM&&!e.target.closest('.cmenu')&&!e.target.closest('[data-lset]'))closeCM()},true);
 window.addEventListener('scroll',closeCM,true);window.addEventListener('resize',closeCM);
 /* testni tahrirlash: yaratish oynasini qayta ishlatamiz */
 function wizTitle(){var ed=!!W.edit,ph=$('#cwiz .ph');if(ph){ph.querySelector('h1').textContent=T(ed?'Testni tahrirlash':'Yangi dars');ph.querySelector('p').textContent=T(ed?'Savollarni o’zgartiring va saqlang.':'To’rt qadamda tayyor.')}var mk=$('#mk');if(mk)mk.textContent=T(ed?'Saqlash':'Darsni yaratish')}
-function editL(id){var l=find(id);if(!l||l.id.charAt(0)!=='u')return;if(l.deb){if(window.Debate)window.Debate.edit(l);return}
+function editL(id){var l=find(id);if(!l||l.id.charAt(0)!=='u')return;if(l.wh){if(window.Wheel)window.Wheel.edit(l);return}if(l.deb){if(window.Debate)window.Debate.edit(l);return}
   W.edit=l.id;W.topic=l.title;W.cls=l.cls||'Sinf';W.m=MT[l.m]&&!MT[l.m].soon?l.m:'quiz';
   W.qs=l.qs?QE.from(l.qs):[bq(),bq(),bq()];
   W.pairs=l.pairs?l.pairs.map(function(p){return{t:p.t,d:p.d}}):[bp(),bp(),bp()];
@@ -1606,7 +1607,7 @@ $('#dlg').addEventListener('click',function(e){var t=e.target,b;
   if(b=t.closest('[data-dpub]')){var pl=find(b.dataset.dpub);if(pl){pl.pub=pl.pub===false;saveD();cloudPush(pl);openDetail(pl.id)}return}
   if(b=t.closest('[data-dcopy]')){try{navigator.clipboard.writeText(b.dataset.dcopy).then(function(){say('Kod nusxalandi')},function(){})}catch(x){}return}
   if(b=t.closest('[data-ddel]')){var did=b.dataset.ddel;ask('Dars o’chirilsinmi?','Dars butunlay o’chiriladi.','O’chirish',function(){var dl=find(did);if(dl&&dl.cid)cloudDel(dl.cid);D.lessons=D.lessons.filter(function(x){return x.id!==did});saveD();renderAll();say('Dars o’chirildi')});return}
-  if(b=t.closest('[data-dadd]')){var l=find(b.dataset.dadd),c={id:'u'+Date.now(),code:gen(),title:l.title,cls:'Sinf',m:l.m,created:Date.now()};if(l.deb)c.deb=JSON.parse(JSON.stringify(l.deb));else if(l.qs)c.qs=JSON.parse(JSON.stringify(l.qs));else c.pairs=JSON.parse(JSON.stringify(l.pairs));D.lessons.unshift(c);saveD();cloudPush(c);closeDlg();renderAll();say('Darslarimga qo’shildi');return}
+  if(b=t.closest('[data-dadd]')){var l=find(b.dataset.dadd),c={id:'u'+Date.now(),code:gen(),title:l.title,cls:'Sinf',m:l.m,created:Date.now()};if(l.wh)c.wh=JSON.parse(JSON.stringify(l.wh));else if(l.deb)c.deb=JSON.parse(JSON.stringify(l.deb));else if(l.qs)c.qs=JSON.parse(JSON.stringify(l.qs));else c.pairs=JSON.parse(JSON.stringify(l.pairs));D.lessons.unshift(c);saveD();cloudPush(c);closeDlg();renderAll();say('Darslarimga qo’shildi');return}
   if(b=t.closest('[data-ee]')){E.emoji=b.dataset.ee;$$('#eemo button').forEach(function(x){x.setAttribute('aria-pressed',x===b)});epPrev();return}
   if(b=t.closest('[data-eb]')){E.bg=BGS[+b.dataset.eb];$$('#ebg button').forEach(function(x){x.setAttribute('aria-pressed',x===b)});epPrev();return}
   if(t.closest('[data-esave]'))saveEdit()});
@@ -1963,9 +1964,9 @@ $$('[data-lqjoin]').forEach(function(b){b.addEventListener('click',function(){go
 var CL={uid:null,warned:false,pubAt:0};
 function sbc(){return window.sb&&window.sb.from?window.sb:null}
 function cuid(){if(CL.uid)return Promise.resolve(CL.uid);if(!sbc())return Promise.resolve(null);return sbc().auth.getSession().then(function(r){CL.uid=r.data&&r.data.session?r.data.session.user.id:null;return CL.uid},function(){return null})}
-function rowOf(l,uid){var p={};if(l.qs)p.qs=l.qs;if(l.pairs)p.pairs=l.pairs;if(l.aiTest)p.aiTest=true;if(l.m==='mystery')p.mx='mystery';if(l.m==='debate'){p.mx='debate';p.deb=l.deb}if(Array.isArray(l.xc))p.xc=l.xc;if(l.my)p.my=l.my;return{owner_id:uid,owner_name:String(uinfo().name||'').slice(0,60),code:l.code,title:String(l.title||'').slice(0,180),sub:l.aiTest?'AI':(l.sub||null),method:l.m==='mystery'||l.m==='debate'?'quiz':l.m,cls:l.cls||null,payload:p,is_public:l.pub!==false}}
+function rowOf(l,uid){var p={};if(l.qs)p.qs=l.qs;if(l.pairs)p.pairs=l.pairs;if(l.aiTest)p.aiTest=true;if(l.m==='mystery')p.mx='mystery';if(l.m==='debate'){p.mx='debate';p.deb=l.deb}if(l.m==='wheel'){p.mx='wheel';p.wh=l.wh}if(Array.isArray(l.xc))p.xc=l.xc;if(l.my)p.my=l.my;return{owner_id:uid,owner_name:String(uinfo().name||'').slice(0,60),code:l.code,title:String(l.title||'').slice(0,180),sub:l.aiTest?'AI':(l.sub||null),method:l.m==='mystery'||l.m==='debate'||l.m==='wheel'?'quiz':l.m,cls:l.cls||null,payload:p,is_public:l.pub!==false}}
 function lessonOf(r,mine){var p=r.payload||{},l={id:(mine?'u_':'g_')+r.id,cid:r.id,code:r.code,title:r.title,cls:r.cls||'Sinf',m:(p.mx&&MT[p.mx]?p.mx:r.method),created:Date.parse(r.created_at)||Date.now(),pub:r.is_public};
-  l.sub=mine?(r.sub==='AI'?'AI':r.sub):('👤 '+(r.owner_name||'—'));if(p.qs)l.qs=p.qs;if(p.pairs)l.pairs=p.pairs;if(p.aiTest)l.aiTest=true;if(Array.isArray(p.xc))l.xc=p.xc;if(p.my)l.my=p.my;if(p.deb)l.deb=p.deb;return l}
+  l.sub=mine?(r.sub==='AI'?'AI':r.sub):('👤 '+(r.owner_name||'—'));if(p.qs)l.qs=p.qs;if(p.pairs)l.pairs=p.pairs;if(p.aiTest)l.aiTest=true;if(Array.isArray(p.xc))l.xc=p.xc;if(p.my)l.my=p.my;if(p.deb)l.deb=p.deb;if(p.wh)l.wh=p.wh;return l}
 function cloudWhy(e){var m=String(e&&e.message||e||''),c=String(e&&e.code||'');
   if(c==='PGRST205'||c==='42P01'||/schema cache|does not exist|relation/i.test(m))return 'Supabase’da shared_lessons jadvali yo’q — shared-lessons.sql ni SQL Editor’da ishga tushiring';
   if(c==='42501'||/row-level security|permission denied/i.test(m))return 'Supabase ruxsat bermadi (RLS) — shared-lessons.sql to’liq ishga tushirilganini tekshiring';
@@ -1990,7 +1991,7 @@ function cloudPub(){if(!sbc())return;CL.pubAt=Date.now();cuid().then(function(ui
 window.cloudPubSoon=function(){if(Date.now()-CL.pubAt>20000)cloudPub()};
 function fetchByCode(c){if(!sbc())return Promise.resolve(null);return cuid().then(function(){return sbc().from('shared_lessons').select('*').eq('code',c).maybeSingle()}).then(function(r){if(r.error||!r.data)return null;var mine=r.data.owner_id===CL.uid,l=lessonOf(r.data,mine),ex=allL().filter(function(x){return x.cid===l.cid})[0];if(ex)return ex;if(mine){D.lessons.unshift(l);saveD()}else G.unshift(l);return l},function(){return null})}
 function shareL(l,force){if(!l||!l.code)return;if(l.pub===false){if(force&&l.id&&l.id.charAt(0)==='u'){l.pub=true;saveD();cloudPush(l)}else{say('Ulashish uchun “Hammaga ochiq”ni yoqing');return}}
-  var url=location.origin+'/home#t='+l.code,txt=(l.m==='debate'?'InterDars’da munozara mavzulari:':T('InterDars’da test:'))+' '+l.title;
+  var url=location.origin+'/home#t='+l.code,txt=(l.m==='wheel'?'InterDars’da omad barabani:':l.m==='debate'?'InterDars’da munozara mavzulari:':T('InterDars’da test:'))+' '+l.title;
   function fallback(){var x=document.createElement('textarea');x.value=url;x.setAttribute('readonly','');x.style.position='fixed';x.style.opacity='0';document.body.appendChild(x);x.select();try{document.execCommand('copy');say('Havola nusxalandi')}catch(e){say(url)}x.remove()}
   function copy(){if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(url).then(function(){say('Havola nusxalandi')},fallback);else fallback()}
   if(navigator.share&&!matchMedia('(pointer:fine)').matches){navigator.share({title:l.title,text:txt,url:url}).catch(function(e){if(e&&e.name!=='AbortError')copy()})}else copy()}
@@ -2010,6 +2011,7 @@ window.confetti=function(x,y,n){if(matchMedia('(prefers-reduced-motion: reduce)'
 <script src="/qrcode.js"></script>
 <script src="/live.js?v=7"></script>
 <script src="/league.js?v=7"></script>
+<script src="/wheel.js?v=1"></script>
 <script src="/debate.js?v=5"></script>
 </body>
 </html>
