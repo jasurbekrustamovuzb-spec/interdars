@@ -65,7 +65,7 @@ function askExit(){if(!(H||P))return;if((H&&H.ph==='fin')||(P&&P.S&&P.S.ph==='fi
 function leave(msg){stopPourFlow();if(H){send({t:'end'});clearInterval(HT);H=null;lsDel(LSH)}
   if(P){send({t:'bye',p:P.pid});clearInterval(P.hl);clearInterval(P.tm);P=null;lsDel(LSP)}
   netClose(350);modalClose();closeOv();if(msg)say(msg)}
-function topbar(extra){return '<div class="lgt"><button class="lgib" data-act="exit" aria-label="Chiqish">✕</button><span class="lgpill">🏆 CHEMPIONLAR LIGASI</span>'+(extra||'')+'<span class="sp"></span></div>'}
+function topbar(extra){return '<div class="lgt"><button class="lgib" data-act="exit" aria-label="Chiqish">✕</button><span class="lgpill">🏆 '+((H&&H.test)||(P&&P.S&&P.S.tst)?'🥤 KOLA SINOVI':'🏆 CHEMPIONLAR LIGASI')+'</span>'+(extra||'')+'<span class="sp"></span></div>'}
 
 /* ===== umumiy ko'rinishlar ===== */
 function rosMap(S){var o={};(S.ros||[]).forEach(function(r){o[r[0]]=r});return o}
@@ -83,7 +83,7 @@ function podium(S){var ros=rosMap(S),f=S.fin||[],nm=function(i){var r=ros[i];ret
 
 /* =====================  TASHKILOTCHI  ===================== */
 function ok(x){return x.a&&x.a.length>=2&&x.c!=null&&(!x.k||x.k==='mcq'||x.k==='tf')}
-function host(l){
+function host(l,opts){
   if(!l||!l.qs){say('Savollar topilmadi');return false}
   if(!window.sb||!window.sb.channel){say('Jonli rejim uchun internet kerak');return false}
   if(H||P){openOv();return true}
@@ -91,14 +91,14 @@ function host(l){
   var src=l.qs.filter(ok).map(function(x){return{q:x.q,a:x.a.slice(),c:x.c,k:x.k==='tf'?'tf':'mcq'}});
   if(src.length<2){say('Kamida 2 ta test savoli kerak');return false}
   H={v:1,pin:String(100000+Math.floor(Math.random()*900000)),lid:l.id,title:l.title,src:src,set:{time:15,nq:5},ph:'lobby',pl:{},n:0,ri:-1,qi:-1,t0:0,dur:0,rounds:[],ts:Date.now()};
-  hBoot();return true}
+  if(opts&&opts.test)H.test=1;hBoot();return true}
 function hBoot(){openOv();
   netOpen(H.pin,hMsg,function(s){var bad=s==='CHANNEL_ERROR'||s==='TIMED_OUT'||s==='CLOSED';conn(bad);if(s==='SUBSCRIBED')bcast()});
   persist(1);hRender();clearInterval(HT);var hb=0;HT=setInterval(function(){hTick();if(++hb%13===0&&H)send({t:'h',ph:H.ph,qi:H.qi,ri:H.ri})},500)}
-var persT=0;function persist(now){if(!H)return;clearTimeout(persT);if(now){H.ts=Date.now();lsSet(LSH,H)}else persT=setTimeout(function(){if(H){H.ts=Date.now();lsSet(LSH,H)}},300)}
+var persT=0;function persist(now){if(!H||H.test)return;clearTimeout(persT);if(now){H.ts=Date.now();lsSet(LSH,H)}else persT=setTimeout(function(){if(H){H.ts=Date.now();lsSet(LSH,H)}},300)}
 function byI(i){for(var k in H.pl)if(H.pl[k].i===i)return H.pl[k];return null}
 function ros(){return Object.keys(H.pl).map(function(k){return H.pl[k]}).sort(function(a,b){return a.i-b.i}).map(function(p){return[p.i,p.n,p.a]})}
-function snap(){var n=Date.now(),o={ph:H.ph,ttl:H.title,R:H.R||0,ri:H.ri,nq:H.nq||0,qi:H.qi,dur:H.dur,rem:Math.max(0,H.t0+H.dur-n),rn:H.rn||'',ros:ros()};
+function snap(){var n=Date.now(),o={ph:H.ph,tst:H.test?1:0,ttl:H.title,R:H.R||0,ri:H.ri,nq:H.nq||0,qi:H.qi,dur:H.dur,rem:Math.max(0,H.t0+H.dur-n),rn:H.rn||'',ros:ros()};
   if(H.ph!=='lobby'&&H.rounds.length)o.br=H.rounds.map(function(r){return r.map(function(m){var pr=m.pour,x=[m.a,m.b,m.w,m.sa,m.sb,m.st==='bye'?1:m.st==='duel'?2:m.st==='pour'?3:m.st==='done'?4:0,m.third?1:0,pr?[pr.turn,pr.starter,pr.results.map(function(v){return v?[Math.round(v.fill*10)/10,v.spilled?1:0,Math.round(v.overflow*10)/10,Math.round(v.ms/1000)]:0}),pr.state||null]:0,m.ok||0];return x})});
   if((H.ph==='q'||H.ph==='rev')&&H.cq){o.q=H.cq.q;o.a=H.cq.a;if(H.ph==='rev')o.c=H.cq.c}
   if(H.ph==='fin')o.fin=H.fin;return o}
@@ -120,9 +120,10 @@ function hDraw(){if(!H||H.ph!=='lobby')return;
   var b=mkBracket(ids);H.M=b.M;H.R=b.R;H.B=b.B;H.rounds=b.rounds;H.bronze=0;H.ri=-1;
   var q=shuffle(H.src.slice()),nq=Math.max(1,Math.min(H.set.nq,Math.floor(q.length/H.R))),need=nq*H.R;H.nq=nq;H.warn=q.length<need?1:0;H.queue=[];
   for(var i=0;i<need;i++){if(i>0&&i%q.length===0)shuffle(q);H.queue.push(q[i%q.length])}
-  H.ph='draw';H.t0=Date.now();H.dur=0;H.rn='Qur\u2018a';persist(1);bcast();hRender();}
+  if(H.test)H.warn=0;H.ph='draw';H.t0=Date.now();H.dur=0;H.rn='Qur\u2018a';persist(1);bcast();hRender();}
 function hRoundStart(){H.ri++;var r=H.rounds[H.ri];H.rn=r.length>1&&H.ri===H.R-1?'Final va 3-o\u2018rin':rname(H.M/Math.pow(2,H.ri));
   r.forEach(function(m){if(m.st==='wait'){m.st='duel';m.sa=m.sb=0}});
+  if(H.test){r.forEach(function(m){if(m.st==='duel')mkPourState(m)});H.ph='pour';H.t0=Date.now();H.dur=0;bcast();hRender();return}
   H.qs=H.queue.slice(H.ri*H.nq,(H.ri+1)*H.nq);H.qi=-1;H.ph='pre';H.t0=Date.now();H.dur=3800;persist(1);bcast();hRender();}
 function hQStart(){H.qi++;H.cq=prepQ(H.qs[H.qi]);H.an={};H.ph='q';H.t0=Date.now();H.dur=H.set.time*1000;persist(1);bcast();hRender()}
 function duels(){return H.rounds[H.ri].filter(function(m){return m.st==='duel'})}
@@ -136,6 +137,7 @@ function hRoundQEnd(){var tied=false;
   duels().forEach(function(m){m.ok=0;if(m.sa!==m.sb){m.w=m.sa>m.sb?m.a:m.b;m.l=m.sa>m.sb?m.b:m.a;m.st='done'}
     else{var starter=Math.random()<.5?0:1;m.st='pour';m.pour={turn:starter,starter:starter,results:[null,null],state:{currentPlayer:starter+1,glassFill:0,bottleFill:85,progress:0,turnStartFill:0,hasPouredThisTurn:false,isPouring:false,pourRate:0,wavePhase:0,waveAmplitude:0,bottleSloshPhase:0,bottleSloshAmp:0,lastTiltRad:0,gameOver:false}};tied=true}});
   if(tied){H.ph='tie';H.t0=Date.now();H.dur=5000;persist(1);bcast();hRender()}else hRoundDone()}
+function mkPourState(m){var starter=Math.random()<.5?0:1;m.st='pour';m.pour={turn:starter,starter:starter,results:[null,null],state:{currentPlayer:starter+1,glassFill:0,bottleFill:85,progress:0,turnStartFill:0,hasPouredThisTurn:false,isPouring:false,pourRate:0,wavePhase:0,waveAmplitude:0,bottleSloshPhase:0,bottleSloshAmp:0,lastTiltRad:0,gameOver:false}}}
 function startPourPhase(){if(!H||H.ph!=='tie')return;H.ph='pour';H.t0=Date.now();H.dur=0;persist(1);bcast();hRender()}
 function hRoundDone(){var r=H.rounds[H.ri];
   if(H.ri>=H.R-1){hFinal();return}
@@ -185,24 +187,24 @@ function hPourTurn(msg){if(!H||H.ph!=='pour'||!msg||!Array.isArray(msg.mi)||!msg
 
 /* ----- tashkilotchi ekranlari ----- */
 function hRender(){if(!H)return;if(hostTimerFrame){cancelAnimationFrame(hostTimerFrame);hostTimerFrame=0}modalClose();({lobby:hLobby,draw:hDrawV,pre:hPre,q:hQ,rev:hQ,tie:hTie,pour:hPour,res:hRes,fin:hFin})[H.ph]()}
-function joinUrl(){return location.origin+'/home#j='+H.pin}
+function joinUrl(){return location.origin+(H.test?'/kola-test.html#j=':'/home#j=')+H.pin}
 function hLobby(){var s=H.set;
   function seg(k,vals,suf){return '<div class="seg">'+vals.map(function(v){return '<button class="'+(s[k]===v?'on':'')+'" data-act="cfg" data-k="'+k+'" data-v="'+v+'">'+v+suf+'</button>'}).join('')+'</div>'}
   view(topbar('<b class="lgchip">Kutish xonasi</b>')+'<div class="lgc lobby"><div class="lgjoin"><div class="lgpin"><small>Qo\u2018shilish ID</small><b>'+pinFmt(H.pin)+'</b><button class="lgb ghost sm" data-act="share">\ud83d\udd17 Havola</button></div><div id="lgqr" class="lgqr"></div></div>'+
-    '<h2 class="lgh">'+esc(H.title)+'</h2><div class="lgset"><label>Savol vaqti</label>'+seg('time',[10,15,20,30],' s')+'<label>Har duelda savol</label>'+seg('nq',[3,5,7],'')+'</div><div class="lgnote" id="lgnote"></div>'+
+    '<h2 class="lgh">'+esc(H.title)+'</h2><div class="lgset"'+(H.test?' hidden':'')+'><label>Savol vaqti</label>'+seg('time',[10,15,20,30],' s')+'<label>Har duelda savol</label>'+seg('nq',[3,5,7],'')+'</div><div class="lgnote" id="lgnote"></div>'+
     '<div class="lgcnt"><b id="lgcnt">0</b> ishtirokchi</div><div class="lggrid" id="lggrid"></div><div class="lgfoot"><button class="lgb go" data-act="draw" id="lgdraw" disabled>\ud83c\udfb2 Random qur\u2018a tashlash</button></div></div>');
   hLobbyUpdate();qr(joinUrl())}
 function hLobbyUpdate(){var g=$('#lggrid');if(!g||!H)return;var l=ros();$('#lgcnt').textContent=l.length;
   g.innerHTML=l.map(function(r){return '<div class="lgpt">'+av(r[2],52,r[1])+'<b>'+esc(r[1])+'</b></div>'}).join('')||'<p class="lgmut">Ishtirokchilar telefondan ID yoki QR orqali qo\u2018shiladi\u2026</p>';obs(g);
   var b=$('#lgdraw');if(b)b.disabled=l.length<2;
   var N=l.length,Mx=1;while(Mx<Math.max(2,N))Mx*=2;var Rr=Math.round(Math.log(Mx)/Math.LN2),need=Rr*H.set.nq,nt=$('#lgnote');
-  if(nt)nt.innerHTML=N>=2?('Taxminan <b>'+rname(Mx)+'</b>'+(Mx>N?' \u00b7 <b>'+(Mx-N)+'</b> ta BYE':'')+' \u00b7 '+Rr+' bosqich'+(H.src.length<need?' \u00b7 <span class="w">savollar yetarli emas ('+H.src.length+' ta) \u2014 duelda savollar soni kamaytiriladi</span>':'')):''}
+  if(nt)nt.innerHTML=N>=2?('Taxminan <b>'+rname(Mx)+'</b>'+(Mx>N?' \u00b7 <b>'+(Mx-N)+'</b> ta BYE':'')+' \u00b7 '+Rr+' bosqich'+(!H.test&&H.src.length<need?' \u00b7 <span class="w">savollar yetarli emas ('+H.src.length+' ta) \u2014 duelda savollar soni kamaytiriladi</span>':'')):''}
 var QRL=null;function qr(text){var b=$('#lgqr');if(!b)return;
   function go(){try{var q=window.qrcode(0,'M');q.addData(text);q.make();var n=q.getModuleCount(),d='';for(var r=0;r<n;r++)for(var c=0;c<n;c++)if(q.isDark(r,c))d+='M'+c+' '+r+'h1v1h-1z';b.innerHTML='<svg viewBox="-2 -2 '+(n+4)+' '+(n+4)+'" shape-rendering="crispEdges"><path d="'+d+'" fill="#1B2150"/></svg>'}catch(e){b.textContent=text}}
   if(window.qrcode)go();else b.textContent=text}
 function hDrawV(){var S=snap(),r0=H.rounds[0],ros={};S.ros.forEach(function(r){ros[r[0]]=r});
   var cards=r0.map(function(m,k){var A=ros[m.a],B=ros[m.b];return '<div class="lgvsc" style="animation-delay:'+(k*140)+'ms"><div class="s">'+av(A[2],50,A[1])+'<b>'+esc(A[1])+'</b></div><div class="vs">'+(m.st==='bye'?'\ud83c\udf9f\ufe0f':'VS')+'</div><div class="s">'+(B?av(B[2],50,B[1])+'<b>'+esc(B[1])+'</b>':'<b class="bye">BYE \u00b7 keyingi bosqichga o\u2018tadi</b>')+'</div></div>'}).join('');
-  view(topbar('<b class="lgchip">Qur\u2018a natijasi</b>')+'<div class="lgc"><h2 class="lgh">\ud83c\udfb2 Qur\u2018a tashlandi!</h2><p class="lgmut">'+Object.keys(H.pl).length+' ishtirokchi \u00b7 '+(H.B?H.B+' ta omadli chipta (BYE) \u00b7 ':'')+H.R+' bosqich \u00b7 har duelda '+H.nq+' savol'+(H.warn?' \u00b7 <span class="w">savollar takrorlanishi mumkin</span>':'')+'</p><div class="lgvsl">'+cards+'</div><div class="lgfoot"><button class="lgb go" data-act="go">\u25b6 '+rname(H.M)+'ni boshlash</button></div></div>')}
+  view(topbar('<b class="lgchip">Qur\u2018a natijasi</b>')+'<div class="lgc"><h2 class="lgh">\ud83c\udfb2 Qur\u2018a tashlandi!</h2><p class="lgmut">'+Object.keys(H.pl).length+' ishtirokchi \u00b7 '+(H.B?H.B+' ta omadli chipta (BYE) \u00b7 ':'')+H.R+' bosqich \u00b7 '+(H.test?'savolsiz Kola dueli':'har duelda '+H.nq+' savol')+(H.warn?' \u00b7 <span class="w">savollar takrorlanishi mumkin</span>':'')+'</p><div class="lgvsl">'+cards+'</div><div class="lgfoot"><button class="lgb go" data-act="go">\u25b6 '+rname(H.M)+'ni boshlash</button></div></div>')}
 function hPre(){var ph=H.rn;view(topbar()+'<div class="lgcd"><small>Keyingi bosqich</small><div class="lgbig">'+esc(ph)+'</div><p>'+duels().length+' ta duel'+(H.rounds[H.ri].some(function(m){return m.st==='bye'})?' \u00b7 '+H.rounds[H.ri].filter(function(m){return m.st==='bye'}).length+' ta BYE':'')+'</p></div>')}
 function resultShort(r){if(!r)return 'navbat kutilmoqda';return r.spilled?('to‘kildi · '+Math.round(r.overflow)+'%'):('stakan '+Math.round(r.fill)+'%')}
 function cardHTML(m,ros){var A=ros[m.a]||[0,'?',-1],B=ros[m.b]||[0,'?',-1],an=H.ph==='q'?H.an||{}:{},p=m.pour,detail='';
@@ -247,7 +249,7 @@ function syncPourFrame(S,mm){var frame=$('#colaFrame');if(!frame||!frame.content
 function pSnap(m){var first=!P.got,prev=P.S,samePour=!!(prev&&prev.ph==='pour'&&m.ph==='pour'&&prev.ri===m.ri),old=null,next=null;
   if(samePour){old=mine(prev,prev.ri);next=mine(m,m.ri);samePour=!!(old&&next&&old.s===next.s&&old.m[5]===3&&next.m[5]===3)}
   P.got=true;P.lastH=Date.now();if(m.you)P.i=m.you;P.S=m;P.dl=performance.now()+m.rem;
-  if(first){conn(false);lsSet(LSP,{pin:P.pin,pid:P.pid,n:P.n,a:P.a,ts:Date.now()})}
+  if(first){conn(false);if(!m.tst)lsSet(LSP,{pin:P.pin,pid:P.pid,n:P.n,a:P.a,ts:Date.now()})}
   if(m.ph==='q'&&!(prev&&prev.ph==='q'&&prev.ri===m.ri&&prev.qi===m.qi)){P.my=-1;P.ak=false}
   if(samePour)syncPourFrame(m,next);else pRender(prev)}
 function pRender(prev){var S=P.S;modalClose();clearInterval(P.tm);

@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="uz">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Kola dueli — sinov</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27%3E%3Ctext y=%27.9em%27 font-size=%2790%27%3E%F0%9F%A5%A4%3C/text%3E%3C/svg%3E">
+<style>
+*{box-sizing:border-box;margin:0}
+html,body{height:100%}
+body{display:grid;place-items:center;padding:16px;font:700 16px/1.35 Nunito,system-ui,sans-serif;color:#1B2150;background:linear-gradient(165deg,#fffbeb,#fde68a 70%,#fed7aa)}
+.card{width:min(400px,100%);padding:26px 20px 22px;border-radius:24px;background:#fff;box-shadow:0 14px 36px rgba(146,64,14,.18);text-align:center;display:flex;flex-direction:column;gap:12px}
+.em{font-size:46px;line-height:1}
+h1{font-size:22px}
+.mut{color:#6B7199;font-size:14px;font-weight:600}
+.or{color:#6B7199;font-size:13px;display:flex;align-items:center;gap:10px}
+.or:before,.or:after{content:"";flex:1;height:1px;background:#E3E7F8}
+input{width:100%;padding:13px 14px;border:2px solid #E3E7F8;border-radius:14px;font:inherit;text-align:center;color:inherit;background:#fff;outline:0}
+input:focus{border-color:#4B6BFF}
+#pin{letter-spacing:.18em;font-size:20px}
+.b{padding:14px;border:0;border-radius:14px;font:inherit;font-weight:800;color:#fff;background:#4B6BFF;cursor:pointer}
+.b.go{background:linear-gradient(135deg,#ef4444,#b91c1c)}
+.b:disabled{opacity:.55;cursor:default}
+#t{position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom,0px) + 20px);transform:translateX(-50%);z-index:300;max-width:90vw;padding:10px 16px;border-radius:12px;background:#1B2150;color:#fff;font-size:14px;opacity:0;pointer-events:none;transition:opacity .2s}
+#t.on{opacity:1}
+/* avatar (league.js) */
+.jq-av{position:relative;display:inline-grid;place-items:center;flex:0 0 var(--s,56px);width:var(--s,56px);height:var(--s,56px);min-width:var(--s,56px);overflow:hidden;border-radius:50%;vertical-align:middle;line-height:1}
+.jq-av-initial{position:absolute;inset:0;display:grid;place-items:center;font-size:calc(var(--s,56px)*.48);font-weight:900;color:#fff}
+</style>
+</head>
+<body>
+<main class="card">
+  <div class="em">🥤</div>
+  <h1>Kola dueli sinovi</h1>
+  <p class="mut">Savolsiz va kirish shart emas. Xona oching yoki ID / QR orqali qo‘shiling.</p>
+  <button class="b go" id="host">🏠 Xona ochish</button>
+  <div class="or">yoki qo‘shiling</div>
+  <input id="pin" inputmode="numeric" maxlength="7" placeholder="Xona ID (6 ta raqam)" autocomplete="off">
+  <input id="nm" maxlength="20" placeholder="Ismingiz" autocomplete="nickname">
+  <button class="b" id="join">▶ Qo‘shilish</button>
+</main>
+<div id="t" role="status"></div>
+<script>
+(function(){
+'use strict';
+var V='8',$=function(s){return document.querySelector(s)};
+var SB_URL='https://kikehcuwjcucyspxdopd.supabase.co',SB_KEY='sb_publishable_aBqimXgAK3ia1K_keuaICg_wIRBHx14';
+var tt=0;function say(m){var t=$('#t');t.textContent=m;t.classList.add('on');clearTimeout(tt);tt=setTimeout(function(){t.classList.remove('on')},2800)}
+window.LiveQuiz={say:say,active:function(){return false}};   /* league.js shu yordamchidan foydalanadi */
+function ld(src){return new Promise(function(ok,no){var s=document.createElement('script');s.src=src;s.onload=ok;s.onerror=function(){no(new Error(src))};document.head.appendChild(s)})}
+var ready=null;
+/* og'ir skriptlar faqat kerak bo'lganda yuklanadi */
+function boot(){
+  if(!ready)ready=(window.supabase?Promise.resolve():ld('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2')).then(function(){
+    if(!window.sb)window.sb=window.supabase.createClient(SB_URL,SB_KEY);
+    return window.League?0:ld('/league.js?v='+V)
+  }).catch(function(e){ready=null;throw e});
+  return ready}
+function busy(on){$('#host').disabled=$('#join').disabled=!!on}
+function fail(){busy(0);say('Yuklanmadi — internetni tekshirib qayta urining')}
+function pid(){var k='kolaPid',v=null;try{v=sessionStorage.getItem(k)}catch(e){}if(!v){v='k'+Math.random().toString(36).slice(2,10);try{sessionStorage.setItem(k,v)}catch(e){}}return v}
+function nm(){var v=$('#nm').value.replace(/[<>]/g,'').trim().slice(0,20)||'Mehmon '+(100+Math.floor(Math.random()*900));try{localStorage.setItem('kolaName',v)}catch(e){}return v}
+
+$('#host').onclick=function(){
+  busy(1);
+  Promise.all([boot(),window.qrcode?0:ld('/qrcode.js').catch(function(){})]).then(function(){
+    busy(0);
+    window.League.host({id:'kola-test',title:'Kola dueli sinovi',qs:[{q:'1',a:['A','B'],c:0},{q:'2',a:['A','B'],c:0}]},{test:true})
+  }).catch(fail)};
+
+$('#join').onclick=function(){
+  var pin=$('#pin').value.replace(/\D/g,'');
+  if(pin.length!==6){say('ID 6 ta raqamdan iborat bo‘lishi kerak');$('#pin').focus();return}
+  var n=nm();busy(1);
+  boot().then(function(){busy(0);window.League.join({pin:pin,pid:pid(),n:n,a:-1})}).catch(fail)};
+
+$('#pin').addEventListener('keydown',function(e){if(e.key==='Enter')$('#nm').focus()});
+$('#nm').addEventListener('keydown',function(e){if(e.key==='Enter')$('#join').click()});
+try{$('#nm').value=localStorage.getItem('kolaName')||''}catch(e){}
+var h=location.hash.match(/^#j=(\d{6})$/);
+if(h){$('#pin').value=h[1];$('#nm').focus();setTimeout(function(){boot().catch(function(){})},400)}
+})();
+</script>
+</body>
+</html>

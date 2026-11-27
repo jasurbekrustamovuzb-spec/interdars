@@ -1544,7 +1544,7 @@ var CM=null;
 function closeCM(){if(CM){CM.remove();CM=null}}
 function openCM(id,btn){closeCM();var l=find(id);if(!l)return;var own=l.id.charAt(0)==='u',it=[];
   it.push(['play','▶',hostLbl(l.m)]);if(l.code)it.push(['share','🔗','Ulashish']);
-  if(l.qs&&!hostM(l.m)){it.push(['live','🔴','Jonli o’tkazish']);it.push(['league','🏆','Chempionlar ligasi'])}
+  if(l.qs&&!hostM(l.m)){it.push(['live','🔴','Jonli o’tkazish']);it.push(['league','🏆','Chempionlar ligasi']);it.push(['kola','🥤','Kola dueli sinovi'])}
   if(own){it.push(['edit','✏️','Tahrirlash']);it.push(['pub','🌐','Hammaga ochiq',l.pub!==false]);it.push(['-']);it.push(['del','🗑️','O’chirish','dng'])}
   else it.push(['add','➕','Testlarimga qo’shish']);
   var el=document.createElement('div');el.className='cmenu';el.setAttribute('role','menu');
@@ -1554,7 +1554,7 @@ function openCM(id,btn){closeCM();var l=find(id);if(!l)return;var own=l.id.charA
   el.style.left=left+'px';el.style.top=top+'px'}
 function cmAct(a,id){closeCM();var l=find(id);if(!l)return;
   if(a==='play')play(id);else if(a==='share')shareL(l,true);
-  else if(a==='league'){hostGo(l,'league')}else if(a==='live'){if(window.LiveQuiz)window.LiveQuiz.host(l)}else if(a==='class'){if(window.LiveQuiz)window.LiveQuiz.host(l,{mode:'class'})}
+  else if(a==='kola'){window.open('/kola-test.html','_blank','noopener')}else if(a==='league'){hostGo(l,'league')}else if(a==='live'){if(window.LiveQuiz)window.LiveQuiz.host(l)}else if(a==='class'){if(window.LiveQuiz)window.LiveQuiz.host(l,{mode:'class'})}
   else if(a==='edit')editL(id);
   else if(a==='pub'){l.pub=l.pub===false;saveD();cloudPush(l);say(l.pub===false?'Faqat sizga ko’rinadi':'Hamma ko’ra oladi')}
   else if(a==='add'){var c={id:'u'+Date.now(),code:gen(),title:l.title,cls:'Sinf',m:l.m,created:Date.now()};if(l.wh)c.wh=JSON.parse(JSON.stringify(l.wh));else if(l.deb)c.deb=JSON.parse(JSON.stringify(l.deb));else if(l.qs)c.qs=JSON.parse(JSON.stringify(l.qs));else c.pairs=JSON.parse(JSON.stringify(l.pairs));D.lessons.unshift(c);saveD();cloudPush(c);renderAll();say('Testlarimga qo’shildi')}
@@ -2010,7 +2010,7 @@ window.confetti=function(x,y,n){if(matchMedia('(prefers-reduced-motion: reduce)'
 <script src="/ai-test.js?v=2"></script>
 <script src="/qrcode.js"></script>
 <script src="/live.js?v=7"></script>
-<script src="/league.js?v=7"></script>
+<script src="/league.js?v=8"></script>
 <script src="/wheel.js?v=2"></script>
 <script src="/debate.js?v=5"></script>
 </body>

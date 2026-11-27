@@ -1,6 +1,7 @@
 {
   "rewrites": [
-    { "source": "/home", "destination": "/app.html" }
+    { "source": "/home", "destination": "/app.html" },
+    { "source": "/kola", "destination": "/kola-test.html" }
   ],
   "redirects": [
     { "source": "/app.html", "destination": "/home", "permanent": false }
