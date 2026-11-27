@@ -2000,18 +2000,18 @@ function cloudInit(){if(!sbc())return;
   if(pc){try{history.replaceState(null,'','#bosh')}catch(e){}}
   var session=cuid();session.then(function(){cloudPull();window.cloudPubSoon()});
   if(pc)session.then(function(){return fetchByCode(pc)}).then(function(l){if(l){if(l.m==='mystery'&&l.my)mysShared(l);else openDetail(l.id)}else say('Bunday test topilmadi')})}
-window.aiTestBridge={getLessons:function(){return D.lessons},saveLesson:function(l){var i=D.lessons.findIndex(function(x){return x.id===l.id});if(i<0)D.lessons.unshift(l);else{var o=D.lessons[i];if(o.cid)l.cid=o.cid;if(l.pub===undefined&&o.pub!==undefined)l.pub=o.pub;D.lessons[i]=l}saveD();cloudPush(l);renderAll()},deleteLesson:function(id){var dl=find(id);if(dl&&dl.cid)cloudDel(dl.cid);D.lessons=D.lessons.filter(function(x){return x.id!==id});saveD();renderAll()},share:function(id){shareL(find(id))},play:function(id){play(id)},detail:function(id){openDetail(id)},go:function(p){go(p)},MT:MT,ask:ask,xc:XC,QE:QE};renderAll();show();bdot();cloudInit();
+window.aiTestBridge={getLessons:function(){return D.lessons},getAll:function(){return allL()},saveLesson:function(l){var i=D.lessons.findIndex(function(x){return x.id===l.id});if(i<0)D.lessons.unshift(l);else{var o=D.lessons[i];if(o.cid)l.cid=o.cid;if(l.pub===undefined&&o.pub!==undefined)l.pub=o.pub;D.lessons[i]=l}saveD();cloudPush(l);renderAll()},deleteLesson:function(id){var dl=find(id);if(dl&&dl.cid)cloudDel(dl.cid);D.lessons=D.lessons.filter(function(x){return x.id!==id});saveD();renderAll()},share:function(id){shareL(find(id))},play:function(id){play(id)},detail:function(id){openDetail(id)},go:function(p){go(p)},MT:MT,ask:ask,xc:XC,QE:QE};renderAll();show();bdot();cloudInit();
 try{if(remOn()){var td=dstr(new Date());if(lsg('idRemDay')!==td&&D.streak.last!==td&&curStreak()>0){lss('idRemDay',td);new Notification('InterDars',{body:T('Seriyangiz uzilmasin — bugun bitta dars bajaring!')})}}}catch(e){}
 })();
 </script>
 <script>
 window.confetti=function(x,y,n){if(matchMedia('(prefers-reduced-motion: reduce)').matches||!document.body.animate)return;var C=['#4B6BFF','#8A63F5','#FF7AB6','#FFC53D','#27C99A','#FF6F61'];for(var i=0;i<(n||30);i++){var e=document.createElement('i');e.className='cf';e.style.background=C[i%6];document.body.appendChild(e);var a=Math.random()*Math.PI*2,v=120+Math.random()*220,dx=Math.cos(a)*v,dy=Math.sin(a)*v-140;e.animate([{transform:'translate('+x+'px,'+y+'px) rotate(0)',opacity:1},{transform:'translate('+(x+dx)+'px,'+(y+dy+260)+'px) rotate('+(Math.random()*720)+'deg)',opacity:0}],{duration:1100+Math.random()*600,easing:'cubic-bezier(.2,.7,.4,1)'}).onfinish=(function(el){return function(){el.remove()}})(e)}};
 </script>
-<script src="/ai-test.js"></script>
+<script src="/ai-test.js?v=2"></script>
 <script src="/qrcode.js"></script>
 <script src="/live.js?v=7"></script>
 <script src="/league.js?v=7"></script>
-<script src="/wheel.js?v=1"></script>
+<script src="/wheel.js?v=2"></script>
 <script src="/debate.js?v=5"></script>
 </body>
 </html>

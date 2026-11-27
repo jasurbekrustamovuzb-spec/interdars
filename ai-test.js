@@ -284,6 +284,7 @@ function init(){
     if(b=e.target.closest('[data-delsv]')){var id=b.dataset.delsv;B.ask('Test o’chirilsinmi?','Test butunlay o’chiriladi.','O’chirish',function(){B.deleteLesson(id);renderSaved()})}});
   document.addEventListener('langchange',function(){renderTypes();renderFiles();quota();if(S.cur&&!$('#ax-editor').hidden)editor();renderSaved();upBtn()});
   renderTypes();renderFiles();renderSaved();quota()}
+window.aiTestApi={read:function(f){return XT.read(f)},authH:authH,normQ:normQ,MAXC:MAXC};
 init();
 document.addEventListener('visibilitychange',function(){if(!document.hidden)renderSaved()});
 })();
