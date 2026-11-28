@@ -1351,7 +1351,7 @@ function goBack(fallback){if(navStack.length){history.back();return}if(fallback)
 window.addEventListener('hashchange',show);
 window.addEventListener('popstate',function(e){var state=e.state;
   if(!$('#sov').hidden||!$('#play').hidden||!$('#dlg').hidden){if(!$('#sov').hidden)closeS();else if(!$('#play').hidden)closePlay();else closeDlg();try{history.pushState(navState(navPage,W.s,navPage==='bosh'),'','#'+navPage)}catch(x){}return}
-  if(navPage==='bosh'&&(!state||!state.__interdars||typeof state.navIndex!=='number'||state.navIndex<=navIndex)){try{history.pushState(navState('bosh',W.s,true),'','#bosh')}catch(x){}return}
+  if(navPage==='bosh'){try{history.forward()}catch(x){}return}
   if(state&&state.__interdars&&P.indexOf(state.page)>=0){navIndex=typeof state.navIndex==='number'?state.navIndex:navIndex;if(navStack.length&&navStack[navStack.length-1]===state.page)navStack.pop();if(state.page==='yaratish'&&typeof state.step==='number'&&W.s!==state.step)step(state.step,true);show(state.page);return}
   if(navPage!=='bosh'){try{history.pushState(navState(navPage,W.s),'','#'+navPage)}catch(x){}}
 });
