@@ -448,9 +448,9 @@ body.typing nav{display:flex}
 .guide p{background:var(--card);border:2px solid var(--line);border-radius:18px 18px 18px 6px;padding:10px 14px;font-weight:700;font-size:14px;box-shadow:var(--shadow)}
 .cf{position:fixed;z-index:90;width:9px;height:14px;border-radius:2px;pointer-events:none;animation:cf 1.5s cubic-bezier(.2,.7,.4,1) forwards}
 @keyframes cf{0%{transform:translate(0,0) rotate(0);opacity:1}35%{transform:translate(calc(var(--dx)*.7),calc(var(--dy)*-1)) rotate(calc(var(--r)*.5))}100%{transform:translate(var(--dx),240px) rotate(var(--r));opacity:0}}
-.sw{width:46px;height:28px;border-radius:99px;background:var(--line);position:relative;flex:none;transition:background .2s;display:block}
-.sw i{position:absolute;left:3px;top:3px;width:22px;height:22px;border-radius:50%;background:#fff;box-shadow:0 2px 4px rgba(0,0,0,.25);transition:transform .2s;display:block}
-[aria-checked=true] .sw{background:var(--mint)}[aria-checked=true] .sw i{transform:translateX(18px)}
+.sw{width:46px;height:28px;border-radius:99px;background:var(--line);position:relative;flex:0 0 46px;overflow:hidden;transition:background .2s;display:block}
+.sw i{position:absolute;left:3px;top:3px;width:22px;height:22px;border-radius:50%;background:#fff;box-shadow:0 2px 4px rgba(0,0,0,.25);transform:none;transition:left .2s;display:block}
+[aria-checked=true] .sw{background:var(--mint)}[aria-checked=true] .sw i{left:21px;transform:none}
 .dot[hidden]{display:none}
 .nl{display:grid;gap:10px;margin-top:14px;max-height:46vh;overflow-y:auto}
 .ni{display:flex;gap:12px;align-items:center;background:var(--bg);border-radius:16px;padding:10px 12px}
