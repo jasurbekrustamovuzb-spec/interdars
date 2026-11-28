@@ -205,8 +205,8 @@ MATERIAL OXIRI`;
         const correctIndex = Number(item.correctIndex);
         if (options.length !== 4 || !options.every(Boolean) || new Set(options.map(option => option.toLocaleLowerCase())).size !== 4 || !Number.isInteger(correctIndex) || correctIndex < 0 || correctIndex >= 4) return null;
         const mediumOrHard = difficulty !== 'oson';
-        const forbidden = /\\b(?:faqat|faqatgina|yagona|hech\\s+qachon|barchasi|har\\s+doim)\\b/iu;
-        const wordCount = value => (value.match(/[\\p{L}\\p{N}]+(?:[’'ʻʼ-][\\p{L}\\p{N}]+)*/gu) || []).length;
+        const forbidden = /\b(?:faqat|faqatgina|yagona|hech\s+qachon|barchasi|har\s+doim)\b/iu;
+        const wordCount = value => (value.match(/[\p{L}\p{N}]+(?:[’'ʻʼ-][\p{L}\p{N}]+)*/gu) || []).length;
         if (mediumOrHard && options.some((option, index) => index !== correctIndex &&
           (forbidden.test(option) || wordCount(option) < wordCount(options[correctIndex])))) return null;
         const correctOption = options[correctIndex];
@@ -225,7 +225,7 @@ MATERIAL OXIRI`;
         return { k: 'text', q, answer, evidence };
       }
       if (typeof item.correct !== 'boolean') return null;
-      if (!item.correct && difficulty !== 'oson' && /\\b(?:faqat|faqatgina|yagona|hech\\s+qachon|barchasi|har\\s+doim)\\b/iu.test(q)) return null;
+      if (!item.correct && difficulty !== 'oson' && /\b(?:faqat|faqatgina|yagona|hech\s+qachon|barchasi|har\s+doim)\b/iu.test(q)) return null;
       accepted.tf += 1;
       return { k: 'tf', q, correct: item.correct, evidence };
     }).filter(Boolean).slice(0, n);
