@@ -82,10 +82,34 @@ h2{font-size:clamp(34px,5.5vw,54px);margin:8px 0 10px}
 .mpn ul{list-style:none;padding:0;display:grid;gap:8px}.mpn li::before{content:"✓";display:inline-grid;place-items:center;width:22px;height:22px;border-radius:8px;background:rgba(255,255,255,.28);margin-right:10px;font-size:13px}
 .mc{display:flex;flex-wrap:wrap;gap:8px;margin:16px 0}.mc span{background:rgba(255,255,255,.22);border-radius:99px;padding:3px 12px;font-size:13px;font-weight:800}
 .mpn .gb{box-shadow:0 5px 0 rgba(0,0,0,.18)}
-.steps{display:grid;gap:16px;margin-top:30px}
-.sp{background:var(--card);border-radius:24px;padding:22px;box-shadow:var(--sh);position:relative}
-.sp .n{position:absolute;top:-12px;right:18px;width:34px;height:34px;border-radius:12px;background:var(--blue);color:#fff;display:grid;place-items:center;font-family:"Baloo 2";font-weight:800;box-shadow:0 3px 0 var(--blue-d)}
-.sp .e{font-size:40px;display:block;margin-bottom:8px}.sp h3{font-size:22px}.sp p{color:var(--muted);font-size:15px;margin-top:4px}
+.steps{display:grid;gap:22px;margin-top:38px}
+.sp{background:var(--card);border:1px solid var(--line);border-radius:22px;box-shadow:var(--sh);position:relative;overflow:hidden;display:flex;flex-direction:column}
+.sp::before{content:"";position:absolute;inset:0 0 auto;height:3px;background:var(--ac)}.sp.s1::before{background:linear-gradient(90deg,#6C8BFF,#A57BFF,#FF8A70)}
+.sp .ui{padding:22px 20px 18px;height:268px;display:flex;flex-direction:column;justify-content:center;gap:10px;background:radial-gradient(120% 90% at 50% 0,color-mix(in srgb,var(--blue) 9%,transparent),transparent 70%);border-bottom:1px solid var(--line)}
+.sp .tx{padding:18px 22px 22px;flex:1;display:flex;flex-direction:column}.sp .hr{display:flex;align-items:center;gap:10px}
+.sp .ib{width:34px;height:34px;border-radius:11px;display:grid;place-items:center;color:var(--ac);background:color-mix(in srgb,var(--ac) 16%,transparent);border:1px solid color-mix(in srgb,var(--ac) 35%,transparent)}
+.sp .no{font:800 13px "Baloo 2";letter-spacing:.14em;color:var(--ac)}.sp h3{font-size:24px;margin-top:12px}.sp p{color:var(--muted);font-size:15px;margin-top:6px;min-height:46px}
+.sp .cp{display:flex;flex-wrap:wrap;gap:6px;margin-top:auto;padding-top:14px}
+.sp .cp span{font-size:12.5px;font-weight:800;padding:4px 11px;border-radius:99px;color:var(--c);background:color-mix(in srgb,var(--c) 14%,transparent);border:1px solid color-mix(in srgb,var(--c) 32%,transparent)}
+.sp .fl,.sp .mr,.sp .idr,.sp .qq{display:flex;align-items:center;gap:10px;background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:10px 12px;font-weight:700;font-size:14px;color:var(--ink)}
+.sp .fl svg{color:var(--muted);flex:none}.sp .fl span{flex:1}.sp em{font-style:normal;display:grid;place-items:center;width:20px;height:20px;border-radius:50%;background:#27C99A;color:#fff;flex:none}
+.sp .scan{display:flex;align-items:center;gap:10px;padding:0 4px}.sp .scan svg{flex:none;animation:spk 2.4s ease-in-out infinite}
+.sp .bar{flex:1;height:4px;border-radius:2px;background:var(--line);overflow:hidden}.sp .bar i{display:block;height:100%;width:40%;border-radius:2px;background:linear-gradient(90deg,#6C8BFF,#A57BFF,#FF8A70);animation:bar 1.8s ease-in-out infinite}
+.sp .qq{padding:8px 12px}.sp .qq b{width:22px;height:22px;border-radius:7px;display:grid;place-items:center;background:var(--card);border:1px solid var(--line);font-size:12px;color:var(--muted);flex:none}
+.sp .qq s{flex:1;display:block;text-decoration:none}.sp .qq s::after{content:"";display:block;height:6px;border-radius:3px;background:var(--line);width:100%}.sp .qq s.w2::after{width:70%}.sp .qq s.w3::after{width:50%}
+.sp .mr svg{flex:none;color:var(--muted)}.sp .mr span{flex:1}.sp .mr.on{border-color:var(--ac);background:color-mix(in srgb,var(--ac) 12%,var(--bg));box-shadow:0 0 0 3px color-mix(in srgb,var(--ac) 18%,transparent)}.sp .mr.on svg{color:var(--ac)}.sp .mr.on em{background:var(--ac)}
+.sp .idr{justify-content:space-between;padding:12px 16px}.sp .idr span{display:grid;line-height:1}.sp .idr small{font-size:11px;letter-spacing:.14em;color:var(--muted);font-weight:800}.sp .idr b{font:800 30px "Baloo 2";letter-spacing:.06em}.sp .idr svg{color:var(--ink)}
+.sp .pl{display:flex;align-items:center;justify-content:space-between;padding:0 4px}
+.sp .avs{display:flex}.sp .avs i{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;font:800 12px Nunito;font-style:normal;color:#fff;border:2px solid var(--card);margin-left:-8px}.sp .avs i:first-child{margin-left:0}.sp .avs i.mo{background:var(--line);color:var(--muted)}
+.sp .lv{display:flex;align-items:center;gap:7px;font-size:13px;font-weight:800;color:var(--muted)}.sp .lv u{width:8px;height:8px;border-radius:50%;background:#27C99A;animation:lvp 1.6s ease-in-out infinite}
+.sp .aig{font-family:"Baloo 2";font-weight:800;font-size:1.1em;background:linear-gradient(90deg,#6C8BFF,#A57BFF,#FF8A70);-webkit-background-clip:text;background-clip:text;color:transparent}
+@keyframes spk{50%{transform:scale(1.2) rotate(14deg)}}
+@keyframes bar{0%{transform:translateX(-100%)}100%{transform:translateX(250%)}}
+@keyframes lvp{50%{opacity:.35}}
+@keyframes spk{50%{transform:scale(1.25) rotate(18deg)}}
+@keyframes okp{50%{transform:scaleX(1.08)}}
+@keyframes sel{0%,22%,100%{transform:none;box-shadow:none}6%,16%{transform:scale(1.14);box-shadow:0 0 0 4px #FFC53D,0 8px 18px rgba(0,0,0,.25)}}
+@keyframes avp{0%,60%,100%{transform:none}30%{transform:translateY(-7px)}}
 .fin{border-radius:36px;padding:52px 24px;text-align:center;color:#fff;background:linear-gradient(140deg,var(--blue),var(--violet) 60%,var(--coral));box-shadow:0 8px 0 var(--blue-d),0 24px 50px rgba(75,107,255,.3)}
 .fin h2{max-width:14ch;margin:0 auto 10px}.fin p{opacity:.95;font-size:18px}.fin .cta{justify-content:center}
 footer{padding:26px 0 40px;color:var(--muted);font-size:14px;text-align:center}
@@ -110,13 +134,23 @@ footer{padding:26px 0 40px;color:var(--muted);font-size:14px;text-align:center}
 @keyframes bob{50%{transform:translateY(-10px)}}
 @keyframes mq{to{transform:translateX(-50%)}}
 @keyframes sp{to{transform:rotate(360deg)}}
-@media(min-width:560px){.mos{grid-template-columns:repeat(3,1fr)}.steps{grid-template-columns:repeat(2,1fr)}}
+@media(min-width:560px){.mos{grid-template-columns:repeat(3,1fr)}}
 @media(min-width:760px){.s{display:none}.l{display:inline}}
-@media(min-width:960px){.lk{display:flex}.hero .w{grid-template-columns:.9fr 1.3fr}.steps{grid-template-columns:repeat(4,1fr)}.mx{grid-template-columns:300px 1fr}.mt{flex-direction:column;overflow:visible}.mb small{display:block}.mb{width:100%}.mpn{padding:40px}.mpn h3{font-size:48px}.mpn .big{font-size:170px}}
+@media(min-width:960px){.lk{display:flex}.hero .w{grid-template-columns:.9fr 1.3fr}.steps{grid-template-columns:repeat(3,1fr);gap:24px}.mx{grid-template-columns:300px 1fr}.mt{flex-direction:column;overflow:visible}.mb small{display:block}.mb{width:100%}.mpn{padding:40px}.mpn h3{font-size:48px}.mpn .big{font-size:170px}}
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.js .rv{opacity:1;transform:none}}
 .mos{grid-auto-flow:dense}
 .c1{--r:-2.5deg;background:linear-gradient(150deg,#4B6BFF,#7C93FF)}
-.c2{--r:2deg;background:linear-gradient(150deg,#1FB98C,#59E0B6)}
+.tp{display:block;font:800 16px/1.1 "Baloo 2";margin:10px 0 12px}
+.tm{display:grid;grid-template-columns:1fr auto 1fr;align-items:end;gap:6px}
+.sd{position:relative;display:grid;justify-items:center;gap:6px;padding:8px 5px;border-radius:14px}
+.sd.a{background:rgba(75,107,255,.6)}.sd.b{background:rgba(255,111,97,.6)}
+.sd u{display:grid;place-items:center;width:100%;min-height:40px;text-align:center;text-decoration:none;background:#fff;color:#1B2150;font:800 11px/1.15 Nunito;padding:4px 6px;border-radius:10px 10px 10px 3px;animation:say 4s ease-in-out infinite}
+.sd.b u{border-radius:10px 10px 3px 10px;animation-delay:-2s}
+.av2{display:flex}.av2 i{width:26px;height:26px;border-radius:50%;background:#fff;display:grid;place-items:center;font-style:normal;font-size:15px;margin-left:-6px}.av2 i:first-child{margin-left:0}
+.sd em{font:800 11px Nunito;font-style:normal;letter-spacing:.06em;text-transform:uppercase}
+.vs2{font:800 14px "Baloo 2";background:#FFC53D;color:#3F2E00;width:30px;height:30px;border-radius:50%;display:grid;place-items:center;align-self:center}
+@keyframes say{0%,5%{opacity:0;transform:scale(.6)}12%,42%{opacity:1;transform:scale(1)}50%,100%{opacity:0;transform:scale(.6)}}
+.c2{--r:2deg;background:linear-gradient(150deg,#27307F,#4B3FB5)}
 .c3{--r:-1.5deg;background:linear-gradient(150deg,#8A63F5,#B093FF)}
 .c4{--r:2.5deg;background:linear-gradient(150deg,#FF6F61,#FFA06B)}
 .c5{--r:-2deg;background:linear-gradient(150deg,#F2A516,#FFCB4A);color:#3F2E00}
@@ -186,7 +220,7 @@ footer{padding:26px 0 40px;color:var(--muted);font-size:14px;text-align:center}
 
 <header><div class="w hd">
   <a class="logo" href="#top">🚀 InterDars</a>
-  <nav class="lk" aria-label="Bo’limlar"><a href="#metodlar">Metodlar</a><a href="#jonli">Jonli viktorina</a><a href="#qanday">Qanday ishlaydi</a></nav>
+  <nav class="lk" aria-label="Bo’limlar"><a href="#qanday">Qanday ishlaydi</a><a href="#metodlar">Metodlar</a><a href="#jonli">Jonli viktorina</a></nav>
   <button class="gb" id="hb" data-open><svg><use href="#g"/></svg><span class="s">Kirish</span><span class="l">Google bilan kirish</span></button>
 </div></header>
 
@@ -199,7 +233,7 @@ footer{padding:26px 0 40px;color:var(--muted);font-size:14px;text-align:center}
     <div>
       <span class="lqeb">🚀 InterDars</span>
       <h1>Interaktiv darslar va <span class="hl">metodlar</span> bazasi</h1>
-      <p class="lead">Tayyor darslar, interaktiv metodlar va jonli viktorina — o’qituvchi uchun hammasi bir joyda.</p>
+      <p class="lead">Darslarni interaktiv metodlar bilan samarali o’tkazing.</p>
       <div class="cta">
         <button class="gb xl" data-open><svg><use href="#g"/></svg>Google bilan davom etish</button>
         <a class="sc" href="#metodlar">Metodlarni ko’rish ↓</a>
@@ -210,7 +244,7 @@ footer{padding:26px 0 40px;color:var(--muted);font-size:14px;text-align:center}
       <span class="stk" style="left:-6px;top:-18px">🎉</span><span class="stk" style="right:-4px;top:-22px;animation-delay:-1.5s">🏆</span><span class="stk" style="right:10px;bottom:-24px;animation-delay:-3s">⭐</span>
       <div class="mos">
         <div class="t c1"><span class="lab">⚡ Viktorina</span><b class="qq">7 × 8 = ?</b><div class="oo"><i>54</i><i class="on">56</i><i>58</i><i>64</i></div></div>
-        <div class="t c2"><span class="lab">🧠 Xotira kartalari</span><div class="mm"><i>🍎</i><i>🐘</i><i>🍎</i><i>🐘</i></div></div>
+        <div class="t c2"><span class="lab">🎙️ Munozara</span><b class="tp">Atom energiyasi insoniyatga foydalimi?</b><div class="tm"><div class="sd a"><u>Toza energiya</u><span class="av2"><i>🦊</i><i>🐼</i></span><em>Tasdiq</em></div><span class="vs2">VS</span><div class="sd b"><u>Xavfli chiqindi</u><span class="av2"><i>🦁</i><i>🐯</i></span><em>Inkor</em></div></div></div>
         <div class="t c3"><span class="lab">🧩 Krossvord</span><div class="cw"><i style="--d:0">K</i><i style="--d:1">A</i><i style="--d:2">S</i><i style="--d:3">R</i><i class="e"></i><i class="e"></i><i style="--d:4">O</i><i class="e"></i><i class="e"></i><i class="e"></i><i style="--d:5">N</i><i class="e"></i></div></div>
         <div class="t lqt"><div class="lq-h"><span class="lq-live"><i></i>JONLI</span><span class="lq-pin">Viktorina</span><span class="lq-pl">👥 <b class="cnt">128</b></span></div><b class="qq" style="font-size:20px;margin:8px 0 8px">Eng katta sayyora qaysi?</b><div class="lq-o" style="margin-top:0"><i class="a"><u>▲</u>Mars</i><i class="b"><u>◆</u>Yupiter</i><i class="c"><u>●</u>Venera</i><i class="d"><u>■</u>Yer</i></div><div class="lq-tm"><i></i></div></div>
         <div class="t c4"><span class="lab">🛡️ Jamoaviy jang</span><div class="vs"><span>🦊<b>12</b></span><span>🐼<b>9</b></span></div><div class="tug"><i></i></div></div>
@@ -223,6 +257,29 @@ footer{padding:26px 0 40px;color:var(--muted);font-size:14px;text-align:center}
 </div>
 
 <div class="mq" aria-hidden="true"><div id="mq"><span>🔴 Jonli viktorina</span><span>⚡ Viktorina</span><span>🛡️ Jamoaviy jang</span><span>🧠 Xotira kartalari</span><span>🃏 Sirli kartalar</span><span>🧩 Krossvord</span><span>💰 Kim millioner</span><span>🗺️ Sarguzasht xaritasi</span><span>🎯 Tezkor savol</span><span>🏆 Haftalik turnir</span></div></div>
+
+<section id="qanday"><div class="w">
+  <div class="eyebrow">Qanday ishlaydi</div><h2>Uch qadam — dars tayyor</h2>
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><linearGradient id="aig" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#6C8BFF"/><stop offset=".55" stop-color="#A57BFF"/><stop offset="1" stop-color="#FF8A70"/></linearGradient></defs></svg><div class="steps">
+    <div class="sp s1 rv" style="--ac:#8A63F5"><div class="ui" aria-hidden="true">
+        <div class="fl"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 00-2 2v14a2 2 0 002 2h10a2 2 0 002-2V8zM14 3v5h5M9 13h6M9 17h6"/></svg><span>darslik.pdf</span><em><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></em></div>
+        <div class="scan"><svg viewBox="0 0 24 24" width="20" height="20"><path fill="url(#aig)" d="M12 2l1.9 5.6L19.5 9.5l-5.6 1.9L12 17l-1.9-5.6L4.5 9.5l5.6-1.9zM19 15l.9 2.1L22 18l-2.1.9L19 21l-.9-2.1L16 18l2.1-.9z"/></svg><div class="bar"><i></i></div></div>
+        <div class="qq"><b>1</b><s></s><em><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></em></div><div class="qq"><b>2</b><s class="w2"></s><em><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></em></div><div class="qq"><b>3</b><s class="w3"></s><em><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></em></div>
+      </div>
+      <div class="tx"><div class="hr"><span class="ib"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4M7 9l5-5 5 5M5 20h14"/></svg></span><span class="no">01</span></div><h3>Test tayyorlang</h3><p>Fayl yuklang — savollarni <b class="aig">AI</b> o’zi tuzadi.</p><div class="cp"><span style="--c:#FF6F61">PDF</span><span style="--c:#4B6BFF">Word</span><span style="--c:#F59E0B">PPT</span></div></div></div>
+    <div class="sp s2 rv" style="--ac:#FF6F61"><div class="ui" aria-hidden="true">
+        <div class="mr"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L4 14h7l-1 8 9-12h-7z"/></svg><span>Viktorina</span></div>
+        <div class="mr on"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/></svg><span>Jamoaviy jang</span><em><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></em></div>
+        <div class="mr"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a10 10 0 100 20 10 10 0 000-20zM12 7v10M9 10h4.5a1.5 1.5 0 010 3h-3a1.5 1.5 0 000 3H15"/></svg><span>Kim millioner</span></div>
+      </div>
+      <div class="tx"><div class="hr"><span class="ib"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 13h7v7h-7z"/></svg></span><span class="no">02</span></div><h3>Metodni tanlang</h3><p>Tayyor metodlardan birini bosing — test o’yinga aylanadi.</p><div class="cp"><span style="--c:#FF6F61">Jonli</span><span style="--c:#8A63F5">Jamoaviy</span><span style="--c:#27C99A">Xotira</span></div></div></div>
+    <div class="sp s3 rv" style="--ac:#27C99A"><div class="ui" aria-hidden="true">
+        <div class="idr"><span><small>ID</small><b>482 193</b></span><svg viewBox="0 0 11 11" width="54" height="54" fill="currentColor"><path fill-rule="evenodd" d="M0 0h4v4H0zM1 1v2h2V1zM7 0h4v4H7zM8 1v2h2V1zM0 7h4v4H0zM1 8v2h2V8z"/><path d="M5 0h1v2H5zM5 3h2v1H5zM0 5h2v1H0zM3 5h1v2H3zM5 5h2v2H5zM8 5h1v1H8zM10 5h1v2h-1zM7 7h1v2H7zM9 8h2v1H9zM5 8h1v3H5zM7 10h2v1H7z"/></svg></div>
+        <div class="pl"><div class="avs"><i style="background:#4B6BFF">A</i><i style="background:#8A63F5">D</i><i style="background:#27C99A">M</i><i class="mo">+21</i></div><span class="lv"><u></u>24 qatnashuvchi</span></div>
+      </div>
+      <div class="tx"><div class="hr"><span class="ib"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 4l13 8-13 8z"/></svg></span><span class="no">03</span></div><h3>Boshlang</h3><p>ID yoki QR ulashing — hamma telefondan qo’shiladi.</p><div class="cp"><span style="--c:#4B6BFF">6 xonali ID</span><span style="--c:#27C99A">QR-kod</span></div></div></div>
+  </div>
+</div></section>
 
 <section id="metodlar"><div class="w">
   <div class="eyebrow">Metodlar</div><h2>Har dars uchun o’z metodi</h2><p class="sub">Yangi mavzu, takrorlash yoki yodlash — mosini tanlang.</p>
@@ -248,15 +305,6 @@ footer{padding:26px 0 40px;color:var(--muted);font-size:14px;text-align:center}
   </div>
 </div></div></section>
 
-<section id="qanday" style="padding-top:0"><div class="w">
-  <div class="eyebrow">Qanday ishlaydi</div><h2>To’rt qadam — dars tayyor</h2>
-  <div class="steps">
-    <div class="sp rv"><span class="n">1</span><span class="e">📄</span><h3>Yuklang</h3><p>PDF yoki Word darslik.</p></div>
-    <div class="sp rv"><span class="n">2</span><span class="e">🎯</span><h3>Mavzu</h3><p>Mavzu va sinfni tanlang.</p></div>
-    <div class="sp rv"><span class="n">3</span><span class="e">🎮</span><h3>Metod</h3><p>Viktorinadan krossvordgacha.</p></div>
-    <div class="sp rv"><span class="n">4</span><span class="e">🚀</span><h3>Boshlang</h3><p>Kodni ulashing — sinf qo’shiladi.</p></div>
-  </div>
-</div></section>
 
 <section style="padding-top:0"><div class="w"><div class="fin rv">
   <h2>Keyingi dars — interaktiv bo’lsin</h2><p>Akkauntni tanlang va boshlang.</p>
