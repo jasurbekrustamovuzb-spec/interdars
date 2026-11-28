@@ -206,6 +206,7 @@ MATERIAL OXIRI`;
     const result = JSON.parse(raw.replace(/^```(?:json)?\s*|\s*```$/g, ''));
     const source = text;
     const accepted = { mcq: 0, text: 0, tf: 0 };
+    let qualityNeedsReview = false;
     const questions = (result.questions || []).map(item => {
       const type = ['text', 'tf'].includes(item.type || item.k) ? (item.type || item.k) : 'mcq';
       if (accepted[type] >= counts[type]) return null;
@@ -219,7 +220,7 @@ MATERIAL OXIRI`;
         const forbidden = /\b(?:faqat|faqatgina|yagona|hech\s+qachon|barchasi|har\s+doim)\b/iu;
         const wordCount = value => (value.match(/[\p{L}\p{N}]+(?:[’'ʻʼ-][\p{L}\p{N}]+)*/gu) || []).length;
         if (mediumOrHard && options.some((option, index) => index !== correctIndex &&
-          (forbidden.test(option) || wordCount(option) < wordCount(options[correctIndex])))) return null;
+          (forbidden.test(option) || wordCount(option) < wordCount(options[correctIndex])))) qualityNeedsReview = true;
         const correctOption = options[correctIndex];
         for (let i = options.length - 1; i > 0; i -= 1) {
           const j = Math.floor(Math.random() * (i + 1));
@@ -236,7 +237,7 @@ MATERIAL OXIRI`;
         return { k: 'text', q, answer, evidence };
       }
       if (typeof item.correct !== 'boolean') return null;
-      if (!item.correct && difficulty !== 'oson' && /\b(?:faqat|faqatgina|yagona|hech\s+qachon|barchasi|har\s+doim)\b/iu.test(q)) return null;
+      if (!item.correct && difficulty !== 'oson' && /\b(?:faqat|faqatgina|yagona|hech\s+qachon|barchasi|har\s+doim)\b/iu.test(q)) qualityNeedsReview = true;
       accepted.tf += 1;
       return { k: 'tf', q, correct: item.correct, evidence };
     }).filter(Boolean).slice(0, n);
@@ -245,7 +246,7 @@ MATERIAL OXIRI`;
     if (!questions.length) {
       await refundFailedGeneration();
       logEvent('ai_test_generation_empty', { durationMs: Date.now() - startedAt, inputTokens: payload.usageMetadata?.promptTokenCount || 0 });
-      return res.status(422).json({ error: questions.length ? 'AI so’ralgan tur va miqdordagi barcha talabga mos savollarni tuza olmadi. Mavzu yoki savollar sonini o’zgartirib qayta urinib ko’ring.' : 'Bu mavzu bo’yicha darslikdan dalilli savol topilmadi.' });
+      return res.status(422).json({ error: 'Materialdan manbaga tayanadigan savollar ajratib bo’lmadi. Fayl matnini tekshiring yoki mavzuni toraytiring.' });
     }
 
     logEvent('ai_test_generation_success', {
@@ -256,7 +257,7 @@ MATERIAL OXIRI`;
       outputTokens: payload.usageMetadata?.candidatesTokenCount || 0,
       remainingToday: Number(quota.remaining) || 0
     });
-    return res.status(200).json({ topic: clean(result.topic, 180) || topicText, questions, partial: questions.length < n, balanceNeedsReview: !tfBalanced, requestedCount: n, remainingToday: Number(quota.remaining) || 0 });
+    return res.status(200).json({ topic: clean(result.topic, 180) || topicText, questions, partial: questions.length < n, balanceNeedsReview: !tfBalanced, qualityNeedsReview, requestedCount: n, remainingToday: Number(quota.remaining) || 0 });
   } catch (_) {
     await refundFailedGeneration();
     logEvent('ai_test_generation_parse_or_network_error', { durationMs: Date.now() - startedAt });
