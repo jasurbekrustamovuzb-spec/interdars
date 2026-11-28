@@ -1,10 +1,11 @@
 {
   "rewrites": [
-    { "source": "/home", "destination": "/app.html" },
-    { "source": "/kola", "destination": "/kola-test.html" }
+    { "source": "/home", "destination": "/app.html" }
   ],
   "redirects": [
-    { "source": "/app.html", "destination": "/home", "permanent": false }
+    { "source": "/app.html", "destination": "/home", "permanent": false },
+    { "source": "/kola", "destination": "/home", "permanent": false },
+    { "source": "/kola-test.html", "destination": "/home", "permanent": false }
   ],
   "functions": {
     "api/generate-debate.js": { "maxDuration": 30 }
