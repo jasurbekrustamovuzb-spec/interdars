@@ -242,7 +242,7 @@ MATERIAL OXIRI`;
     }).filter(Boolean).slice(0, n);
 
     const tfBalanced = questions.length < n || !counts.tf || Math.abs(questions.filter(item => item.k === 'tf' && item.correct).length - questions.filter(item => item.k === 'tf' && !item.correct).length) <= 1;
-    if (!questions.length || !tfBalanced) {
+    if (!questions.length) {
       await refundFailedGeneration();
       logEvent('ai_test_generation_empty', { durationMs: Date.now() - startedAt, inputTokens: payload.usageMetadata?.promptTokenCount || 0 });
       return res.status(422).json({ error: questions.length ? 'AI so’ralgan tur va miqdordagi barcha talabga mos savollarni tuza olmadi. Mavzu yoki savollar sonini o’zgartirib qayta urinib ko’ring.' : 'Bu mavzu bo’yicha darslikdan dalilli savol topilmadi.' });
@@ -256,7 +256,7 @@ MATERIAL OXIRI`;
       outputTokens: payload.usageMetadata?.candidatesTokenCount || 0,
       remainingToday: Number(quota.remaining) || 0
     });
-    return res.status(200).json({ topic: clean(result.topic, 180) || topicText, questions, partial: questions.length < n, requestedCount: n, remainingToday: Number(quota.remaining) || 0 });
+    return res.status(200).json({ topic: clean(result.topic, 180) || topicText, questions, partial: questions.length < n, balanceNeedsReview: !tfBalanced, requestedCount: n, remainingToday: Number(quota.remaining) || 0 });
   } catch (_) {
     await refundFailedGeneration();
     logEvent('ai_test_generation_parse_or_network_error', { durationMs: Date.now() - startedAt });
