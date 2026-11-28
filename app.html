@@ -1,6 +1,6 @@
 <!DOCTYPE html>
-<html lang="uz" data-role="general"><script>try{var _u=JSON.parse(localStorage.getItem("idUser")||"null");var _m=location.hash.match(/^#([tj])=(\d{6})$/);if(_m){localStorage.setItem(_m[1]==="j"?"idPendingLive":"idPending",_m[2]);if(_m[1]==="j"){document.documentElement.dataset.liveJoinPending="1";setTimeout(function(){if(document.documentElement.dataset.liveJoinPending==="1"&&window.showLiveJoinFailure)window.showLiveJoinFailure("Kirish yoki sahifa yuklanishi cho‘zildi. Internetni tekshirib, qayta urinib ko‘ring.")},10000)}}var _s=Object.keys(localStorage).some(function(k){return /^sb-.*-auth-token$/.test(k)})||/[?&]code=|access_token=/.test(location.search+location.hash);if(!(_u&&_u.name)&&!_s&&!(_m&&_m[1]==="j"))location.replace("/")}catch(e){location.replace("/")}</script>
-<script>try{var r=localStorage.getItem("idRole");if(r)document.documentElement.setAttribute("data-role",r)}catch(e){}</script>
+<html lang="uz"><script>try{var _u=JSON.parse(localStorage.getItem("idUser")||"null");var _m=location.hash.match(/^#([tj])=(\d{6})$/);if(_m){localStorage.setItem(_m[1]==="j"?"idPendingLive":"idPending",_m[2]);if(_m[1]==="j"){document.documentElement.dataset.liveJoinPending="1";setTimeout(function(){if(document.documentElement.dataset.liveJoinPending==="1"&&window.showLiveJoinFailure)window.showLiveJoinFailure("Kirish yoki sahifa yuklanishi cho‘zildi. Internetni tekshirib, qayta urinib ko‘ring.")},10000)}}var _s=Object.keys(localStorage).some(function(k){return /^sb-.*-auth-token$/.test(k)})||/[?&]code=|access_token=/.test(location.search+location.hash);if(!(_u&&_u.name)&&!_s&&!(_m&&_m[1]==="j"))location.replace("/")}catch(e){location.replace("/")}</script>
+
 <head>
 <script>try{var th=localStorage.getItem("idTheme");if(th==="dark"||th==="light")document.documentElement.setAttribute("data-theme",th)}catch(e){}</script>
 <meta charset="utf-8">
@@ -176,8 +176,6 @@ nav{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(12px + env(sa
 .set{background:var(--card);border-radius:20px;box-shadow:var(--shadow);overflow:hidden}
 .sr{display:flex;align-items:center;gap:12px;width:100%;padding:15px 16px;text-align:left;border-bottom:2px solid var(--line);font-weight:700}
 .sr:last-child{border:0}.sr span{flex:1}.sr em{font-style:normal;color:var(--blue);font-weight:800}.sr.out{color:var(--coral)}
-html:not([data-role=teacher]) [data-v=t]{display:none}html[data-role=teacher] [data-v=g]{display:none}
-[data-r]{display:none}html[data-role=general] [data-r=general],html[data-role=teacher] [data-r=teacher],html[data-role=student] [data-r=student]{display:block}
 .sr.rl{display:block}.sr.rl>span{display:block;margin-bottom:10px}.sr.rl small{display:block;color:var(--muted);font-size:13px;margin-top:10px;font-weight:600}
 .join{margin-top:14px;background:var(--card);border-radius:22px;padding:10px 12px;box-shadow:var(--shadow);display:flex;align-items:center;gap:10px;flex-wrap:wrap}
 .join .key{font-size:24px;flex:none}.code{flex:1;min-width:0;text-align:center;font-family:"Baloo 2";font-size:22px;letter-spacing:.3em;padding:4px 10px 4px calc(10px + .3em)}
@@ -1064,13 +1062,12 @@ html[data-live-join-pending="timeout"] #liveJoinBoot .ljb-actions{display:flex}
 </section>
 
 <section class="page" id="p-profil">
-  <div class="pc"><div class="ava" aria-hidden="true"></div><div><b class="unf"></b><small class="ue"></small><small data-r="general">Dars yaratuvchi</small><small data-r="teacher">O’qituvchi</small><small data-r="student">Talaba</small></div><button class="pe" id="pe" aria-label="Profilni tahrirlash" title="Profilni tahrirlash">✏️</button></div>
+  <div class="pc"><div class="ava" aria-hidden="true"></div><div><b class="unf"></b><small class="ue"></small></div><button class="pe" id="pe" aria-label="Profilni tahrirlash" title="Profilni tahrirlash">✏️</button></div>
   <section class="level" id="lv2" aria-label="Daraja"></section>
   <section class="sec"><div class="sh"><h2>Natijalarim</h2></div><div class="stats" id="ps"></div></section>
   <section class="sec"><div class="sh"><h2>Nishonlar</h2></div><div class="badges" id="pb"></div></section>
   <section class="sec"><div class="sh"><h2>Sozlamalar</h2></div><div class="set">
     <button class="sr" id="sedit"><i class="si">✏️</i><span>Profilni tahrirlash</span><em>›</em></button>
-    <div class="sr rl"><span>Foydalanish turi</span><div class="pills" id="role"><button class="pill" aria-pressed="true" data-role="general">Umumiy</button><button class="pill" aria-pressed="false" data-role="teacher">O’qituvchi</button><button class="pill" aria-pressed="false" data-role="student">Talaba</button></div><small>Profilingizda ko’rinadi.</small></div>
     <div class="sr rl"><span>Til</span><div class="pills" id="lg"><button class="pill" aria-pressed="true" data-l="uz">O’zbekcha</button><button class="pill" aria-pressed="false" data-l="ru">Русский</button><button class="pill" aria-pressed="false" data-l="en">English</button></div></div>
     <button class="sr" id="rt" role="switch" aria-checked="false"><i class="si" id="rti">🌙</i><span>Qorong’i rejim</span><b class="sw"><i></i></b></button>
     <button class="sr" id="nrow"><i class="si">🔔</i><span>Bildirishnomalar</span><em>›</em></button>
@@ -1215,7 +1212,7 @@ var MOON='<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#8
 function eff(){return root.getAttribute('data-theme')||(mq.matches?'dark':'light')}
 function setTheme(t,s){root.setAttribute('data-theme',t);tb.innerHTML=t==='dark'?SUN:MOON;if(s)save('idTheme',t)}
 window.setLang=setLang;lb.addEventListener('click',function(){var o=['uz','ru','en'];setLang(o[(o.indexOf(lang)+1)%3],true)});
-tb.addEventListener('click',function(){setTheme(eff()==='dark'?'light':'dark',true)});
+function toggleTheme(){setTheme(eff()==='dark'?'light':'dark',true)}window.toggleTheme=toggleTheme;tb.addEventListener('click',toggleTheme);
 var st=load('idTheme');setTheme(st==='dark'||st==='light'?st:eff(),false);
 var sl=load('idLang');if(sl==='ru'||sl==='en')setLang(sl,false);
 })();
@@ -1944,12 +1941,9 @@ document.addEventListener('langchange',renderAll);
 var root=document.documentElement;
 function syncL(){var l=root.lang==='ru'||root.lang==='en'?root.lang:'uz';$$('#lg .pill').forEach(function(b){b.setAttribute('aria-pressed',b.dataset.l===l)})}
 $$('#lg .pill').forEach(function(b){b.addEventListener('click',function(){window.setLang(b.dataset.l,true);syncL()})});syncL();document.addEventListener('langchange',syncL);
-$('#rt').addEventListener('click',function(){$('#theme').click()});
+$('#rt').addEventListener('click',function(){if(window.toggleTheme)window.toggleTheme()});
 function syncTh(){var d=root.getAttribute('data-theme')==='dark';$('#rt').setAttribute('aria-checked',d);$('#rti').textContent=d?'🌙':'☀️'}
 new MutationObserver(syncTh).observe(root,{attributes:true,attributeFilter:['data-theme']});syncTh();
-function setRole(r,sv){root.setAttribute('data-role',r);$$('#role .pill').forEach(function(b){b.setAttribute('aria-pressed',b.dataset.role===r)});if(sv){try{localStorage.setItem('idRole',r)}catch(e){}}}
-$$('#role .pill').forEach(function(b){b.addEventListener('click',function(){setRole(b.dataset.role,true)})});
-setRole(root.getAttribute('data-role')||'general',false);
 /* klaviatura ochilganda pastki menyuni yashirish */
 var vv=window.visualViewport,base=0;
 function vh(){return vv?vv.height:window.innerHeight}
