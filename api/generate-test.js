@@ -146,7 +146,7 @@ SAVOL TURLARI
 - TO'G'RI / NOTO'G'RI (tf): q maydoni so'roq emas, manbaga tayangan aniq darak bayonoti bo'lsin. correct boolean ishlating. True va False javoblari sonini muvozanatlang, farqi bittadan oshmasin. Toq sonda imkon qadar teng taqsimlang. O'rtacha va murakkab darajadagi False bayonotlar oddiy inkor shaklida bo'lmasin; manbadagi boshqa hodisa xususiyatini noo'rin bog'lash, jarayon sharti yoki sabab-oqibatni o'zgartirish kabi ishonarli usuldan foydalaning. O'zgartirishlar manbadagi faktlarga tayansin.
 
 NATIJA
-Faqат JSON qaytaring, markdown yoki izohsiz:
+Faqat JSON qaytaring, markdown yoki izohsiz:
 {"topic":"...","questions":[{"type":"mcq","q":"...","options":["...","...","...","..."],"correctIndex":0,"evidence":"manbadan aynan olingan parcha"},{"type":"text","q":"...","answer":"...","evidence":"manbadan aynan olingan parcha"},{"type":"tf","q":"Darak bayonoti.","correct":true,"evidence":"manbadan aynan olingan parcha"}]}
 Aynan ${counts.mcq} ta mcq, ${counts.text} ta text va ${counts.tf} ta tf chiqaring. Manbada yetarli dalil bo'lmasa savol to'qimang.
 
