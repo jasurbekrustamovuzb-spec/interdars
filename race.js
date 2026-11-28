@@ -11,9 +11,10 @@ var TMS=[{e:'🦊',n:'Qizil jamoa',c:'#FF3B5C'},{e:'🐬',n:'Ko‘k jamoa',c:'#2
 /* ===== yordamchilar ===== */
 function $(s,r){return (r||document).querySelector(s)}
 function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
-function ls(k){try{return JSON.parse(localStorage.getItem(k)||'null')}catch(e){return null}}
-function lsSet(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
-function lsDel(k){try{localStorage.removeItem(k)}catch(e){}}
+/* sessionStorage: har bir oyna/tab o‘z o‘yinini eslab qoladi (bir brauzerda bir nechta oynadan sinaganda ular aralashib ketmasin) */
+function ls(k){try{return JSON.parse(sessionStorage.getItem(k)||'null')}catch(e){return null}}
+function lsSet(k,v){try{sessionStorage.setItem(k,JSON.stringify(v))}catch(e){}}
+function lsDel(k){try{sessionStorage.removeItem(k)}catch(e){}}
 function shuffle(a){for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1)),t=a[i];a[i]=a[j];a[j]=t}return a}
 function cleanName(s){s=String(s||'').replace(/[<>]/g,'').replace(/\s+/g,' ').trim().slice(0,20);return s||'Ishtirokchi'}
 function LQ(){return window.LiveQuiz||{}}
@@ -200,10 +201,9 @@ function pStrip(){var s=$('#trstrip');if(!s||!P.S)return;var S=P.S,my=myTeam();
   s.innerHTML=S.T.map(function(t){var T=tm(t[0]),p=Math.min(100,Math.round(t[1]/S.goal*100));return '<div class="trst'+(t[0]===my?' me':'')+'" style="--c:'+T.c+'"><span>'+T.e+'</span><i><u style="width:'+p+'%"></u></i><b>'+t[1]+'</b></div>'}).join('')}
 function pBody(){var b=$('#trbody');if(!b||!P.S||P.S.ph!=='play')return;var my=myTeam(),T=tm(my<0?0:my),S=P.S,st=my>=0&&S.T[my]?S.T[my][1]:0;
   if(!P.q){b.innerHTML='<div class="trcd"><div class="trspin"></div><p>Savol yuklanmoqda…</p></div>';return}
-  b.innerHTML='<div class="trteam" style="--c:'+T.c+'">'+T.e+' '+T.n+' · <b>'+st+'/'+S.goal+'</b></div><div class="trq">'+esc(P.q.q)+'</div><div class="trog">'+P.q.o.map(function(t,j){return '<button class="trop '+CL[j%4]+(P.sel===j?' sel':'')+'" data-act="opt" data-v="'+j+'"><u>'+SHP[j%4]+'</u><span>'+esc(t)+'</span></button>'}).join('')+'</div><p class="trhint" id="trhint">'+(P.sent?'Tekshirilmoqda…':P.sel>=0?'Tasdiqlash uchun yana bir marta bosing':'To‘g‘ri javob sizda bo‘lmasligi mumkin — jamoadoshlar bilan maslahatlashing. Xato bossangiz jamoa 0 ga tushadi!')+'</p>';obs(b)}
+  b.innerHTML='<div class="trteam" style="--c:'+T.c+'">'+T.e+' '+T.n+' · <b>'+st+'/'+S.goal+'</b></div><div class="trq">'+esc(P.q.q)+'</div><div class="trog">'+P.q.o.map(function(t,j){return '<button class="trop '+CL[j%4]+(P.sel===j?' sel':'')+'" data-act="opt" data-v="'+j+'"><u>'+SHP[j%4]+'</u><span>'+esc(t)+'</span></button>'}).join('')+'</div><p class="trhint" id="trhint">'+(P.sent?'Tekshirilmoqda…':'To‘g‘ri javob sizda bo‘lmasligi mumkin — jamoadoshlar bilan maslahatlashing. Xato bossangiz jamoa 0 ga tushadi!')+'</p>';obs(b)}
 function pOpt(j){if(!P||!P.q||P.sent||!P.S||P.S.ph!=='play')return;
-  if(P.sel===j){P.sent=1;var k=P.q.k;send({t:'ans',p:P.pid,k:k,o:j});pBody();setTimeout(function(){if(P&&P.q&&P.q.k===k&&P.sent)pHello()},4000)}
-  else{P.sel=j;pBody()}}
+  P.sel=j;P.sent=1;var k=P.q.k;send({t:'ans',p:P.pid,k:k,o:j});pBody();setTimeout(function(){if(P&&P.q&&P.q.k===k&&P.sent)pHello()},4000)}
 function pFin(){var S=P.S,rk=rank(S),my=myTeam(),won=S.win===my;
   view(topbar('<b class="trchip">Yakun</b>')+'<div class="trc fin"><div class="trcd"><div class="em big">'+(won?'🏆':'🏁')+'</div><h2>'+(won?'Jamoangiz g‘olib!':tm(S.win).n+' g‘olib bo‘ldi')+'</h2></div><div class="trrank">'+rk.map(function(t,k){var T=tm(t[0]);return '<div class="trrk'+(t[0]===my?' me':'')+'" style="--c:'+T.c+'"><span class="n">'+(k+1)+'</span><span class="e">'+T.e+'</span><b>'+T.n+'</b><em>'+t[1]+'/'+S.goal+'</em></div>'}).join('')+'</div><div class="trfoot"><button class="trb go" data-act="exitok">Yopish</button></div></div>','pl')}
 
