@@ -5,6 +5,17 @@ const GLOBAL_PER_MINUTE_LIMIT = 10;
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
 
 const clean = (value, length) => typeof value === 'string' ? value.trim().slice(0, length) : '';
+const evidenceText = value => String(value || '').normalize('NFKC').toLocaleLowerCase()
+  .replace(/[’‘ʻʼ´]/g, "'").replace(/[^\p{L}\p{N}]+/gu, ' ').trim();
+function evidenceMatches(evidence, source) {
+  const quote = evidenceText(evidence), material = evidenceText(source);
+  if (!quote) return false;
+  if (material.includes(quote)) return true;
+  const words = quote.split(' ').filter(Boolean), sourceWords = new Set(material.split(' '));
+  if (!words.length) return false;
+  const matched = words.filter(word => sourceWords.has(word)).length;
+  return matched / words.length >= (words.length < 4 ? 1 : 0.75);
+}
 
 function logEvent(event, details = {}) {
   // Never include document text, API keys, access tokens, or user identifiers in logs.
@@ -193,13 +204,13 @@ MATERIAL OXIRI`;
 
     const raw = payload.candidates?.[0]?.content?.parts?.map(part => part.text || '').join('') || '';
     const result = JSON.parse(raw.replace(/^```(?:json)?\s*|\s*```$/g, ''));
-    const source = text.replace(/\s+/g, ' ').trim().toLocaleLowerCase();
+    const source = text;
     const accepted = { mcq: 0, text: 0, tf: 0 };
     const questions = (result.questions || []).map(item => {
       const type = ['text', 'tf'].includes(item.type || item.k) ? (item.type || item.k) : 'mcq';
       if (accepted[type] >= counts[type]) return null;
       const q = clean(item.q, 500), evidence = clean(item.evidence, 700);
-      if (!q || !evidence || !source.includes(evidence.replace(/\s+/g, ' ').trim().toLocaleLowerCase())) return null;
+      if (!q || !evidence || !evidenceMatches(evidence, source)) return null;
       if (type === 'mcq') {
         const options = Array.isArray(item.options) ? item.options.slice(0, 4).map(option => clean(option, 300)) : [];
         const correctIndex = Number(item.correctIndex);
@@ -230,9 +241,8 @@ MATERIAL OXIRI`;
       return { k: 'tf', q, correct: item.correct, evidence };
     }).filter(Boolean).slice(0, n);
 
-    const typeCountsMatch = Object.keys(counts).every(type => accepted[type] === counts[type]);
     const tfBalanced = !counts.tf || Math.abs(questions.filter(item => item.k === 'tf' && item.correct).length - questions.filter(item => item.k === 'tf' && !item.correct).length) <= 1;
-    if (questions.length !== n || !typeCountsMatch || !tfBalanced) {
+    if (!questions.length || !tfBalanced) {
       await refundFailedGeneration();
       logEvent('ai_test_generation_empty', { durationMs: Date.now() - startedAt, inputTokens: payload.usageMetadata?.promptTokenCount || 0 });
       return res.status(422).json({ error: questions.length ? 'AI so’ralgan tur va miqdordagi barcha talabga mos savollarni tuza olmadi. Mavzu yoki savollar sonini o’zgartirib qayta urinib ko’ring.' : 'Bu mavzu bo’yicha darslikdan dalilli savol topilmadi.' });
@@ -246,7 +256,7 @@ MATERIAL OXIRI`;
       outputTokens: payload.usageMetadata?.candidatesTokenCount || 0,
       remainingToday: Number(quota.remaining) || 0
     });
-    return res.status(200).json({ topic: clean(result.topic, 180) || topicText, questions, remainingToday: Number(quota.remaining) || 0 });
+    return res.status(200).json({ topic: clean(result.topic, 180) || topicText, questions, partial: questions.length < n, requestedCount: n, remainingToday: Number(quota.remaining) || 0 });
   } catch (_) {
     await refundFailedGeneration();
     logEvent('ai_test_generation_parse_or_network_error', { durationMs: Date.now() - startedAt });
