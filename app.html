@@ -1337,7 +1337,7 @@ function renderAll(){
 /* ===== navigatsiya ===== */
 var P=['bosh','metodlar','yaratish','ai-test','kutubxona','profil'],tabs=$$('.nv');
 var wizNext=false,navPage='bosh',navReady=false,navStack=[],navIndex=0;
-function navState(p,s,anchor){return{__interdars:true,page:p,step:s||0,homeAnchor:!!anchor,navIndex:navIndex}}
+function navState(p,s,anchor,stepEntry){return{__interdars:true,page:p,step:s||0,homeAnchor:!!anchor,stepEntry:!!stepEntry,navIndex:navIndex}}
 function initNav(p){if(navReady)return;navReady=true;navStack=[];navIndex=0;try{var st=navState(p,W.s,p==='bosh'),url=location.href;history.replaceState(st,'',url);if(p==='bosh')history.pushState(navState(p,W.s,true),'',url)}catch(e){}}
 function openWiz(){wizNext=true;go('yaratish')}
 function show(p){if(typeof p!=='string')p=location.hash.slice(1);if(P.indexOf(p)<0)p='bosh';navPage=p;if(!navReady)initNav(p);if(p!=='yaratish'&&W.edit)resetW();
@@ -1432,7 +1432,7 @@ var W={s:0,edit:null,xc:null,topic:'',cls:'Sinf',m:'quiz',qs:[bq(),bq(),bq()],pa
 var panes=$$('.pane'),bars=$$('.stp i');
 var GD=[['idle','Avval mavzuni yozing — qisqa va aniq bo’lsin.'],['idle','Dars qaysi shaklda bo’lishini tanlang.'],['think','Savollarni yozing va to’g’ri javobni belgilang.'],['cheer','Hammasi tayyor! Darsni yarating.']];
 function guide(){var g=GD[W.s]||GD[0];$('#gm').innerHTML=MS(g[0]);$('#gt').textContent=T(g[1])}
-function step(n,fromPop){if(n<0)n=0;if(n>3)n=3;if(!fromPop&&n>W.s&&navPage==='yaratish'){try{if(history.state&&history.state.__interdars&&history.state.page==='yaratish'){navIndex++;history.pushState(navState('yaratish',n,false),'',location.href)}}catch(e){}}W.s=n;guide();panes.forEach(function(p,i){p.classList.toggle('on',i===n)});bars.forEach(function(b,i){b.classList.toggle('on',i<=n)});
+function step(n,fromPop){if(n<0)n=0;if(n>3)n=3;if(!fromPop&&n<W.s&&navPage==='yaratish'&&history.state&&history.state.__interdars&&history.state.page==='yaratish'){if(history.state.stepEntry&&history.state.step===W.s){history.back();return}else{try{history.replaceState(navState('yaratish',n,false,false),'',location.href)}catch(e){}}}if(!fromPop&&n>W.s&&navPage==='yaratish'){try{if(history.state&&history.state.__interdars&&history.state.page==='yaratish'){navIndex++;history.pushState(navState('yaratish',n,false,true),'',location.href)}}catch(e){}}W.s=n;guide();panes.forEach(function(p,i){p.classList.toggle('on',i===n)});bars.forEach(function(b,i){b.classList.toggle('on',i<=n)});
   if(n===2)renderEditor();if(n===3)renderSummary();window.scrollTo(0,0)}
 function setM(k){if(MT[k]&&!MT[k].soon&&!(W.qs.some(function(x){return x.k==='text'})&&!MT[k].txt)){W.m=k;renderOpts();if(W.s===2)renderEditor()}}
 function validQs_old(){var out=[];W.qs.forEach(function(x){var q=x.q.trim();if(!q)return;var o=[],ci=-1;x.o.forEach(function(t,i){t=t.trim();if(!t)return;if(i===x.c)ci=o.length;o.push(t)});if(o.length>=2&&ci>-1)out.push({q:q,a:o,c:ci})});return out}
