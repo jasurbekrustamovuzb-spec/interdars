@@ -209,6 +209,7 @@ async function generate(){
     var notices=[];
     if(generatedQuestions.length<requestedCount)notices.push('AI '+generatedQuestions.length+' ta savol tayyorladi ('+requestedCount+' ta so’ralgan). Tayyor savollarni tahrirlab, kerak bo’lsa pastdagi tugmalar bilan qo’shing.');
     if(data.balanceNeedsReview)notices.push('To’g’ri/noto’g’ri savollarining javob nisbatini tekshiring.');
+    if(data.qualityNeedsReview)notices.push('Ayrim variantlar qiyinlik talabiga mosligini muharrirda tekshiring.');
     if(cut)notices.push('Matn qisqartirildi — faqat boshlang’ich qismi ishlatildi.');
     if(notices.length)status(notices.join(' '));
     if(window.confetti)confetti(innerWidth/2,innerHeight*.3,36)
