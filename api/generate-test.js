@@ -5,6 +5,17 @@ const GLOBAL_PER_MINUTE_LIMIT = 10;
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
 
 const clean = (value, length) => typeof value === 'string' ? value.trim().slice(0, length) : '';
+function parseGeminiResult(raw) {
+  const body = String(raw || '').trim()
+    .replace(/^\x60{3}(?:json)?\s*/i, '')
+    .replace(/\s*\x60{3}$/i, '')
+    .trim();
+  const start = body.indexOf('{'), end = body.lastIndexOf('}');
+  if (start < 0 || end < start) throw new Error('AI_JSON_OBJECT_MISSING');
+  const result = JSON.parse(body.slice(start, end + 1));
+  if (!result || !Array.isArray(result.questions)) throw new Error('AI_QUESTIONS_ARRAY_MISSING');
+  return result;
+}
 const evidenceText = value => String(value || '').normalize('NFKC').toLocaleLowerCase()
   .replace(/[’‘ʻʼ´]/g, "'").replace(/[^\p{L}\p{N}]+/gu, ' ').trim();
 function evidenceMatches(evidence, source) {
@@ -174,11 +185,18 @@ MATERIAL OXIRI`;
     // Gemini may briefly return 503 during capacity spikes. Retry once in the
     // same request so the user does not need to click again and hit cooldown.
     for (let attempt = 0; attempt < 2; attempt += 1) {
-      response = await fetch(geminiUrl, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: geminiBody
-      });
+      try {
+        response = await fetch(geminiUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: geminiBody
+        });
+      } catch (networkError) {
+        if (attempt === 1) throw networkError;
+        logEvent('ai_test_network_retry', { attempt: attempt + 1 });
+        await sleep(500);
+        continue;
+      }
       if (response.status !== 503 || attempt === 1) break;
       logEvent('ai_test_provider_retry', { status: 503, attempt: attempt + 1 });
       await sleep(900);
@@ -202,8 +220,45 @@ MATERIAL OXIRI`;
       return res.status(502).json({ error: 'AI javob bera olmadi. Sozlamalar yoki model holatini tekshiring.' });
     }
 
-    const raw = payload.candidates?.[0]?.content?.parts?.map(part => part.text || '').join('') || '';
-    const result = JSON.parse(raw.replace(/^```(?:json)?\s*|\s*```$/g, ''));
+    let raw = payload.candidates?.[0]?.content?.parts?.map(part => part.text || '').join('') || '';
+    let result;
+    try {
+      result = parseGeminiResult(raw);
+    } catch (parseError) {
+      logEvent('ai_test_json_retry', {
+        finishReason: clean(payload.candidates?.[0]?.finishReason, 40),
+        blockReason: clean(payload.promptFeedback?.blockReason, 60)
+      });
+      const repairPrompt = prompt + '\n\nFORMAT RETRY: Your previous response was empty or invalid JSON. Return one complete JSON object with a questions array. Follow the requested counts and types. Do not include markdown, comments, or text outside JSON. Keep answers concise enough to finish the JSON.';
+      const retryBody = JSON.stringify({
+        contents: [{ parts: [{ text: repairPrompt }] }],
+        generationConfig: { responseMimeType: 'application/json', temperature: 0.2, maxOutputTokens: 8192 }
+      });
+      let retryResponse;
+      for (let attempt = 0; attempt < 2; attempt += 1) {
+        retryResponse = await fetch(geminiUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: retryBody
+        });
+        if (retryResponse.status !== 503 || attempt === 1) break;
+        await sleep(900);
+      }
+      if (!retryResponse.ok) {
+        const retryError = new Error('AI_JSON_RETRY_HTTP_' + retryResponse.status);
+        retryError.code = 'AI_JSON_RETRY_HTTP';
+        throw retryError;
+      }
+      payload = await retryResponse.json();
+      raw = payload.candidates?.[0]?.content?.parts?.map(part => part.text || '').join('') || '';
+      try {
+        result = parseGeminiResult(raw);
+      } catch (_) {
+        const retryError = new Error('AI_JSON_INVALID_AFTER_RETRY');
+        retryError.code = 'AI_JSON_INVALID_AFTER_RETRY';
+        throw retryError;
+      }
+    }
     const source = text;
     const accepted = { mcq: 0, text: 0, tf: 0 };
     let qualityNeedsReview = false;
@@ -258,10 +313,18 @@ MATERIAL OXIRI`;
       remainingToday: Number(quota.remaining) || 0
     });
     return res.status(200).json({ topic: clean(result.topic, 180) || topicText, questions, partial: questions.length < n, balanceNeedsReview: !tfBalanced, qualityNeedsReview, requestedCount: n, remainingToday: Number(quota.remaining) || 0 });
-  } catch (_) {
+  } catch (error) {
     await refundFailedGeneration();
-    logEvent('ai_test_generation_parse_or_network_error', { durationMs: Date.now() - startedAt });
-    return res.status(502).json({ error: 'AI javobini o’qib bo’lmadi. Qayta urinib ko’ring.' });
+    const errorCode = clean(error?.code, 64);
+    logEvent('ai_test_generation_parse_or_network_error', {
+      durationMs: Date.now() - startedAt,
+      errorName: clean(error?.name, 40),
+      errorCode
+    });
+    const message = errorCode === 'AI_JSON_INVALID_AFTER_RETRY'
+      ? 'AI javob formati tuzalmadi. Savollar sonini kamaytirib yoki qayta urinib ko’ring.'
+      : 'AI xizmati bilan aloqa uzildi. Birozdan keyin qayta urinib ko’ring.';
+    return res.status(502).json({ error: message });
   }
 };
 
