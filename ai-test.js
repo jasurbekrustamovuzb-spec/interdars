@@ -262,7 +262,7 @@ function leave(){
   if(!$('#ax-editor').hidden){
     if(S.cur&&S.dirty&&!S.saved){B.ask('Saqlanmagan test','Chiqsangiz, tayyorlangan savollar yo’qoladi.','Chiqish',closeEd);return}
     closeEd();return}
-  B.go('yaratish')}
+  (B.back||B.go)('yaratish')}
 function closeEd(){S.cur=null;S.editId=null;showEditor(false);renderSaved()}
 
 /* ---- hodisalar ---- */
