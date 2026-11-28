@@ -193,13 +193,13 @@ MATERIAL OXIRI`;
 
     const raw = payload.candidates?.[0]?.content?.parts?.map(part => part.text || '').join('') || '';
     const result = JSON.parse(raw.replace(/^```(?:json)?\s*|\s*```$/g, ''));
-    const source = text.replace(/\\s+/g, ' ').trim().toLocaleLowerCase();
+    const source = text.replace(/\s+/g, ' ').trim().toLocaleLowerCase();
     const accepted = { mcq: 0, text: 0, tf: 0 };
     const questions = (result.questions || []).map(item => {
       const type = ['text', 'tf'].includes(item.type || item.k) ? (item.type || item.k) : 'mcq';
       if (accepted[type] >= counts[type]) return null;
       const q = clean(item.q, 500), evidence = clean(item.evidence, 700);
-      if (!q || !evidence || !source.includes(evidence.replace(/\\s+/g, ' ').trim().toLocaleLowerCase())) return null;
+      if (!q || !evidence || !source.includes(evidence.replace(/\s+/g, ' ').trim().toLocaleLowerCase())) return null;
       if (type === 'mcq') {
         const options = Array.isArray(item.options) ? item.options.slice(0, 4).map(option => clean(option, 300)) : [];
         const correctIndex = Number(item.correctIndex);
