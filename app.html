@@ -817,11 +817,17 @@ html{background:var(--bg)}
 .qe{background:var(--card);border:2px solid var(--line);border-left-width:6px;border-radius:18px;padding:12px;margin-top:12px}
 .qe.k-mcq{border-left-color:var(--blue)}.qe.k-text{border-left-color:var(--violet)}.qe.k-tf{border-left-color:var(--mint)}
 .qe.bad{border-color:var(--coral)}.qe.nt{opacity:.7}
-.qe-h{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.qe-h{display:flex;align-items:center;gap:6px;flex-wrap:nowrap}
 .qe-n{width:30px;height:30px;border-radius:10px;background:var(--bg);display:grid;place-items:center;font-weight:800;flex:none}
-.qe-ty{display:flex;gap:4px;flex:1;min-width:0;flex-wrap:wrap}
-.qe-ty button{padding:5px 10px;border-radius:10px;border:2px solid var(--line);font-weight:800;font-size:12.5px;background:var(--bg)}
-.qe-ty button[aria-pressed=true]{background:var(--blue);border-color:var(--blue);color:#fff}
+.qe-kind-menu{position:relative;flex:none}
+.qe-kind-menu summary{list-style:none;cursor:pointer}
+.qe-kind-menu summary::-webkit-details-marker{display:none}
+.qe-kind-current{width:34px;height:34px;border:1px solid var(--line);border-radius:10px;background:var(--bg);display:flex;align-items:center;justify-content:center;gap:2px;font-weight:900;color:var(--blue)}
+.qe-kind-current span{font-size:15px;line-height:1}
+.qe-kind-current i{font-style:normal;font-size:10px;color:var(--muted)}
+.qe-kind-options{position:absolute;top:calc(100% + 5px);left:0;z-index:20;display:flex;gap:4px;padding:5px;border:1px solid var(--line);border-radius:12px;background:var(--card);box-shadow:0 8px 24px #1b255022}
+.qe-kind-options button{width:34px;height:34px;padding:0;border:1px solid var(--line);border-radius:9px;background:var(--bg);font-weight:900;color:var(--ink)}
+.qe-kind-options button[aria-pressed=true]{background:var(--blue);border-color:var(--blue);color:#fff}
 .qe-x{width:34px;height:34px;border-radius:10px;background:var(--bg);font-weight:800;flex:none}
 .qe-t,.qe-a{width:100%;margin-top:10px;border:2px solid var(--line);border-radius:12px;padding:9px 12px;font:inherit;font-weight:700;background:var(--bg);color:inherit;resize:none;overflow:hidden;display:block}
 .qe-o{display:grid;gap:8px;margin-top:10px}.qe-op{display:flex;gap:8px;align-items:center}
@@ -838,9 +844,12 @@ html{background:var(--bg)}
 .qe-why{color:var(--coral);font-weight:800;font-size:13px;margin-top:8px}
 .qe-al span{display:block;margin-top:10px;font-weight:800;font-size:13px;color:var(--muted)}
 .qe-ev{margin-top:8px;font-size:13px}
-.qe-add{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:14px}
-.qe-add button{padding:9px 14px;border-radius:12px;border:2px dashed var(--line);font-weight:800;background:var(--card)}
-.qe-add button:disabled{opacity:.4}.qe-empty{color:var(--muted);margin:10px 0}
+.qe-add{display:flex;align-items:center;gap:4px;margin-top:10px;padding:6px 7px;border:1px solid var(--line);border-radius:13px;background:var(--card)}
+.qe-add>b{display:flex;align-items:center;gap:4px;margin-right:auto;white-space:nowrap;font-size:12px;color:var(--muted)}
+.qe-add>b i{font-style:normal;font-size:15px;color:var(--blue)}
+.qe-add button{display:inline-flex;align-items:center;justify-content:center;gap:3px;padding:6px 7px;min-width:0;border:1px solid var(--line);border-radius:9px;font-weight:800;font-size:12px;background:var(--bg);white-space:nowrap}
+.qe-add button i{font-style:normal;color:var(--blue)}
+.qe-add button:active{transform:scale(.97)}.qe-add button:disabled{opacity:.4}.qe-empty{color:var(--muted);margin:10px 0}
 .axt{display:grid;gap:8px}.ax-kinds{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}.ax-kind{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-height:62px;padding:6px 3px;border:2px solid var(--line);border-radius:15px;background:var(--bg);color:var(--muted);font:800 12px/1.1 Nunito,sans-serif;text-align:center}.ax-kind i{font-style:normal;font-size:19px}.ax-kind[aria-pressed=true]{border-color:var(--blue);background:rgba(75,107,255,.1);color:var(--ink);box-shadow:0 3px 0 var(--blue)}.ax-count-label{margin:10px 0 0;font-size:14px;font-weight:800}.ax-count-options{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px;margin-top:6px}.ax-count-choice{min-height:42px;border:2px solid var(--line);border-radius:14px;background:var(--bg);color:var(--muted);font:800 15px Nunito,sans-serif}.ax-count-choice[aria-pressed=true]{border-color:var(--blue);background:rgba(75,107,255,.1);color:var(--ink);box-shadow:0 3px 0 var(--blue)}.axt-mix{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;margin-top:8px}.ax-mix-type{min-width:0;padding:7px 4px;border:2px solid var(--line);border-radius:13px;background:var(--bg);text-align:center}.ax-mix-type>b{display:block;margin-bottom:4px;font-size:11px;line-height:1.1}.ax-mix-type>div{display:flex;align-items:center;justify-content:center;gap:4px}.ax-mix-type button{width:28px;height:28px;border:2px solid var(--line);border-radius:9px;background:var(--card);font-weight:800;font-size:16px}.ax-mix-type button:disabled{opacity:.35}.ax-mix-type em{min-width:20px;font-style:normal;font-weight:800;font-size:14px}@media(max-width:480px){.ax-kind{min-height:58px;font-size:10px}.ax-kind i{font-size:17px}.ax-mix-type>b{font-size:10px}}.axt-r{display:flex;align-items:center;gap:10px;padding:8px 12px;border:2px solid var(--line);border-radius:14px;background:var(--bg)}
 .axt-r>span{font-size:20px;width:26px;text-align:center;font-weight:800;color:var(--blue)}.axt-r div{flex:1;min-width:0}.axt-r b{display:block}.axt-r small{color:var(--muted);font-size:12.5px;font-weight:700}
 .axt-r button{width:36px;height:36px;border-radius:10px;border:2px solid var(--line);background:var(--card);font-weight:800;font-size:18px}.axt-r button:disabled{opacity:.35}
@@ -1374,7 +1383,7 @@ var QE={
   h+='<div class="qe-sum">'+QKO.map(function(k){return '<span class="qe-chip k-'+k+(cn[k]?'':' z')+'"><i>'+QK[k].e+'</i>'+cn[k]+' '+T(QK[k].n)+'</span>'}).join('')+'</div>';
   if(!list.length)h+='<p class="qe-empty">'+T('Hali savol yo’q. Pastdagi tugmalar bilan qo’shing.')+'</p>';
   h+=list.map(function(x,i){var bd=o.bad===i,nt=o.noText&&x.k==='text';
-    var b='<article class="qe k-'+x.k+(bd?' bad':'')+(nt?' nt':'')+'" data-qe="'+i+'"><div class="qe-h"><span class="qe-n">'+(i+1)+'</span><div class="qe-ty" role="group" aria-label="'+T('Savol turi')+'">'+QKO.map(function(k){return '<button type="button" data-qek="'+k+'" aria-pressed="'+(x.k===k)+'" title="'+T(QK[k].h)+'">'+T(QK[k].n)+'</button>'}).join('')+'</div><button type="button" class="qe-x" data-qerm="'+i+'" aria-label="'+T('O’chirish')+'">✕</button></div>';
+    var b='<article class="qe k-'+x.k+(bd?' bad':'')+(nt?' nt':'')+'" data-qe="'+i+'"><div class="qe-h"><span class="qe-n">'+(i+1)+'</span><details class="qe-kind-menu"><summary class="qe-kind-current" title="'+T('Savol turini o’zgartirish')+'" aria-label="'+T('Savol turi')+': '+T(QK[x.k].n)+'"><span aria-hidden="true">'+QK[x.k].e+'</span><i aria-hidden="true">⌄</i></summary><div class="qe-kind-options" role="group" aria-label="'+T('Savol turini tanlang')+'">'+QKO.map(function(k){return '<button type="button" data-qek="'+k+'" aria-pressed="'+(x.k===k)+'" title="'+T(QK[k].n)+'" aria-label="'+T(QK[k].n)+'">'+QK[k].e+'</button>'}).join('')+'</div></details><button type="button" class="qe-x" data-qerm="'+i+'" aria-label="'+T('O’chirish')+'">✕</button></div>';
     b+='<textarea class="qe-t" data-qef="q" rows="2" maxlength="500" placeholder="'+T(x.k==='tf'?'Tasdiq matni (to’g’ri yoki noto’g’ri bo’lishi mumkin)':'Savol matni')+'" aria-label="'+T('Savol matni')+'">'+esc(x.q)+'</textarea>';
     if(x.k==='mcq')b+='<div class="qe-o">'+x.a.map(function(t,j){var on=x.c===j,L='ABCD'.charAt(j);return '<div class="qe-op'+(on?' ok':'')+'"><button type="button" class="qe-l" data-qec="'+j+'" aria-pressed="'+on+'" aria-label="'+T('To’g’ri javob')+' '+L+'">'+(on?'✓':L)+'</button><input data-qeo="'+j+'" maxlength="300" value="'+esc(t)+'" placeholder="'+T('Variant')+' '+L+'" aria-label="'+T('Variant')+' '+L+'"></div>'}).join('')+'</div><p class="qe-tip">'+T('Harfni bosib to’g’ri variantni belgilang.')+'</p>';
     else if(x.k==='tf')b+='<div class="qe-tf" role="group">'+TFA.map(function(t,j){return '<button type="button" class="'+(j?'no':'ok')+'" data-qetf="'+j+'" aria-pressed="'+(x.c===j)+'"><i>'+(j?'✕':'✓')+'</i>'+T(t)+'</button>'}).join('')+'</div><p class="qe-tip">'+T('Yozilgan tasdiq to’g’rimi yoki noto’g’rimi — shuni belgilang.')+'</p>';
@@ -1383,7 +1392,7 @@ var QE={
     if(nt)b+='<p class="qe-nt">'+T('Bu metodda savol-javob ishlatilmaydi — “Sirli kartalar” yoki “Interaktiv dars”da ishlaydi.')+'</p>';
     if(bd&&o.why)b+='<p class="qe-why">'+T(o.why)+'</p>';
     return b+'</article>'}).join('');
-  h+='<div class="qe-add"><b>'+T('Qo’shish')+'</b>'+QKO.map(function(k){return '<button type="button" data-qeadd="'+k+'"'+(list.length>=mx?' disabled':'')+'><i>'+QK[k].e+'</i> '+T(QK[k].n)+'</button>'}).join('')+'</div>';
+  h+='<div class="qe-add"><b><i aria-hidden="true">＋</i>'+T('Savol qo’shish')+'</b>'+QKO.map(function(k){var label=k==='mcq'?'Test':k==='text'?'Javob':'T/N';return '<button type="button" data-qeadd="'+k+'" aria-label="'+T(QK[k].n)+' savoli qo’shish" title="'+T(QK[k].n)+' savoli qo’shish"'+(list.length>=mx?' disabled':'')+'><i aria-hidden="true">'+QK[k].e+'</i><span>'+T(label)+'</span></button>'}).join('')+'</div>';
   return h},
  mount:function(box,list,o){box._qe={list:list,o:o||{}};QE.draw(box,false);
    if(!box._qeb){box._qeb=1;box.addEventListener('input',QE.onIn);box.addEventListener('click',QE.onClick)}},

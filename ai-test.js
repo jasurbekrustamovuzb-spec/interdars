@@ -200,11 +200,18 @@ async function generate(){
     var res=await fetch('/api/generate-test',{method:'POST',headers:await authH(),signal:S.ctl&&S.ctl.signal,body:JSON.stringify({text:text,topic:$('#ax-topic').value.trim(),kind:S.kind,count:total(),counts:S.counts,level:S.level,request:reqText()})});
     var data={};try{data=await res.json()}catch(e){}
     if(!res.ok){var er=Error(data.error||T('Test tuzishda xatolik yuz berdi.'));er.retry=Number(data.retryAfter)||0;er.raw=true;throw er}
-    S.cur={topic:$('#ax-topic').value.trim()||data.topic||T('Yangi test'),questions:B.QE.from(data.questions.map(normQ).filter(function(x,i,a){var n=x.q.trim().toLowerCase();return a.findIndex(function(y){return y.q.trim().toLowerCase()===n})===i})),file:fs.map(function(f){return f.name}).join(', '),m:'quiz'};
+    var generatedQuestions=B.QE.from(data.questions.map(normQ).filter(function(x,i,a){var n=x.q.trim().toLowerCase();return a.findIndex(function(y){return y.q.trim().toLowerCase()===n})===i}));
+    var requestedCount=Number(data.requestedCount)||total();
+    S.cur={topic:$('#ax-topic').value.trim()||data.topic||T('Yangi test'),questions:generatedQuestions,file:fs.map(function(f){return f.name}).join(', '),m:'quiz'};
     S.editId=null;S.saved=false;S.dirty=true;S.bad=-1;
     if(typeof data.remainingToday==='number'){S.remain=data.remainingToday;quota()}
     wait(false);showEditor(true);
-    if(cut)status('Matn qisqartirildi — faqat boshlang’ich qismi ishlatildi.');
+    var notices=[];
+    if(generatedQuestions.length<requestedCount)notices.push('AI '+generatedQuestions.length+' ta savol tayyorladi ('+requestedCount+' ta so’ralgan). Tayyor savollarni tahrirlab, kerak bo’lsa pastdagi tugmalar bilan qo’shing.');
+    if(data.balanceNeedsReview)notices.push('To’g’ri/noto’g’ri savollarining javob nisbatini tekshiring.');
+    if(data.qualityNeedsReview)notices.push('Ayrim variantlar qiyinlik talabiga mosligini muharrirda tekshiring.');
+    if(cut)notices.push('Matn qisqartirildi — faqat boshlang’ich qismi ishlatildi.');
+    if(notices.length)status(notices.join(' '));
     if(window.confetti)confetti(innerWidth/2,innerHeight*.3,36)
   }catch(e){
     wait(false);
