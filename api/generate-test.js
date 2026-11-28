@@ -241,7 +241,7 @@ MATERIAL OXIRI`;
       return { k: 'tf', q, correct: item.correct, evidence };
     }).filter(Boolean).slice(0, n);
 
-    const tfBalanced = !counts.tf || Math.abs(questions.filter(item => item.k === 'tf' && item.correct).length - questions.filter(item => item.k === 'tf' && !item.correct).length) <= 1;
+    const tfBalanced = questions.length < n || !counts.tf || Math.abs(questions.filter(item => item.k === 'tf' && item.correct).length - questions.filter(item => item.k === 'tf' && !item.correct).length) <= 1;
     if (!questions.length || !tfBalanced) {
       await refundFailedGeneration();
       logEvent('ai_test_generation_empty', { durationMs: Date.now() - startedAt, inputTokens: payload.usageMetadata?.promptTokenCount || 0 });
