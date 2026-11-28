@@ -219,7 +219,7 @@ function host(l,opts){
   var cls=!!(opts&&opts.mode==='class');
   if(!l||!l.qs||!l.qs.length){say('Savollar topilmadi');return false}
   if(!window.sb||!window.sb.channel){say('Jonli rejim uchun internet kerak');return false}
-  if(window.League&&window.League.active()){window.League.open();return true}
+  if(window.League&&window.League.active()){window.League.open();return true}if(window.TeamRace&&window.TeamRace.active()){window.TeamRace.open();return true}
   if(H||P){openOv();return true}
   var pin;pin=String(100000+Math.floor(Math.random()*900000));
   H={v:1,pin:pin,lid:l.id,title:l.title,set:defSet(cls),ph:'lobby',qi:-1,t0:0,dur:0,pl:{},n:0,qs:[],ts:Date.now(),lock:false,qst:[]};
@@ -392,7 +392,7 @@ function hCSV(){var rows;
 var P=null,PT=null,E={n:'',a:0,g:'f'};
 function join(pin,forceProfile){
   return new Promise(function(resolve){
-    if(H||P||(window.League&&window.League.active())){resolve('none');return}
+    if(H||P||(window.League&&window.League.active())||(window.TeamRace&&window.TeamRace.active())){resolve('none');return}
     var prof=ls(LSF)||{},u=uinfo();LiveQuiz.err='';
     P={pin:pin,pid:rid(),n:prof.n||u.name||'',a:prof.a!=null?normalizeAv(prof.a):-1,ph:'conn',max:4,probe:true,tot:0,my:-1};
     if(prof.a!=null&&prof.a!==P.a){prof.a=P.a;lsSet(LSF,prof)}
@@ -416,6 +416,7 @@ function pMsg(m){
   else if(m.t==='h'){P.lastH=Date.now();if(P.got&&(m.ph!==P.ph||m.qi!==P.qi))pHello()}
   else if(m.t==='k'){P.ak=true}
   else if(m.t==='lg'&&window.League&&P.probe){var lgme=P,lgs={pin:P.pin,pid:P.pid,n:P.n,a:P.a};clearInterval(lgme.hl);P=null;netClose();modalClose();closeOv();if(lgme.done)lgme.done('ok');setTimeout(function(){window.League.join(lgs)},450)}
+  else if(m.t==='tr'&&window.TeamRace&&P.probe){var trme=P,trs={pin:P.pin,pid:P.pid,n:P.n,a:P.a};clearInterval(trme.hl);P=null;netClose();modalClose();closeOv();if(trme.done)trme.done('ok');setTimeout(function(){window.TeamRace.join(trs)},450)}
   else if(m.t==='deny'){var msg=m.why==='full'?'Xona to‘lgan':'Dars boshlangan — qo‘shilib bo‘lmaydi';LiveQuiz.err=msg;if(!P.got&&P.done)P.done('closed');else leave(msg)}
   else if(m.t==='kick'){leave('Tashkilotchi sizni xonadan chiqardi')}
   else if(m.t==='end'){if(P.ph==='fin'){leave()}else{leave('Tashkilotchi testni tugatdi')}}}
